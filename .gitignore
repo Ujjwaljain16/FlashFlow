@@ -1,0 +1,38 @@
+# Compiled Binaries & Executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test & Profiling Artifacts
+*.test
+*.out
+coverage.txt
+coverage.html
+*.pprof
+*.cpu
+*.mem
+*.trace
+
+# Go workspace & dependency caches
+go.work
+go.work.sum
+vendor/
+
+# IDE & Editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Temporary & Scratch Files
+tmp/
+temp/
+scratch/
+*.log

@@ -1,0 +1,34 @@
+{
+  "experiment": "001-A-connection-cost-decomposition",
+  "concurrency": 10,
+  "requests": 1000,
+  "payload_bytes": 64,
+  "dial_only": {
+    "p50_ns": 0,
+    "p95_ns": 0,
+    "p99_ns": 0,
+    "min_ns": 0,
+    "max_ns": 0
+  },
+  "per_request_conn_latency": {
+    "p50_ns": 0,
+    "p95_ns": 0,
+    "p99_ns": 0,
+    "min_ns": 0,
+    "max_ns": 0
+  },
+  "per_request_rtt_latency": {
+    "p50_ns": 0,
+    "p95_ns": 0,
+    "p99_ns": 0,
+    "min_ns": 0,
+    "max_ns": 0
+  },
+  "persistent_rtt_latency": {
+    "p50_ns": 0,
+    "p95_ns": 0,
+    "p99_ns": 0,
+    "min_ns": 0,
+    "max_ns": 0
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "experiment": "001-tcp-connection-lifecycle",
+  "connection_mode": "per-request",
+  "concurrency": 100,
+  "payload_bytes": 32,
+  "requests": 1000,
+  "successful": 1,
+  "failed": 999,
+  "total_duration_ns": 632619700,
+  "connections": 1,
+  "p50_req_ns": 65818100,
+  "p95_req_ns": 65818100,
+  "p99_req_ns": 65818100,
+  "min_req_ns": 65818100,
+  "max_req_ns": 65818100,
+  "p50_conn_ns": 2655200,
+  "p95_conn_ns": 2655200,
+  "p99_conn_ns": 2655200,
+  "throughput_rps": 1.5807285166743938
+}

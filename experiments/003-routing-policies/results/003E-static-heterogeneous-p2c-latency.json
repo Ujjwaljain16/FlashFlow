@@ -1,0 +1,48 @@
+{
+  "experiment": "003-E-power-of-two-choices",
+  "timestamp": "2026-09-04T18:49:34Z",
+  "scenario": "static-heterogeneous",
+  "policy": "p2c-latency",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 1923.8982796501584,
+      "client_latencies": {
+        "p50": 13614200,
+        "p95": 28448000,
+        "p99": 37253700,
+        "min": 1003200,
+        "max": 48004400
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 316,
+          "edge_forwarded_count": 316,
+          "counts_agree": true,
+          "share_percent": 52.666666666666664
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 284,
+          "edge_forwarded_count": 284,
+          "counts_agree": true,
+          "share_percent": 47.333333333333336
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "p2c-latency under static 1ms/1ms/100ms: RPS=1923.9 p95=28.448ms p99=37.2537ms shares a=52.7% b=47.3% c=0.0%."
+}

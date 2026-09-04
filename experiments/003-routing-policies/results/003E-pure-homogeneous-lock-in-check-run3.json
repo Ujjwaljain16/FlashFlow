@@ -1,0 +1,48 @@
+{
+  "experiment": "003-E-power-of-two-choices",
+  "timestamp": "2026-09-04T18:49:29Z",
+  "scenario": "pure-homogeneous-lock-in-check",
+  "policy": "p2c-latency",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 4526.627888554422,
+      "client_latencies": {
+        "p50": 3426200,
+        "p95": 20566900,
+        "p99": 35129600,
+        "min": 1030400,
+        "max": 44453000
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 22,
+          "edge_forwarded_count": 22,
+          "counts_agree": true,
+          "share_percent": 3.6666666666666665
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 280,
+          "edge_forwarded_count": 280,
+          "counts_agree": true,
+          "share_percent": 46.666666666666664
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 298,
+          "edge_forwarded_count": 298,
+          "counts_agree": true,
+          "share_percent": 49.666666666666664
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "run 3, 3 IDENTICAL 1ms edges, P2C-over-latency (seed=20260907): shares = 3.7%/46.7%/49.7% (a/b/c). EWMA on the identical setup (003-D) gave e.g. 94.0%/3.8%/2.2%."
+}

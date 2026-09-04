@@ -1,0 +1,48 @@
+{
+  "experiment": "003-E-power-of-two-choices",
+  "timestamp": "2026-09-04T18:49:31Z",
+  "scenario": "static-heterogeneous",
+  "policy": "least-connections",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 1567.2486818785565,
+      "client_latencies": {
+        "p50": 3234400,
+        "p95": 8432900,
+        "p99": 108551000,
+        "min": 1016000,
+        "max": 112465300
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 318,
+          "edge_forwarded_count": 318,
+          "counts_agree": true,
+          "share_percent": 53
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 268,
+          "edge_forwarded_count": 268,
+          "counts_agree": true,
+          "share_percent": 44.666666666666664
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 14,
+          "edge_forwarded_count": 14,
+          "counts_agree": true,
+          "share_percent": 2.3333333333333335
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "least-connections under static 1ms/1ms/100ms: RPS=1567.2 p95=8.4329ms p99=108.551ms shares a=53.0% b=44.7% c=2.3%."
+}

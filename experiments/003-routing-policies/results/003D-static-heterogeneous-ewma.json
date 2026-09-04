@@ -1,0 +1,48 @@
+{
+  "experiment": "003-D-ewma-latency-variation",
+  "timestamp": "2026-09-04T18:35:22Z",
+  "scenario": "static-heterogeneous",
+  "policy": "ewma",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 5972.086467849273,
+      "client_latencies": {
+        "p50": 3783000,
+        "p95": 10028100,
+        "p99": 15001300,
+        "min": 1021400,
+        "max": 17094800
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 600,
+          "edge_forwarded_count": 600,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "ewma under static 1ms/1ms/100ms: RPS=5972.1 p95=10.0281ms p99=15.0013ms edge-c share=0.00%."
+}

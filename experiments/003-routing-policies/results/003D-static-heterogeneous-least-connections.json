@@ -1,0 +1,48 @@
+{
+  "experiment": "003-D-ewma-latency-variation",
+  "timestamp": "2026-09-04T18:35:22Z",
+  "scenario": "static-heterogeneous",
+  "policy": "least-connections",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 1704.7977839901873,
+      "client_latencies": {
+        "p50": 2655500,
+        "p95": 14918300,
+        "p99": 108529600,
+        "min": 1027300,
+        "max": 125281400
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 306,
+          "edge_forwarded_count": 306,
+          "counts_agree": true,
+          "share_percent": 51
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 280,
+          "edge_forwarded_count": 280,
+          "counts_agree": true,
+          "share_percent": 46.666666666666664
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 14,
+          "edge_forwarded_count": 14,
+          "counts_agree": true,
+          "share_percent": 2.3333333333333335
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "least-connections under static 1ms/1ms/100ms: RPS=1704.8 p95=14.9183ms p99=108.5296ms edge-c share=2.33%."
+}

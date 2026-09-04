@@ -1,0 +1,240 @@
+{
+  "experiment": "003-D-ewma-latency-variation",
+  "timestamp": "2026-09-04T18:35:28Z",
+  "scenario": "alpha-oscillation",
+  "policy": "ewma",
+  "alpha": 0.05,
+  "concurrency": 10,
+  "requests": 200,
+  "phases": [
+    {
+      "phase": "phase1-fast",
+      "successful_requests": 200,
+      "failed_requests": 0,
+      "throughput_rps": 1306.6549241944147,
+      "client_latencies": {
+        "p50": 4832800,
+        "p95": 22526200,
+        "p99": 32520900,
+        "min": 1250700,
+        "max": 33126100
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 172,
+          "edge_forwarded_count": 172,
+          "counts_agree": true,
+          "share_percent": 86
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 18,
+          "edge_forwarded_count": 18,
+          "counts_agree": true,
+          "share_percent": 9
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 10,
+          "edge_forwarded_count": 10,
+          "counts_agree": true,
+          "share_percent": 5
+        }
+      ],
+      "edge_c_ewma_estimate_ms": 14.51,
+      "client_server_outcome_mismatch": 0
+    },
+    {
+      "phase": "phase2-slow",
+      "successful_requests": 200,
+      "failed_requests": 0,
+      "throughput_rps": 1725.711899301259,
+      "client_latencies": {
+        "p50": 4410800,
+        "p95": 12777300,
+        "p99": 15351100,
+        "min": 1043000,
+        "max": 24438800
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "edge_c_ewma_estimate_ms": 14.51,
+      "client_server_outcome_mismatch": 0
+    },
+    {
+      "phase": "phase3-fast",
+      "successful_requests": 200,
+      "failed_requests": 0,
+      "throughput_rps": 1627.4346422247684,
+      "client_latencies": {
+        "p50": 4810400,
+        "p95": 12186200,
+        "p99": 22333300,
+        "min": 1038200,
+        "max": 23461400
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "edge_c_ewma_estimate_ms": 14.51,
+      "client_server_outcome_mismatch": 0
+    },
+    {
+      "phase": "phase4-slow",
+      "successful_requests": 200,
+      "failed_requests": 0,
+      "throughput_rps": 1139.0325968348561,
+      "client_latencies": {
+        "p50": 6548700,
+        "p95": 23209900,
+        "p99": 36466200,
+        "min": 1035100,
+        "max": 39553600
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "edge_c_ewma_estimate_ms": 14.51,
+      "client_server_outcome_mismatch": 0
+    },
+    {
+      "phase": "phase5-fast",
+      "successful_requests": 200,
+      "failed_requests": 0,
+      "throughput_rps": 1465.3528313181068,
+      "client_latencies": {
+        "p50": 5083300,
+        "p95": 15323500,
+        "p99": 23344200,
+        "min": 1099300,
+        "max": 23344200
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "edge_c_ewma_estimate_ms": 14.51,
+      "client_server_outcome_mismatch": 0
+    },
+    {
+      "phase": "phase6-slow",
+      "successful_requests": 200,
+      "failed_requests": 0,
+      "throughput_rps": 1522.0491652321352,
+      "client_latencies": {
+        "p50": 4905000,
+        "p95": 11564700,
+        "p99": 21711000,
+        "min": 1057000,
+        "max": 22372400
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "edge_c_ewma_estimate_ms": 14.51,
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "alpha=0.05: edge-c share per phase (fast/slow/fast/slow/fast/slow) = 5.0%/0.0%/0.0%/0.0%/0.0%/0.0%; EWMA estimate per phase (ms) = 14.5/14.5/14.5/14.5/14.5/14.5"
+}

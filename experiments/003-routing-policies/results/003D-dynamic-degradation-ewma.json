@@ -1,0 +1,85 @@
+{
+  "experiment": "003-D-ewma-latency-variation",
+  "timestamp": "2026-09-04T18:35:26Z",
+  "scenario": "dynamic-degradation",
+  "policy": "ewma",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "phase1-homogeneous",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 1671.6318776855812,
+      "client_latencies": {
+        "p50": 12612300,
+        "p95": 42053600,
+        "p99": 79990100,
+        "min": 1034600,
+        "max": 96592700
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 586,
+          "edge_forwarded_count": 586,
+          "counts_agree": true,
+          "share_percent": 97.66666666666667
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 14,
+          "edge_forwarded_count": 14,
+          "counts_agree": true,
+          "share_percent": 2.3333333333333335
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    },
+    {
+      "phase": "phase2-degraded",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 2019.3120271233993,
+      "client_latencies": {
+        "p50": 8480700,
+        "p95": 35832800,
+        "p99": 65796400,
+        "min": 1022000,
+        "max": 76696900
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 600,
+          "edge_forwarded_count": 600,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "ewma: phase1 edge-c share=2.33% RPS=1671.6. phase2 (degraded, no reconfiguration) edge-c share=0.00% RPS=2019.3 p95=35.8328ms p99=65.7964ms."
+}

@@ -1,0 +1,48 @@
+{
+  "experiment": "003-D-ewma-latency-variation",
+  "timestamp": "2026-09-04T18:35:32Z",
+  "scenario": "pure-homogeneous-lock-in-check",
+  "policy": "ewma",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 1669.6149283609973,
+      "client_latencies": {
+        "p50": 10107300,
+        "p95": 42517900,
+        "p99": 89209900,
+        "min": 1055200,
+        "max": 119307300
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 109,
+          "edge_forwarded_count": 109,
+          "counts_agree": true,
+          "share_percent": 18.166666666666668
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 472,
+          "edge_forwarded_count": 472,
+          "counts_agree": true,
+          "share_percent": 78.66666666666667
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 19,
+          "edge_forwarded_count": 19,
+          "counts_agree": true,
+          "share_percent": 3.1666666666666665
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "run 3, 3 IDENTICAL 1ms edges, EWMA only: shares = 18.2%/78.7%/3.2% (a/b/c). Round Robin would give ~33.3%/33.3%/33.3%."
+}

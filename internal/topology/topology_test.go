@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"sync"
 	"testing"
 	"time"
 
@@ -54,6 +55,48 @@ func TestOriginServer_HealthAndData(t *testing.T) {
 	}
 	if oResp.Instance != "origin-unit" {
 		t.Fatalf("expected origin-unit, got %s", oResp.Instance)
+	}
+}
+
+// TestOriginServer_ConcurrencyStats_TracksPeak proves the peak tracker
+// actually reflects real concurrent load rather than just the final
+// snapshot's active count — the exact measurement a cache stampede
+// experiment depends on to size "how big was the burst".
+func TestOriginServer_ConcurrencyStats_TracksPeak(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-concurrency", DefaultDelay: 100 * time.Millisecond})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	if stats := origin.ConcurrencyStats(); stats.Active != 0 || stats.Peak != 0 {
+		t.Fatalf("expected zero concurrency before any traffic, got %+v", stats)
+	}
+
+	const concurrent = 20
+	var wg sync.WaitGroup
+	wg.Add(concurrent)
+	for i := 0; i < concurrent; i++ {
+		go func() {
+			defer wg.Done()
+			client := &http.Client{Timeout: 2 * time.Second}
+			resp, err := client.Get(origin.URL() + "/data")
+			if err != nil {
+				t.Errorf("request failed: %v", err)
+				return
+			}
+			resp.Body.Close()
+		}()
+	}
+	wg.Wait()
+
+	stats := origin.ConcurrencyStats()
+	if stats.Active != 0 {
+		t.Fatalf("expected active=0 after all requests complete, got %d", stats.Active)
+	}
+	if stats.Peak != concurrent {
+		t.Fatalf("expected peak concurrency to reach exactly %d (100ms delay held all %d requests in flight "+
+			"simultaneously), got %d", concurrent, concurrent, stats.Peak)
 	}
 }
 

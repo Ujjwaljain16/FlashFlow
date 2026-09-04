@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"flashflow/internal/httpx"
@@ -29,6 +30,25 @@ type OriginServer struct {
 	listener        net.Listener
 	addrPort        string
 	artificialDelay time.Duration
+
+	activeRequests  atomic.Int64
+	peakConcurrency atomic.Int64
+}
+
+// ConcurrencyStats reports how many requests Origin is (or, at peak, was)
+// handling at once — the "how big is the burst" question a cache stampede
+// experiment needs answered, and something no earlier stage needed to
+// measure since nothing before Stage 4 could cause a synchronized burst of
+// upstream requests in the first place.
+type ConcurrencyStats struct {
+	Active int64 `json:"active"`
+	Peak   int64 `json:"peak"`
+}
+
+// ConcurrencyStats returns the current in-flight count and the all-time
+// (since this OriginServer was created) peak concurrent request count.
+func (s *OriginServer) ConcurrencyStats() ConcurrencyStats {
+	return ConcurrencyStats{Active: s.activeRequests.Load(), Peak: s.peakConcurrency.Load()}
 }
 
 // NewOriginServer creates a new Origin server instance.
@@ -66,6 +86,15 @@ func (s *OriginServer) Handler() http.Handler {
 
 	// Data and fallback endpoints
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		n := s.activeRequests.Add(1)
+		defer s.activeRequests.Add(-1)
+		for {
+			peak := s.peakConcurrency.Load()
+			if n <= peak || s.peakConcurrency.CompareAndSwap(peak, n) {
+				break
+			}
+		}
+
 		reqID := httpx.ExtractOrGenerateRequestID(r)
 		w.Header().Set(httpx.HeaderRequestID, reqID)
 

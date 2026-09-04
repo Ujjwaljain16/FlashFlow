@@ -208,3 +208,26 @@ Raw data: `experiments/005-virtual-time/results/005G-full-scenario.json`, full t
 ### Interpretation
 
 Nothing in this experiment required new domain logic — the one line of genuinely new integration code was the `registry.IsAvailable` filter placed in front of `selector.SelectTarget`. Everything else is 005-C, 005-D, and 005-E's already-proven pieces sharing a clock and an event queue. That's exactly what makes the result meaningful rather than merely convenient: determinism held not because this experiment was built to be simple, but because every piece feeding into it was already individually deterministic, and composing deterministic pieces without introducing new shared mutable state accessed out of order stays deterministic. The detection-lag measurement is the clearest illustration of why this experiment needed the composition to exist at all — 005-D alone could show failure and recovery landing at precise timestamps, but only with routing in the loop does "the router kept sending traffic to a target for 100ms after it broke" become an observable, quantified consequence rather than an assumption about how the pieces would interact.
+
+---
+
+## 10. Results: Experiment 005-H — Virtual vs. Real Engine Comparison
+
+**Hypothesis (H8)**: see `hypotheses.md`. Same conceptual scenario as Stage 4's Experiment 004-C (TTL=50ms, service/origin delay=100ms, no coalescing) at C=10/30/100, read directly from 004-C's already-recorded JSON results on the real side, freshly executed under `vtime.Engine` on the virtual side.
+
+| C | Upstream (real / virtual) | p50 (real / virtual) | p99 (real / virtual) |
+|---:|:---:|:---:|:---:|
+| 10 | 10 / **10** | 102.9ms / **100.0ms** | 102.9ms / **100.0ms** |
+| 30 | 30 / **30** | 103.8ms / **100.0ms** | 104.9ms / **100.0ms** |
+| 100 | 100 / **100** | 109.9ms / **100.0ms** | 115.4ms / **100.0ms** |
+
+Raw data: `experiments/005-virtual-time/results/005H-virtual-vs-real.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**: upstream request count matches at every concurrency level tested, in both directions (10=10, 30=30, 100=100). The stampede's core structural claim — nothing deduplicates concurrent misses, so C misses produce C dispatches — depends only on the absence of coalescing, not on which engine runs the scenario.
+2. **Prediction 2 confirmed, in the predicted direction**: the real engine's p99 grows measurably with C (102.9ms → 104.9ms → 115.4ms), while the virtual engine holds flat at exactly 100.0ms — p50 and p99 identical — at every concurrency level. The gap widens as C grows (essentially 0ms at C=10, ~15ms at C=100), tracking the real engine's own growing queueing effect almost exactly, which is itself the point: the *entire* real-vs-virtual latency gap is attributable to the one thing the virtual model deliberately doesn't represent.
+
+### Interpretation
+
+This is the comparison item 54 asks for, not a scoreboard: neither number is "wrong." The real engine is doing exactly what a fidelity check should — surfacing a genuine timing effect (real scheduling contention) that exists even underneath Origin's own already-simplified infinite-server model, a limitation 004-C's own README already named. The virtual engine is doing exactly what it was built for — reproducing the *structural* finding (the stampede's request count) with zero real wall-clock cost, at the price of a latency model with no queueing or capacity representation at all, a boundary stated plainly in `internal/vtime`'s design rather than discovered by surprise here. Put together: if the question is "does removing coalescing produce a duplicate-request stampede," either engine answers it, and they agree. If the question is "how much does that stampede actually hurt tail latency under realistic scheduling," only the real engine's answer means anything — the virtual engine was never built to have an opinion on that question, and this experiment is the concrete demonstration of exactly where that line sits.

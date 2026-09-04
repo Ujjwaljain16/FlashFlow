@@ -1,0 +1,42 @@
+{
+  "experiment": "005-H-virtual-vs-real-comparison",
+  "timestamp": "2026-09-04T23:26:20Z",
+  "ttl_ms": 50,
+  "service_time_ms": 100,
+  "cells": [
+    {
+      "concurrency": 10,
+      "real_p50_ms": 102.868,
+      "real_p95_ms": 102.868,
+      "real_p99_ms": 102.868,
+      "real_upstream_requests": 10,
+      "virtual_p50_ms": 100,
+      "virtual_p95_ms": 100,
+      "virtual_p99_ms": 100,
+      "virtual_upstream_requests": 10
+    },
+    {
+      "concurrency": 30,
+      "real_p50_ms": 103.833,
+      "real_p95_ms": 104.914,
+      "real_p99_ms": 104.914,
+      "real_upstream_requests": 30,
+      "virtual_p50_ms": 100,
+      "virtual_p95_ms": 100,
+      "virtual_p99_ms": 100,
+      "virtual_upstream_requests": 30
+    },
+    {
+      "concurrency": 100,
+      "real_p50_ms": 109.949,
+      "real_p95_ms": 114.294,
+      "real_p99_ms": 115.413,
+      "real_upstream_requests": 100,
+      "virtual_p50_ms": 100,
+      "virtual_p95_ms": 100,
+      "virtual_p99_ms": 100,
+      "virtual_upstream_requests": 100
+    }
+  ],
+  "findings": "Upstream request count matches exactly at every concurrency level (10=10, 30=30, 100=100) -- the stampede's defining structural property (each concurrent miss independently dispatches, since neither engine's scenario here uses coalescing) reproduces identically regardless of engine. Latency does not match, and is not expected to: the real engine shows p99 growing from 102.9ms (c=10) to 115.4ms (c=100) -- a real, if modest, queueing effect from actual OS/goroutine scheduling contention, even against Origin's own already-simplified infinite-server model (see the 004-C README). The virtual engine shows a flat 100.0ms at every concurrency level, with zero spread between p50 and p99, because the virtual model has no representation of finite server capacity or contention at all -- every burst request is assigned exactly the same fixed 100ms service time regardless of how many others arrived at the same instant. This is not a bug in either engine; it is the real engine validating fidelity the virtual model was never built to have, and the virtual engine providing the deterministic, zero-real-time-cost structural proof the real engine cannot produce efficiently."
+}

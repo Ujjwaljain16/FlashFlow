@@ -156,3 +156,32 @@ Raw data: `experiments/004-caching-failures/results/004D-*.json`.
 ### Interpretation
 
 Coalescing does exactly what Experiment 004-C's evidence said it should: it converts a burst of C duplicate Origin fetches into exactly 1, at every scale tested, with no sign of the effect weakening as C grows. The modest tail-latency win is not a shortfall of the coalescing implementation — it is the direct, predicted consequence of measuring against an Origin model that doesn't yet punish concurrent load the way a real, resource-constrained backend would. That gap remains open for a future experiment with a bounded-capacity Origin; it does not weaken the case made here, which rests on upstream-request and peak-concurrency counts that are unambiguous either way. The one behavioral cost worth naming plainly: cacheable GET misses that return a non-2xx or non-2xx-adjacent status now always buffer their body before responding (needed so every waiter can share the exact same bytes), where the pre-coalescing edge streamed non-2xx cacheable responses straight through — a deliberate, necessary tradeoff of coalescing, not an oversight.
+
+---
+
+## 9. Results: Experiment 004-E — Origin Outage & Recovery
+
+**Hypothesis (H5)**: see `hypotheses.md`. Same `Client -> Edge -> Origin` topology as every other Stage 4 experiment, cache + coalescing both enabled. Origin is genuinely stopped (`OriginServer.Stop`, listener closed) rather than made to return a synthetic error, then restarted on the exact same address it was reserved on ahead of time. Tested first at the unit level (`TestEdgeServer_Coalesce_FailureCleansUpAndRecovers`, `internal/topology/topology_test.go`) before being trusted here as an experiment.
+
+| Check | Result |
+|---|---:|
+| Warm-key requests during outage | 20 / 20 succeeded (all cache hits) |
+| Cold-key burst during outage | 30 / 30 failed with 502 |
+| Dial attempts to Origin for that burst | **1** (not 30) |
+| CoalesceStats after the burst | `Leads: 2, Shared: 29, Failures: 30` |
+| Post-burst request, still during outage | Failed cleanly (502), not stuck |
+| Cold key, first request after recovery | Succeeded (200, fresh `MISS`) |
+| Warm key, after recovery | Still `HIT` — never touched by any of this |
+
+Raw data: `experiments/004-caching-failures/results/004E-origin-outage-and-recovery.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**: all 20 warm-key requests succeeded throughout the outage, every one served as a cache hit. Origin being completely unreachable was invisible to a caller asking for data the edge already had — the cache did exactly the job it exists to do.
+2. **Prediction 2 confirmed exactly, and this is the header result**: the 30-way concurrent burst against a never-cached key produced exactly **1** dial attempt to Origin, not 30 — `TransportStats.FailedDials` reads 1, `CoalesceStats` reads `Leads: 2` (one from the pre-outage warm-key priming request, one for the burst itself), `Shared: 29`, `Failures: 30`. Every one of the 30 callers received the identical 502, and coalescing held under a genuine connection-refused failure exactly as it did against the synthetic errors in `coalesce_test.go`.
+3. **Prediction 3 confirmed**: the request issued immediately after the burst, still during the outage, failed cleanly (502) rather than hanging — proof the in-flight entry was removed the moment the leader's fetch failed, not left stuck waiting for a fetch that would never come.
+4. **Prediction 4 confirmed**: the very next request after Origin restarted succeeded immediately — a fresh `MISS`, no special recovery step, no leftover broken state. Because failed fetches are never cached and the coalescer's cleanup runs on every exit path (success, error, or panic), the post-outage state was already indistinguishable from an ordinary cold key.
+
+### Interpretation
+
+This is the result that ties Stage 4 together: 004-A through 004-D established that caching and coalescing reduce *unnecessary* work when Origin is healthy, but H5 was the open question of whether either mechanism does anything useful — or anything harmful — when Origin is genuinely broken. The answer on both counts is exactly what the invariants were designed to guarantee: the cache fully insulates already-warm data from an outage it has no way to know is even happening, and the coalescer turns what would have been 30 wasted failed connection attempts into 1, without introducing a single new failure mode of its own (no stuck requests, no poisoned keys, no special-cased recovery). None of this was a new capability built for this experiment — it is the cache and coalescer's existing design from earlier in this stage, specifically the "no abandoned in-flight entry" invariant, surviving contact with a real failure instead of a mocked one.

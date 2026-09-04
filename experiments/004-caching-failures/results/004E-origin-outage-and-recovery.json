@@ -1,0 +1,19 @@
+{
+  "experiment": "004-E-origin-outage-and-recovery",
+  "timestamp": "2026-09-04T20:29:14Z",
+  "warm_key_requests_during_outage": 20,
+  "warm_key_successes_during_outage": 20,
+  "cold_key_burst_size": 30,
+  "cold_key_failures_during_outage": 30,
+  "coalesce_stats_after_burst": {
+    "leads": 2,
+    "shared": 29,
+    "failures": 30
+  },
+  "failed_dials_during_outage": 1,
+  "post_burst_still_failed_cleanly": true,
+  "post_recovery_cold_key_succeeded": true,
+  "post_recovery_cold_key_status": "MISS",
+  "post_recovery_warm_key_still_hit": true,
+  "findings": "Warm key: 20/20 succeeded during the outage (cache insulation). Cold-key burst of 30: 30 failed with 502, coalesced to leads=2 shared=29 failures=30 (failed dials=1, not 30 -- coalescing held). Post-burst request during outage still failed cleanly: true (no abandoned in-flight entry). After recovery: cold key succeeded=true (status=200, MISS), warm key still HIT=true."
+}

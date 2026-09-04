@@ -23,6 +23,12 @@ type BenchmarkConfig struct {
 	Path            string                    `json:"path"`
 	ClientTransport transport.TransportConfig `json:"client_transport"`
 	Timeout         time.Duration             `json:"timeout"`
+	// PathFunc, if set, is called once per request to produce that
+	// request's path, overriding Path — for workloads that hit more than
+	// one key (e.g. a hot/cold key-access pattern for cache experiments).
+	// Called concurrently from every worker goroutine; thread safety is
+	// the caller's responsibility.
+	PathFunc func() string `json:"-"`
 }
 
 // LatencyPercentiles summarizes measured latency distribution.
@@ -92,9 +98,9 @@ func RunHTTPBenchmark(cfg BenchmarkConfig) (BenchmarkResult, error) {
 	baseReqs := cfg.Requests / cfg.Concurrency
 	rem := cfg.Requests % cfg.Concurrency
 
-	reqURL := cfg.TargetURL
+	staticReqURL := cfg.TargetURL
 	if cfg.Path != "" {
-		reqURL += cfg.Path
+		staticReqURL += cfg.Path
 	}
 
 	start := time.Now()
@@ -117,6 +123,11 @@ func RunHTTPBenchmark(cfg BenchmarkConfig) (BenchmarkResult, error) {
 				var body io.Reader
 				if len(cfg.Payload) > 0 {
 					body = bytes.NewReader(cfg.Payload)
+				}
+
+				reqURL := staticReqURL
+				if cfg.PathFunc != nil {
+					reqURL = cfg.TargetURL + cfg.PathFunc()
 				}
 
 				req, err := http.NewRequestWithContext(context.Background(), cfg.Method, reqURL, body)

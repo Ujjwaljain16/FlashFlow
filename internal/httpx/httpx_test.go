@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 	"time"
 
@@ -123,5 +124,60 @@ func TestCopyEndToEndHeaders(t *testing.T) {
 	}
 	if dst.Get("X-Ephemeral-Header") != "" {
 		t.Fatalf("expected dynamic hop header declared in Connection stripped, got %q", dst.Get("X-Ephemeral-Header"))
+	}
+}
+
+// TestRunHTTPBenchmark_PathFunc proves PathFunc actually varies the request
+// path per call (not just accepted and ignored), and that it overrides the
+// static Path field when both are set — the mechanism a hot/cold key
+// workload for the Stage 4 cache experiments builds on.
+func TestRunHTTPBenchmark_PathFunc(t *testing.T) {
+	var mu sync.Mutex
+	seen := map[string]int{}
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		seen[r.URL.Path]++
+		mu.Unlock()
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	paths := []string{"/a", "/b", "/c"}
+	var idx int
+	var idxMu sync.Mutex
+	pathFunc := func() string {
+		idxMu.Lock()
+		defer idxMu.Unlock()
+		p := paths[idx%len(paths)]
+		idx++
+		return p
+	}
+
+	res, err := RunHTTPBenchmark(BenchmarkConfig{
+		TargetURL:   ts.URL,
+		Path:        "/should-be-overridden",
+		Requests:    30,
+		Concurrency: 3,
+		PathFunc:    pathFunc,
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if res.SuccessfulRequests != 30 {
+		t.Fatalf("expected 30 successful requests, got %d", res.SuccessfulRequests)
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if seen["/should-be-overridden"] != 0 {
+		t.Fatalf("expected PathFunc to override the static Path, but the server saw %d requests for it", seen["/should-be-overridden"])
+	}
+	if len(seen) != len(paths) {
+		t.Fatalf("expected requests spread across all %d configured paths, server saw %v", len(paths), seen)
+	}
+	for _, p := range paths {
+		if seen[p] != 10 {
+			t.Fatalf("expected exactly 10 requests for %s (30 requests / 3 paths), got %d (seen=%v)", p, seen[p], seen)
+		}
 	}
 }

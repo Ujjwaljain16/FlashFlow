@@ -15,6 +15,7 @@ import (
 	"flashflow/internal/cache"
 	"flashflow/internal/clock"
 	"flashflow/internal/httpx"
+	"flashflow/internal/netsim"
 	"flashflow/internal/transport"
 )
 
@@ -36,6 +37,12 @@ type EdgeConfig struct {
 	// once caching is enabled) so experiments can hold everything else
 	// fixed and compare with/without coalescing directly.
 	Coalesce bool `json:"coalesce"`
+	// NetworkConditions simulates link-level degradation (added latency,
+	// jitter, packet loss) between this edge and Origin. The zero value
+	// simulates a perfect link, matching this struct's other "zero means
+	// off" fields. See package netsim for why this exists in place of
+	// `tc netem`.
+	NetworkConditions netsim.Conditions `json:"network_conditions"`
 	// Clock is used for cache TTL checks. Defaults to WallClock if nil.
 	Clock clock.Clock `json:"-"`
 }
@@ -54,6 +61,7 @@ type EdgeServer struct {
 	clock           clock.Clock
 	cache           *cache.Cache
 	coalescer       *cache.Coalescer
+	netTransport    *netsim.Transport
 }
 
 // NewEdgeServer constructs an Edge forwarding server.
@@ -90,15 +98,23 @@ func NewEdgeServer(cfg EdgeConfig) (*EdgeServer, error) {
 		}
 	}
 
+	httpClient := tt.HTTPClient(10 * time.Second)
+	var netTransport *netsim.Transport
+	if cfg.NetworkConditions != (netsim.Conditions{}) {
+		netTransport = netsim.NewTransport(tt, cfg.NetworkConditions, nil)
+		httpClient.Transport = netTransport
+	}
+
 	return &EdgeServer{
 		config:          cfg,
 		originURL:       u,
 		trackedTrans:    tt,
-		httpClient:      tt.HTTPClient(10 * time.Second),
+		httpClient:      httpClient,
 		artificialDelay: cfg.DefaultDelay,
 		clock:           clk,
 		cache:           c,
 		coalescer:       co,
+		netTransport:    netTransport,
 	}, nil
 }
 
@@ -130,6 +146,15 @@ func (e *EdgeServer) CoalesceStats() cache.CoalesceStats {
 		return cache.CoalesceStats{}
 	}
 	return e.coalescer.Snapshot()
+}
+
+// NetworkStats returns the edge's simulated-network activity counters, or
+// a zero Stats if this edge has no NetworkConditions configured.
+func (e *EdgeServer) NetworkStats() netsim.Stats {
+	if e.netTransport == nil {
+		return netsim.Stats{}
+	}
+	return e.netTransport.Snapshot()
 }
 
 // resolveDelay applies the same per-request delay overrides (query param,

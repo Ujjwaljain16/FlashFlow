@@ -13,6 +13,7 @@ import (
 	"flashflow/internal/cache"
 	"flashflow/internal/clock"
 	"flashflow/internal/httpx"
+	"flashflow/internal/netsim"
 	"flashflow/internal/transport"
 )
 
@@ -720,5 +721,109 @@ func TestEdgeServer_Coalesce_FailureCleansUpAndRecovers(t *testing.T) {
 	}
 	if got := resp3.Header.Get(httpx.HeaderCacheStatus); got != "MISS" {
 		t.Fatalf("expected a fresh MISS on recovery (nothing was ever successfully cached for this key), got %q", got)
+	}
+}
+
+// TestEdgeServer_NetworkConditions_LatencyOnlyAffectsMisses proves the
+// simulated edge-origin latency shows up on a fetch but is completely
+// invisible on a cache hit, the same insulation property 004-E already
+// demonstrated for a total outage, now shown for partial degradation.
+func TestEdgeServer_NetworkConditions_LatencyOnlyAffectsMisses(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-netsim-latency"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:          "edge-netsim-latency",
+		OriginURL:         origin.URL(),
+		CacheTTL:          time.Minute,
+		NetworkConditions: netsim.Conditions{Latency: 60 * time.Millisecond},
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	start := time.Now()
+	resp, err := client.Get(edge.URL() + "/data/hot")
+	missElapsed := time.Since(start)
+	if err != nil {
+		t.Fatalf("miss request failed: %v", err)
+	}
+	if got := resp.Header.Get(httpx.HeaderCacheStatus); got != "MISS" {
+		t.Fatalf("expected MISS, got %q", got)
+	}
+	resp.Body.Close()
+	if missElapsed < 60*time.Millisecond {
+		t.Fatalf("expected the miss to pay the simulated 60ms latency, took %v", missElapsed)
+	}
+
+	start = time.Now()
+	resp, err = client.Get(edge.URL() + "/data/hot")
+	hitElapsed := time.Since(start)
+	if err != nil {
+		t.Fatalf("hit request failed: %v", err)
+	}
+	if got := resp.Header.Get(httpx.HeaderCacheStatus); got != "HIT" {
+		t.Fatalf("expected HIT, got %q", got)
+	}
+	resp.Body.Close()
+	if hitElapsed >= 60*time.Millisecond {
+		t.Fatalf("expected a cache hit to be unaffected by the simulated link latency, took %v", hitElapsed)
+	}
+
+	if stats := edge.NetworkStats(); stats.Requests != 1 {
+		t.Fatalf("expected exactly 1 request to reach the simulated network (the hit never should), got %+v", stats)
+	}
+}
+
+// TestEdgeServer_NetworkConditions_LossFailsMissesButNotHits proves
+// simulated packet loss on the edge-origin link fails a fetch but never
+// touches an already-cached key, the same insulation shown for a total
+// outage in 004-E, now for probabilistic loss instead of a hard failure.
+func TestEdgeServer_NetworkConditions_LossFailsMissesButNotHits(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-netsim-loss"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:          "edge-netsim-loss",
+		OriginURL:         origin.URL(),
+		CacheTTL:          time.Minute,
+		NetworkConditions: netsim.Conditions{LossRate: 1.0}, // always drop, for a deterministic test
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	resp, err := client.Get(edge.URL() + "/data/lossy-key")
+	if err != nil {
+		t.Fatalf("request failed at the transport level: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusBadGateway {
+		t.Fatalf("expected a 100%% loss rate to fail the miss with 502, got %d", resp.StatusCode)
+	}
+
+	if stats := edge.NetworkStats(); stats.Requests != 1 || stats.Dropped != 1 {
+		t.Fatalf("expected NetworkStats{Requests:1, Dropped:1}, got %+v", stats)
+	}
+	if stats := edge.CacheStats(); stats.Fills != 0 {
+		t.Fatalf("expected a dropped fetch to never be cached, got %+v", stats)
 	}
 }

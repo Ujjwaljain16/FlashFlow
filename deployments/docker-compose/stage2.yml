@@ -1,0 +1,92 @@
+services:
+  origin:
+    build:
+      context: ../..
+      dockerfile: deployments/Dockerfile
+    command: ["/usr/local/bin/http-origin", "-addr", ":8000", "-instance", "origin-1"]
+    container_name: flashflow-origin
+    networks:
+      - flashflow-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 2s
+      timeout: 1s
+      retries: 3
+    restart: "no"
+
+  edge-a:
+    build:
+      context: ../..
+      dockerfile: deployments/Dockerfile
+    command: ["/usr/local/bin/edge", "-addr", ":8001", "-instance", "edge-a", "-origin", "http://origin:8000"]
+    container_name: flashflow-edge-a
+    depends_on:
+      origin:
+        condition: service_healthy
+    networks:
+      - flashflow-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 2s
+      timeout: 1s
+      retries: 3
+    restart: "no"
+
+  edge-b:
+    build:
+      context: ../..
+      dockerfile: deployments/Dockerfile
+    command: ["/usr/local/bin/edge", "-addr", ":8002", "-instance", "edge-b", "-origin", "http://origin:8000"]
+    container_name: flashflow-edge-b
+    depends_on:
+      origin:
+        condition: service_healthy
+    networks:
+      - flashflow-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 2s
+      timeout: 1s
+      retries: 3
+    restart: "no"
+
+  edge-c:
+    build:
+      context: ../..
+      dockerfile: deployments/Dockerfile
+    command: ["/usr/local/bin/edge", "-addr", ":8003", "-instance", "edge-c", "-origin", "http://origin:8000"]
+    container_name: flashflow-edge-c
+    depends_on:
+      origin:
+        condition: service_healthy
+    networks:
+      - flashflow-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 2s
+      timeout: 1s
+      retries: 3
+    restart: "no"
+
+  proxy:
+    build:
+      context: ../..
+      dockerfile: deployments/Dockerfile
+    command: ["/usr/local/bin/proxy", "-addr", ":8080", "-targets", "http://edge-a:8001,http://edge-b:8002,http://edge-c:8003"]
+    container_name: flashflow-proxy
+    ports:
+      - "8080:8080"
+    depends_on:
+      edge-a:
+        condition: service_healthy
+      edge-b:
+        condition: service_healthy
+      edge-c:
+        condition: service_healthy
+    networks:
+      - flashflow-net
+    restart: "no"
+
+networks:
+  flashflow-net:
+    driver: bridge

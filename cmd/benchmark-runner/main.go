@@ -24,11 +24,11 @@ type benchConfig struct {
 
 // fullResult is the on-disk record for one measured iteration.
 type fullResult struct {
-	Experiment   string `json:"experiment"`
-	Mode         string `json:"connection_mode"`
-	Concurrency  int    `json:"concurrency"`
-	PayloadSize  int    `json:"payload_bytes"`
-	Iteration    int    `json:"iteration"`
+	Experiment  string `json:"experiment"`
+	Mode        string `json:"connection_mode"`
+	Concurrency int    `json:"concurrency"`
+	PayloadSize int    `json:"payload_bytes"`
+	Iteration   int    `json:"iteration"`
 	tcp.ClientResult
 }
 

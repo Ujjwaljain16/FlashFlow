@@ -18,7 +18,9 @@ import (
 //     In persistent mode this equals RequestLatency (no dial per request).
 //
 // Percentiles use sorted nearest-rank index selection:
-//   p50 = latencies[n*50/100]
+//
+//	p50 = latencies[n*50/100]
+//
 // This is a simple approximation; it will be replaced by a proper histogram
 // implementation in a later stage when we need coordinated-omission-safe
 // measurements.

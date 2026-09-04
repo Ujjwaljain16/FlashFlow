@@ -17,7 +17,7 @@ func main() {
 	payloadSize := flag.Int("payload", 32, "Payload size in bytes")
 	connMode := flag.String("connection-mode", "persistent", "Connection mode: 'persistent' or 'per-request'")
 	outFormat := flag.String("output", "text", "Output format: 'text' or 'json'")
-	
+
 	flag.Parse()
 
 	if *connMode != "persistent" && *connMode != "per-request" {
@@ -48,16 +48,16 @@ func main() {
 		fmt.Printf("Concurrency:     %d\n", *concurrency)
 		fmt.Printf("Requests:        %d\n", res.TotalRequests)
 		fmt.Printf("Payload:         %d bytes\n\n", *payloadSize)
-		
+
 		fmt.Printf("Connections:     %d\n", res.ConnectionsMade)
 		var sr float64
 		if res.TotalRequests > 0 {
-			sr = float64(res.SuccessfulRequests)/float64(res.TotalRequests)*100
+			sr = float64(res.SuccessfulRequests) / float64(res.TotalRequests) * 100
 		}
 		fmt.Printf("Success rate:    %d/%d (%.2f%%)\n", res.SuccessfulRequests, res.TotalRequests, sr)
 		fmt.Printf("Total Duration:  %v\n", res.TotalDuration)
 		fmt.Printf("Throughput:      %.2f RPS\n\n", res.ThroughputRPS)
-		
+
 		fmt.Printf("p50 req:         %v\n", res.P50ReqLatency)
 		fmt.Printf("p95 req:         %v\n", res.P95ReqLatency)
 		fmt.Printf("p99 req:         %v\n", res.P99ReqLatency)

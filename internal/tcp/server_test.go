@@ -24,11 +24,11 @@ func TestServer_LifecycleAndCounters(t *testing.T) {
 			t.Fatalf("failed to connect: %v", err)
 		}
 		conns = append(conns, conn)
-		
+
 		// Send a message
 		msg := []byte("ping")
 		WriteMessage(conn, msg)
-		
+
 		// Wait for response in a goroutine
 		wg.Add(1)
 		go func(c net.Conn) {

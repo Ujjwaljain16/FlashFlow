@@ -16,11 +16,11 @@ type Server struct {
 	Addr    string
 	Tracker *Tracker
 
-	listener    net.Listener
-	wg          sync.WaitGroup
-	quit        chan struct{}
-	conns       map[net.Conn]struct{} // active connection set for graceful shutdown
-	connsMu     sync.Mutex
+	listener net.Listener
+	wg       sync.WaitGroup
+	quit     chan struct{}
+	conns    map[net.Conn]struct{} // active connection set for graceful shutdown
+	connsMu  sync.Mutex
 }
 
 func NewServer(addr string) *Server {

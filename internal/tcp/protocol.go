@@ -34,6 +34,9 @@ func ReadMessage(r io.Reader) ([]byte, error) {
 	// It may internally perform multiple reads because r can be a TCP stream.
 
 	if err := binary.Read(r, binary.BigEndian, &length); err != nil {
+		if err == io.EOF {
+			return nil, io.EOF
+		}
 		return nil, fmt.Errorf("read message length: %w", err)
 	}
 

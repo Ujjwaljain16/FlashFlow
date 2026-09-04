@@ -1,0 +1,45 @@
+{
+  "experiment": "003-B-weighted-round-robin-heterogeneous-capacity",
+  "timestamp": "2026-09-04T18:12:56Z",
+  "policy": "round-robin",
+  "concurrency": 30,
+  "requests": 600,
+  "edge_a_delay_ms": 1,
+  "edge_b_delay_ms": 1,
+  "edge_c_delay_ms": 100,
+  "successful_requests": 600,
+  "failed_requests": 0,
+  "throughput_rps": 526.7855528008573,
+  "client_latencies": {
+    "p50": 2785500,
+    "p95": 103198500,
+    "p99": 107208600,
+    "min": 1005700,
+    "max": 111192500
+  },
+  "per_edge_counts": [
+    {
+      "instance": "edge-a",
+      "proxy_recorded_count": 200,
+      "edge_forwarded_count": 200,
+      "counts_agree": true,
+      "share_percent": 33.333333333333336
+    },
+    {
+      "instance": "edge-b",
+      "proxy_recorded_count": 200,
+      "edge_forwarded_count": 200,
+      "counts_agree": true,
+      "share_percent": 33.333333333333336
+    },
+    {
+      "instance": "edge-c",
+      "proxy_recorded_count": 200,
+      "edge_forwarded_count": 200,
+      "counts_agree": true,
+      "share_percent": 33.333333333333336
+    }
+  ],
+  "client_server_outcome_mismatch": 0,
+  "findings": "round-robin: RPS=526.8 p95=103.1985ms p99=107.2086ms. Edge-C (100ms) received 33.33% of traffic (200/600 requests). Proxy/edge counts agreed for all edges: true."
+}

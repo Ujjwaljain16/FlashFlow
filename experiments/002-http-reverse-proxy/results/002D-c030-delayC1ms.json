@@ -1,0 +1,24 @@
+{
+  "experiment": "002-D-one-slow-edge-latency-impact",
+  "timestamp": "2026-08-19T15:31:17Z",
+  "concurrency": 30,
+  "requests": 600,
+  "edge_a_delay_ms": 1,
+  "edge_b_delay_ms": 1,
+  "edge_c_delay_ms": 1,
+  "successful_requests": 600,
+  "failed_requests": 0,
+  "throughput_rps": 4610.16094840231,
+  "client_latencies": {
+    "p50": 3488400,
+    "p95": 21967900,
+    "p99": 38810200,
+    "min": 1035400,
+    "max": 44959900
+  },
+  "proxy_upstream_connections": 41,
+  "total_edge_origin_connections": 234,
+  "requests_per_proxy_connection": 14.634146341463415,
+  "requests_per_edge_origin_connection": 2.5641025641025643,
+  "findings": "Homogeneous baseline: All edges respond in ~1ms, providing symmetric load distribution and low tail latency."
+}

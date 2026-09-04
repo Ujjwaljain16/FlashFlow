@@ -1,0 +1,48 @@
+{
+  "experiment": "002-B-edge-failure-detection-and-recovery",
+  "timestamp": "2026-08-19T15:30:26Z",
+  "failure_injection_time_ms": 1787153425394,
+  "detection_time_ms": 1787153425407,
+  "time_to_detection_ms": 13,
+  "recovery_time_ms": 1787153426108,
+  "total_requests_sent": 101,
+  "total_successes": 101,
+  "total_failures_during_outage": 0,
+  "timeline": [
+    {
+      "timestamp_ms": 1787153425093,
+      "event": "INITIALIZATION",
+      "details": "All 3 edge nodes online and healthy"
+    },
+    {
+      "timestamp_ms": 1787153425394,
+      "event": "STEADY_STATE",
+      "details": "Steady traffic verified across Edge A, B, C"
+    },
+    {
+      "timestamp_ms": 1787153425394,
+      "event": "FAILURE_INJECTED",
+      "details": "Stopping Edge B abruptly"
+    },
+    {
+      "timestamp_ms": 1787153425407,
+      "event": "DETECTION_COMPLETE",
+      "details": "Health checker marked Edge B UNHEALTHY in 12.8649ms"
+    },
+    {
+      "timestamp_ms": 1787153425808,
+      "event": "EXCLUSION_ACTIVE",
+      "details": "Traffic continues routed exclusively to remaining healthy Edge A \u0026 C"
+    },
+    {
+      "timestamp_ms": 1787153425808,
+      "event": "RECOVERY_INITIATED",
+      "details": "Restarting Edge B"
+    },
+    {
+      "timestamp_ms": 1787153425808,
+      "event": "EDGE_B_ONLINE",
+      "details": "Edge B restarted on http://127.0.0.1:49491"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "experiment": "002-A1-single-upstream-connection-reuse",
+  "timestamp": "2026-08-19T15:29:47Z",
+  "concurrency": 10,
+  "requests": 1000,
+  "payload_bytes": 64,
+  "keep_alive_enabled": false,
+  "successful_requests": 1000,
+  "failed_requests": 0,
+  "throughput_rps": 2648.94346889743,
+  "client_latencies": {
+    "p50": 3113100,
+    "p95": 9829700,
+    "p99": 15640300,
+    "min": 1001100,
+    "max": 18049600
+  },
+  "proxy_upstream_connections": 1050,
+  "edge_origin_connections": 1050,
+  "requests_per_proxy_connection": 1,
+  "requests_per_edge_origin_connection": 1
+}

@@ -1,0 +1,21 @@
+{
+  "experiment": "002-C-three-edge-baseline-throughput",
+  "timestamp": "2026-08-19T15:31:06Z",
+  "concurrency": 50,
+  "requests": 2000,
+  "payload_bytes": 1024,
+  "successful_requests": 2000,
+  "failed_requests": 0,
+  "throughput_rps": 7467.529315653211,
+  "client_latencies": {
+    "p50": 3379500,
+    "p95": 14988800,
+    "p99": 46203500,
+    "min": 0,
+    "max": 69492300
+  },
+  "proxy_upstream_connections": 41,
+  "total_edge_origin_connections": 28,
+  "requests_per_proxy_connection": 50.24390243902439,
+  "requests_per_edge_origin_connection": 73.57142857142857
+}

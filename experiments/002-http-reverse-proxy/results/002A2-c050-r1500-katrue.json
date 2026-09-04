@@ -1,0 +1,23 @@
+{
+  "experiment": "002-A2-multi-edge-connection-pooling",
+  "timestamp": "2026-08-19T15:30:05Z",
+  "concurrency": 50,
+  "requests": 1500,
+  "payload_bytes": 64,
+  "keep_alive_enabled": true,
+  "max_idle_conns_per_host": 100,
+  "successful_requests": 1500,
+  "failed_requests": 0,
+  "throughput_rps": 7975.13459368816,
+  "client_latencies": {
+    "p50": 2786900,
+    "p95": 16060900,
+    "p99": 34404600,
+    "min": 0,
+    "max": 52518900
+  },
+  "proxy_upstream_connections": 40,
+  "total_edge_origin_connections": 25,
+  "requests_per_proxy_connection": 39,
+  "requests_per_edge_origin_connection": 62.4
+}

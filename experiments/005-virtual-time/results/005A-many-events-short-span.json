@@ -1,0 +1,11 @@
+{
+  "experiment": "005-A-deterministic-clock",
+  "timestamp": "2026-09-04T22:53:04Z",
+  "cell": "many-events-short-span",
+  "event_count": 100000,
+  "virtual_duration_ms": 100,
+  "real_elapsed_ms": 39.505,
+  "events_per_second": 2531299.5185468313,
+  "final_virtual_time_ns": 100000000,
+  "findings": "many-events-short-span: 100000 events packed into 100ms of virtual time took 39.505ms of real time (2531300 events/sec) -- real cost tracks event count, not the (tiny) virtual span they're packed into."
+}

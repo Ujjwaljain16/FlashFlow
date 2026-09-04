@@ -1,0 +1,61 @@
+{
+  "experiment": "005-B-deterministic-event-ordering",
+  "timestamp": "2026-09-04T22:54:08Z",
+  "runs": 50,
+  "events_per_run": 9,
+  "all_identical": true,
+  "baseline_trace": [
+    {
+      "t": 50,
+      "seq": 0,
+      "type": "burst_start"
+    },
+    {
+      "t": 100,
+      "seq": 1,
+      "type": "cache_expired",
+      "entity": "key-a"
+    },
+    {
+      "t": 100,
+      "seq": 2,
+      "type": "request_arrived",
+      "entity": "r1"
+    },
+    {
+      "t": 100,
+      "seq": 3,
+      "type": "probe_fired",
+      "entity": "edge-a"
+    },
+    {
+      "t": 200,
+      "seq": 4,
+      "type": "probe_fired",
+      "entity": "edge-b"
+    },
+    {
+      "t": 200,
+      "seq": 5,
+      "type": "request_arrived",
+      "entity": "r2"
+    },
+    {
+      "t": 200,
+      "seq": 6,
+      "type": "cache_expired",
+      "entity": "key-b"
+    },
+    {
+      "t": 300,
+      "seq": 7,
+      "type": "burst_a"
+    },
+    {
+      "t": 300,
+      "seq": 8,
+      "type": "burst_b"
+    }
+  ],
+  "findings": "All 50 runs of the identical scenario produced byte-for-byte identical traces (9 events each), including three separate same-timestamp batches scheduled in different relative orders and one dynamically-scheduled same-timestamp pair. Same-timestamp ordering is deterministic, not accidental."
+}

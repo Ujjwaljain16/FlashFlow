@@ -1,0 +1,120 @@
+{
+  "experiment": "003-F-comparison-matrix",
+  "timestamp": "2026-09-04T18:57:29Z",
+  "scenario": "burst",
+  "policy": "least-connections",
+  "phases": [
+    {
+      "phase": "baseline-c10",
+      "successful_requests": 150,
+      "failed_requests": 0,
+      "error_rate_percent": 0,
+      "throughput_rps": 618.6362946490435,
+      "client_latencies": {
+        "p50": 3636600,
+        "p95": 15871900,
+        "p99": 108518300,
+        "min": 1007300,
+        "max": 109005100
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 85,
+          "edge_forwarded_count": 85,
+          "counts_agree": true,
+          "share_percent": 56.666666666666664
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 61,
+          "edge_forwarded_count": 61,
+          "counts_agree": true,
+          "share_percent": 40.666666666666664
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 4,
+          "edge_forwarded_count": 4,
+          "counts_agree": true,
+          "share_percent": 2.6666666666666665
+        }
+      ]
+    },
+    {
+      "phase": "burst-c150",
+      "successful_requests": 1500,
+      "failed_requests": 0,
+      "error_rate_percent": 0,
+      "throughput_rps": 2430.6613343358463,
+      "client_latencies": {
+        "p50": 9690300,
+        "p95": 178776100,
+        "p99": 245772200,
+        "min": 1000800,
+        "max": 339346400
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 732,
+          "edge_forwarded_count": 732,
+          "counts_agree": true,
+          "share_percent": 48.8
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 667,
+          "edge_forwarded_count": 667,
+          "counts_agree": true,
+          "share_percent": 44.46666666666667
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 101,
+          "edge_forwarded_count": 101,
+          "counts_agree": true,
+          "share_percent": 6.733333333333333
+        }
+      ]
+    },
+    {
+      "phase": "cooldown-c10",
+      "successful_requests": 150,
+      "failed_requests": 0,
+      "error_rate_percent": 0,
+      "throughput_rps": 605.0055741180229,
+      "client_latencies": {
+        "p50": 3100500,
+        "p95": 9834800,
+        "p99": 107013600,
+        "min": 1012600,
+        "max": 107572300
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 87,
+          "edge_forwarded_count": 87,
+          "counts_agree": true,
+          "share_percent": 58
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 59,
+          "edge_forwarded_count": 59,
+          "counts_agree": true,
+          "share_percent": 39.333333333333336
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 4,
+          "edge_forwarded_count": 4,
+          "counts_agree": true,
+          "share_percent": 2.6666666666666665
+        }
+      ]
+    }
+  ],
+  "findings": "least-connections: edge-c share baseline=2.7% burst=6.7% cooldown=2.7%. RPS baseline=618.6 burst=2430.7 cooldown=605.0. Burst p99=245.7722ms. Errors: baseline=0 burst=0 cooldown=0."
+}

@@ -1,0 +1,83 @@
+{
+  "experiment": "003-F-comparison-matrix",
+  "timestamp": "2026-09-04T18:57:33Z",
+  "scenario": "failure",
+  "policy": "least-connections",
+  "phases": [
+    {
+      "phase": "before-failure",
+      "successful_requests": 400,
+      "failed_requests": 0,
+      "error_rate_percent": 0,
+      "throughput_rps": 4492.701045563851,
+      "client_latencies": {
+        "p50": 3151800,
+        "p95": 9023200,
+        "p99": 9921200,
+        "min": 1004300,
+        "max": 12563700
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 142,
+          "edge_forwarded_count": 142,
+          "counts_agree": true,
+          "share_percent": 35.5
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 136,
+          "edge_forwarded_count": 136,
+          "counts_agree": true,
+          "share_percent": 34
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 122,
+          "edge_forwarded_count": 122,
+          "counts_agree": true,
+          "share_percent": 30.5
+        }
+      ]
+    },
+    {
+      "phase": "during-and-after-kill",
+      "successful_requests": 262,
+      "failed_requests": 138,
+      "error_rate_percent": 34.5,
+      "throughput_rps": 2190.888246302667,
+      "client_latencies": {
+        "p50": 1831600,
+        "p95": 16989600,
+        "p99": 46841200,
+        "min": 1034100,
+        "max": 46841200
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 141,
+          "edge_forwarded_count": 141,
+          "counts_agree": true,
+          "share_percent": 35.25
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 138,
+          "edge_forwarded_count": 0,
+          "counts_agree": false,
+          "share_percent": 34.5
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 121,
+          "edge_forwarded_count": 121,
+          "counts_agree": true,
+          "share_percent": 30.25
+        }
+      ]
+    }
+  ],
+  "findings": "least-connections: before-failure edge-b share=34.0%. After hard-killing edge-b: 138/400 requests failed (34.50%) during the detection+redistribution window; surviving share a=35.2% b=34.5% c=30.2%."
+}

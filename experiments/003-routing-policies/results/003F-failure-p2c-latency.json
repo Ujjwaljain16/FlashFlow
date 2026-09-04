@@ -1,0 +1,83 @@
+{
+  "experiment": "003-F-comparison-matrix",
+  "timestamp": "2026-09-04T18:57:35Z",
+  "scenario": "failure",
+  "policy": "p2c-latency",
+  "phases": [
+    {
+      "phase": "before-failure",
+      "successful_requests": 400,
+      "failed_requests": 0,
+      "error_rate_percent": 0,
+      "throughput_rps": 5776.515288269775,
+      "client_latencies": {
+        "p50": 2386600,
+        "p95": 7192000,
+        "p99": 8789000,
+        "min": 1033900,
+        "max": 10956300
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 119,
+          "edge_forwarded_count": 119,
+          "counts_agree": true,
+          "share_percent": 29.75
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 137,
+          "edge_forwarded_count": 137,
+          "counts_agree": true,
+          "share_percent": 34.25
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 144,
+          "edge_forwarded_count": 144,
+          "counts_agree": true,
+          "share_percent": 36
+        }
+      ]
+    },
+    {
+      "phase": "during-and-after-kill",
+      "successful_requests": 400,
+      "failed_requests": 0,
+      "error_rate_percent": 0,
+      "throughput_rps": 4390.996262164432,
+      "client_latencies": {
+        "p50": 2740000,
+        "p95": 15591600,
+        "p99": 26134700,
+        "min": 1027300,
+        "max": 32297900
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 18,
+          "edge_forwarded_count": 18,
+          "counts_agree": true,
+          "share_percent": 4.5
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 382,
+          "edge_forwarded_count": 382,
+          "counts_agree": true,
+          "share_percent": 95.5
+        }
+      ]
+    }
+  ],
+  "findings": "p2c-latency: before-failure edge-b share=34.2%. After hard-killing edge-b: 0/400 requests failed (0.00%) during the detection+redistribution window; surviving share a=4.5% b=0.0% c=95.5%."
+}

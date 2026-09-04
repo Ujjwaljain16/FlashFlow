@@ -116,3 +116,43 @@ Raw data: `experiments/004-caching-failures/results/004C-*.json`.
 ### Interpretation
 
 Finding 3 is a real limitation of the current Origin model, not evidence that stampedes are less costly than the upstream-request numbers suggest. `OriginServer`'s handler runs one goroutine per request (Go's standard `net/http` behavior) and does `time.Sleep(delay)`, which holds a goroutine without consuming a CPU core — so 100 concurrent "requests" here are effectively served in parallel with no contention, closer to an M/M/∞ (infinite-server) model than the bounded-capacity M/M/1 or M/M/c queue a real backend has. A real origin has a finite thread/worker pool, finite CPU, and finite database or downstream connections; under those constraints, a 100-way duplicate-fetch stampede would plausibly show the sharp nonlinear tail-latency growth queueing theory predicts (and which Stage 3's routing experiments already observed in *this* topology when static routing overloaded one edge). The 99 wasted Origin round trips are real and fully confirmed by Prediction 1 regardless of this limitation — what's not yet demonstrated is how badly they'd hurt latency against an Origin with real capacity constraints. That's a fair caveat to carry into Experiment 004-D's coalescing comparison, not a reason to doubt the case for coalescing.
+
+---
+
+## 7. Implementation: Request Coalescing
+
+Semantics decided before writing any code, implemented as `cache.Coalescer` (`internal/cache/coalesce.go`) and wired into `internal/topology/edge.go`'s cache-miss path:
+
+- **Ownership**: a `Coalescer` is a small, separate type — not folded into `Cache` itself. Deduplicating concurrent fetches is a request-lifecycle concern ("do this at most once"), not a cache-storage concern ("remember this value"); the two only happen to interact at the edge's one call site.
+- **Leader / waiter roles**: `Coalescer.Do(key, fn)` — the first caller for a key runs `fn` and is the leader; any caller for the same key that arrives before `fn` returns becomes a waiter and receives the leader's exact result (value or error) without running `fn` itself.
+- **The invariant that mattered most**: a completed or failed `fn` call must never leave an abandoned in-flight entry that blocks future requests forever. The in-flight map entry is removed the instant `fn` returns — success, error, or panic. A panic in `fn` is specifically recovered and turned into a shared error rather than left to hang every waiter and crash the leader's own goroutine.
+- **Failure propagation**: a failed fetch is shared with every waiter as the same error and is never cached — consistent with the existing 2xx-only cache-fill rule.
+- **The leader-cancellation hazard**: the shared fetch deliberately runs on `context.Background()`, never the leader's own `r.Context()`. If it used the leader's context, that one caller's client disconnecting would cancel the fetch for every waiter still behind it — an easy mistake that would have made coalescing actively worse than not having it under exactly the conditions (heavy concurrent load) it exists to help with. `TestEdgeServer_Coalesce_LeaderCancellationDoesNotAbortWaiters` cancels the leader's own request mid-flight and confirms every waiter still completes successfully and Origin still sees exactly one upstream request.
+- **Opt-in**: gated by `EdgeConfig.Coalesce` (default `false`), independent of `CacheTTL`, so 004-C's already-recorded no-coalescing numbers can be reproduced on demand as an in-experiment control rather than only trusted as a separate prior run.
+- **Observability**: `X-Cache-Status` gained a third value, `MISS-COALESCED`, for waiters (leaders still report `MISS`) — a response-level, externally-visible signal of exactly which of the three paths a given request took. `EdgeServer.CoalesceStats()` exposes leader/waiter/failure counts, the same ambient-instrumentation shape as `CacheStats()` and Stage 3's `LoadTracker`/`LatencyTracker`.
+
+Tested at two levels: `internal/cache/coalesce_test.go` (7 tests — a single leader with no waiters, N concurrent callers proven via a blocking `fn` to share exactly one fetch, distinct keys never coalescing together, failure shared identically with every waiter, the no-abandoned-entry invariant checked after both a success and a failure, and panic recovery) and `internal/topology/topology_test.go` (3 new tests: a 20-way concurrent miss burst collapsing to one upstream fetch with correct `MISS`/`MISS-COALESCED` attribution, coalescing verified off by default, and the leader-cancellation invariant above).
+
+---
+
+## 8. Results: Experiment 004-D — Request Coalescing
+
+**Hypothesis (H4)**: see `hypotheses.md`. Identical setup to 004-C's stampede cell, run twice per concurrency level on the same edge configuration except for `Coalesce`.
+
+| C | Upstream requests (no-coalesce / coalesce) | Origin peak concurrency (no-coalesce / coalesce) | p99 (no-coalesce / coalesce) |
+|---:|:---:|:---:|:---:|
+| 10 | 10 / **1** | 10 / **1** | 103.3ms / **101.8ms** |
+| 30 | 30 / **1** | 30 / **1** | 108.0ms / **101.6ms** |
+| 100 | 100 / **1** | 100 / **1** | 115.2ms / **107.3ms** |
+
+Raw data: `experiments/004-caching-failures/results/004D-*.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly, at every concurrency level**: with coalescing enabled, the burst produces exactly 1 upstream request regardless of whether 10, 30, or 100 clients raced the expired key — down from C in the uncoalesced control, which itself reproduced 004-C's own numbers exactly (10/10, 30/30, 100/100), confirming the two cells really are otherwise identical.
+2. **Prediction 2 confirmed exactly**: Origin's peak concurrent load drops to 1 at every C — not just reduced, but the stampede's defining symptom (many simultaneous requests for one object) is gone entirely. `CoalesceStats` corroborates this from the edge's own side: at C=100, `Leads=2` (one from the priming request, one for the burst) and `Shared=99` — 99 requests that would otherwise have each cost a full Origin round trip instead just waited on the one that did.
+3. **Prediction 3 confirmed, though modestly, exactly as flagged**: p99 improved at every C (103.3→101.8ms, 108.0→101.6ms, 115.2→107.3ms), and the improvement grows with burst size — consistent with the 004-C-documented ceiling: because `OriginServer` currently behaves closer to an infinite-server model than a capacity-constrained one, the uncoalesced burst's own tail latency was already artificially low, leaving less headroom for coalescing to visibly win back. The upstream-request and peak-concurrency numbers, not p99, are the right metrics to judge this result by, and both confirm the effect completely.
+
+### Interpretation
+
+Coalescing does exactly what Experiment 004-C's evidence said it should: it converts a burst of C duplicate Origin fetches into exactly 1, at every scale tested, with no sign of the effect weakening as C grows. The modest tail-latency win is not a shortfall of the coalescing implementation — it is the direct, predicted consequence of measuring against an Origin model that doesn't yet punish concurrent load the way a real, resource-constrained backend would. That gap remains open for a future experiment with a bounded-capacity Origin; it does not weaken the case made here, which rests on upstream-request and peak-concurrency counts that are unambiguous either way. The one behavioral cost worth naming plainly: cacheable GET misses that return a non-2xx or non-2xx-adjacent status now always buffer their body before responding (needed so every waiter can share the exact same bytes), where the pre-coalescing edge streamed non-2xx cacheable responses straight through — a deliberate, necessary tradeoff of coalescing, not an oversight.

@@ -1,0 +1,19 @@
+{
+  "experiment": "004-D-request-coalescing",
+  "timestamp": "2026-09-04T20:20:11Z",
+  "cell": "no-coalesce-c030",
+  "coalesce": false,
+  "concurrency": 30,
+  "origin_delay_ms": 100,
+  "cache_ttl_ms": 50,
+  "successful_requests": 30,
+  "failed_requests": 0,
+  "p50_ms": 105.339,
+  "p95_ms": 107.509,
+  "p99_ms": 108.014,
+  "upstream_requests": 30,
+  "origin_peak_concurrency": 30,
+  "coalesce_leads": 0,
+  "coalesce_shared": 0,
+  "findings": "no coalescing (004-C behavior), c=30: 30/30 succeeded, p50=105.3ms p95=107.5ms p99=108.0ms. Upstream requests=30, Origin peak concurrency=30, coalesce leads=0 shared=0."
+}

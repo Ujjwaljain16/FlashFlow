@@ -44,3 +44,11 @@ The Phase A/B audit found `cache.Cache` already takes an injected `clock.Clock` 
 - *Prediction 1*: Round Robin splits evenly across all three targets regardless of speed — capacity-blind by design, same as Stage 3's own finding.
 - *Prediction 2*: Least Connections and P2C-over-load both shift traffic toward the two fast targets, since a fast target's in-flight count drains quickly and looks more attractive again almost immediately — self-correcting, live-state behavior.
 - *Prediction 3*: EWMA should reproduce Stage 3's own headline finding (Experiment 003-D) — pure-greedy lock-in — not just "prefer fast targets" in the abstract. Once one fast target gets its first observation and its EWMA estimate beats the still-unobserved-or-slow alternatives, it should dominate almost all subsequent traffic, with the other fast target picking up only the residual selections made during the brief window it was still unobserved itself.
+
+## H6 — Seeded Randomness Reproduces Exactly, and Only the Seed Controls It
+
+`P2CSelector` already takes an explicit, injected `*rand.Rand` (Stage 3's own design) rather than reading `math/rand`'s global state — this hypothesis is the direct test of whether that's actually sufficient for full reproducibility under virtual time, isolated from the heterogeneous-capacity dynamics 005-E already covered.
+
+- *Setup*: three *identically fast* targets (so P2C's own random pair sampling, not target heterogeneity, drives most of the variation), a fixed 300-request arrival schedule, three runs: seed 1 twice, seed 2 once.
+- *Prediction 1*: the two seed-1 runs produce the exact same 300-element decision sequence, not merely the same aggregate distribution — a stronger, more specific claim than "similar traffic split."
+- *Prediction 2*: the seed-2 run's decision sequence is not required to differ from seed-1's (nothing guarantees two arbitrary seeds must disagree on every workload), but is expected to diverge in practice, and the *workload itself* (arrival times, target set, service times) must be byte-for-byte identical across all three runs regardless of which seed was used — the seed controls routing randomness and nothing else.

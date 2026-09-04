@@ -1,0 +1,22 @@
+{
+  "experiment": "005-F-seeded-randomness",
+  "timestamp": "2026-09-04T23:14:46Z",
+  "requests": 300,
+  "seed_a": 1,
+  "seed_b_same_as_a": 1,
+  "seed_c_different": 2,
+  "run_a_equals_run_b": true,
+  "run_a_equals_run_c": false,
+  "first_divergence_index": 0,
+  "distribution_a": {
+    "edge-a": 108,
+    "edge-b": 93,
+    "edge-c": 99
+  },
+  "distribution_c": {
+    "edge-a": 104,
+    "edge-b": 99,
+    "edge-c": 97
+  },
+  "findings": "Same seed (1) reproduced the identical 300-decision sequence exactly across two independent runs. A different seed (2) diverged from it starting at request #0, while the workload itself -- arrival times, target set, service times -- was identical in all three runs and never varied. Randomness is controlled by the explicit seed alone, not by goroutine scheduling, map iteration, or global RNG state."
+}

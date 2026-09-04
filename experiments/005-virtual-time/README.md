@@ -157,3 +157,27 @@ The first run of this experiment showed EWMA sending **all 300 requests to the s
 ### Interpretation
 
 Every Stage 3 routing policy needed zero modification to run correctly under a purely virtual, event-driven notion of concurrency — the strongest possible confirmation that `LoadTracker`, `LatencyTracker`, and the selectors themselves were already engine-agnostic pure logic, exactly as the Phase A/B audit found. The bug caught along the way is arguably as valuable as the clean result: it's a concrete demonstration of why Stage 5's emphasis on tracing an unexpected result to its actual mechanism (rather than reporting it as a "finding") matters in practice, not just as a stated principle.
+
+---
+
+## 8. Results: Experiment 005-F — Seeded Randomness
+
+**Hypothesis (H6)**: see `hypotheses.md`. Three identically-fast targets (20ms each, isolating P2C's own random sampling from target heterogeneity), 300 fixed arrivals, `P2CSelector` over load with seed 1 (twice) and seed 2 (once).
+
+| Run | Seed | Distribution | Identical to seed-1 run 1's full decision sequence? |
+|---|---:|---|:---:|
+| 1 | 1 | edge-a:108, edge-b:93, edge-c:99 | — (baseline) |
+| 2 | 1 | identical distribution | **yes**, byte-for-byte, all 300 decisions |
+| 3 | 2 | edge-a:104, edge-b:99, edge-c:97 | no — diverges at request #0 |
+
+Raw data: `experiments/005-virtual-time/results/005F-seeded-randomness.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**: the two seed-1 runs produced the identical 300-element decision sequence, not just a similar-looking aggregate split — the stronger claim the hypothesis asked for.
+2. **Prediction 2 confirmed**: seed 2's sequence diverged from seed 1's immediately, at the very first request — the first random pair sample already differs between the two seeds, which then compounds across all 300 decisions. The workload itself (arrival schedule, target set, service times) was constructed identically regardless of which seed was passed to the selector; only `P2CSelector`'s own coin flips changed.
+3. The aggregate distributions across all three runs look similar (roughly even three-way splits, as expected when every target is equally fast) — a reminder that comparing only final distributions, as 005-E's table did, can hide a completely different underlying decision sequence. Seed reproducibility is a claim about the *sequence*, and this experiment tested it as one.
+
+### Interpretation
+
+`P2CSelector`'s Stage 3 design — an explicitly injected `*rand.Rand`, never `math/rand`'s global state — turns out to be exactly sufficient for full reproducibility under virtual time, with no additional seed-plumbing required anywhere else in the engine. This closes the loop on item 21's requirement in the smallest form that's actually justified by evidence: a single seed for the one component that needs one. A full hierarchical seed tree (separate traffic/routing/failure seeds) remains deferred — nothing built so far has a second source of randomness that would need decoupling from this one, so building that structure now would be speculative rather than earned.

@@ -1,0 +1,19 @@
+{
+  "experiment": "004-C-cache-stampede",
+  "timestamp": "2026-09-04T20:04:08Z",
+  "cell": "stampede-c010",
+  "concurrency": 10,
+  "origin_delay_ms": 100,
+  "cache_ttl_ms": 50,
+  "entry_expired_before_burst": true,
+  "successful_requests": 10,
+  "failed_requests": 0,
+  "p50_ms": 102.868,
+  "p95_ms": 102.868,
+  "p99_ms": 102.868,
+  "upstream_requests": 10,
+  "duplicate_fetches": 9,
+  "origin_peak_concurrency": 10,
+  "cache_misses": 10,
+  "findings": "stampede (cache expired before the burst), c=10: 10/10 succeeded, p50=102.9ms p95=102.9ms p99=102.9ms. Upstream requests=10 (cache misses=10), duplicate fetches=9, Origin peak concurrency=10."
+}

@@ -90,3 +90,29 @@ Tested at two levels: `internal/cache/cache_test.go` (7 tests, white-box, includ
 ### Interpretation
 
 Caching works exactly as hoped on the metric it's meant to help (upstream load, and the typical-case latency that follows from avoiding Origin entirely) and, correctly, does *not* meaningfully help the metric it was never going to help (tail latency, still dominated by real misses paying Origin's real cost). The stampede signal that emerged from this run — unplanned, in a phase meant only to warm up connection pools — is strong independent evidence that Experiment 004-C's premise is real and worth studying carefully, not a hypothetical concern invented to justify building request coalescing.
+
+---
+
+## 6. Results: Experiment 004-C — Cache Stampede
+
+**Hypothesis (H3)**: see `hypotheses.md`. New instrumentation this experiment needed and built: `OriginServer.ConcurrencyStats()` (`internal/topology/origin.go`), a lock-free active/peak concurrent-request tracker — nothing before Stage 4 could produce a synchronized burst of upstream requests, so nothing needed to measure one. Tested directly (`TestOriginServer_ConcurrencyStats_TracksPeak`) before being trusted here.
+
+Single hot key (`/data/hot`), primed and confirmed warm (`X-Cache-Status: HIT` checked explicitly before proceeding — this experiment does not assume its own precondition holds), TTL forced to elapse via `clock.MockClock` (deterministic, not a real-time sleep race), then a burst of C concurrent requests for that exact key, C ∈ {10, 30, 100}. A same-burst, non-expired **control** cell isolates whether the effect is really about *expiry*, not just "concurrent traffic."
+
+| C | Upstream requests (control / stampede) | Duplicate fetches | Origin peak concurrency (control / stampede) | p99 (control / stampede) |
+|---:|:---:|---:|:---:|:---:|
+| 10 | 0 / **10** | 9 | 1 / **10** | 0.6ms / **102.9ms** |
+| 30 | 0 / **30** | 29 | 1 / **30** | 2.0ms / **104.9ms** |
+| 100 | 0 / **100** | 99 | 1 / **100** | 9.4ms / **115.4ms** |
+
+Raw data: `experiments/004-caching-failures/results/004C-*.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly, at every concurrency level tested**: without coalescing, upstream requests equal the burst size precisely — 10/10, 30/30, 100/100. Every single concurrent miss independently fetches from Origin; nothing currently prevents it. Duplicate fetches scale linearly and, as far as this data shows, unboundedly with concurrency: a 100-way stampede on one key produces 99 entirely wasted Origin round trips for an object that only needed to be fetched once.
+2. **Prediction 2 confirmed just as cleanly**: the control cell — identical burst, identical key, cache simply not expired — produced 0 upstream requests and peak concurrency of 1 (attributable entirely to the priming request, not the burst) at every C. The effect is specifically about synchronized expiry, not "any concurrent load."
+3. **Prediction 3 is where the result gets more interesting than expected**: p99 during the stampede stayed close to Origin's configured 100ms delay across *all three* concurrency levels (102.9ms → 104.9ms → 115.4ms) — a 10× increase in burst size produced barely more than a 10% increase in tail latency, not the sharp nonlinear blowup an M/M/1-style queueing model would predict as utilization climbs toward saturation.
+
+### Interpretation
+
+Finding 3 is a real limitation of the current Origin model, not evidence that stampedes are less costly than the upstream-request numbers suggest. `OriginServer`'s handler runs one goroutine per request (Go's standard `net/http` behavior) and does `time.Sleep(delay)`, which holds a goroutine without consuming a CPU core — so 100 concurrent "requests" here are effectively served in parallel with no contention, closer to an M/M/∞ (infinite-server) model than the bounded-capacity M/M/1 or M/M/c queue a real backend has. A real origin has a finite thread/worker pool, finite CPU, and finite database or downstream connections; under those constraints, a 100-way duplicate-fetch stampede would plausibly show the sharp nonlinear tail-latency growth queueing theory predicts (and which Stage 3's routing experiments already observed in *this* topology when static routing overloaded one edge). The 99 wasted Origin round trips are real and fully confirmed by Prediction 1 regardless of this limitation — what's not yet demonstrated is how badly they'd hurt latency against an Origin with real capacity constraints. That's a fair caveat to carry into Experiment 004-D's coalescing comparison, not a reason to doubt the case for coalescing.

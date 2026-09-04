@@ -1,0 +1,19 @@
+{
+  "experiment": "004-C-cache-stampede",
+  "timestamp": "2026-09-04T20:04:08Z",
+  "cell": "control-c010",
+  "concurrency": 10,
+  "origin_delay_ms": 100,
+  "cache_ttl_ms": 50,
+  "entry_expired_before_burst": false,
+  "successful_requests": 10,
+  "failed_requests": 0,
+  "p50_ms": 0.566,
+  "p95_ms": 0.566,
+  "p99_ms": 0.566,
+  "upstream_requests": 0,
+  "duplicate_fetches": 0,
+  "origin_peak_concurrency": 1,
+  "cache_misses": 0,
+  "findings": "control (cache stays warm), c=10: 10/10 succeeded, p50=0.6ms p95=0.6ms p99=0.6ms. Upstream requests=0 (cache misses=0), duplicate fetches=0, Origin peak concurrency=1."
+}

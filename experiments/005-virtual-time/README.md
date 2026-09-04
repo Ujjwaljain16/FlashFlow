@@ -181,3 +181,30 @@ Raw data: `experiments/005-virtual-time/results/005F-seeded-randomness.json`.
 ### Interpretation
 
 `P2CSelector`'s Stage 3 design — an explicitly injected `*rand.Rand`, never `math/rand`'s global state — turns out to be exactly sufficient for full reproducibility under virtual time, with no additional seed-plumbing required anywhere else in the engine. This closes the loop on item 21's requirement in the smallest form that's actually justified by evidence: a single seed for the one component that needs one. A full hierarchical seed tree (separate traffic/routing/failure seeds) remains deferred — nothing built so far has a second source of randomness that would need decoupling from this one, so building that structure now would be speculative rather than earned.
+
+---
+
+## 9. Results: Experiment 005-G — Full Deterministic Edge Scenario
+
+**Hypothesis (H7)**: see `hypotheses.md`. A shared cache in front of a 3-target Least-Connections-routed backend (one slow, two fast), 300 fixed arrivals over 4 cache keys, `edge-b-fast` failing at t=500ms and recovering at t=1000ms. This composes only mechanisms 005-C, 005-D, and 005-E already proved individually — the one new integration point is routing's `available` list being filtered by `health.Registry.IsAvailable`. **This topology (cache + routing together) is a virtual-only exploratory construction**: Stage 4's real topology has caching without routing, Stage 2/3's real topology has routing without caching — nothing claims the real engine has an equivalent combined path.
+
+| | |
+|---|---|
+| Health transitions | HEALTHY (t=0) → **UNHEALTHY (t=600ms)** → RECOVERING (t=1000ms) → HEALTHY (t=1100ms) |
+| Cache | `{Lookups:300, Hits:292, Misses:8, Fills:8}` |
+| Completed by target | `edge-a-slow:2, edge-b-fast:4, edge-c-fast:2` |
+| Rejected requests | 0 |
+| Trace length | 379 events |
+| Runs compared | 20, full-trace `reflect.DeepEqual` |
+
+Raw data: `experiments/005-virtual-time/results/005G-full-scenario.json`, full trace at `005G-trace.jsonl`.
+
+### Findings
+
+1. **Prediction 1 confirmed at the strongest level tested in this stage**: all 20 runs produced byte-for-byte identical 379-event traces — every `cache_hit`, `cache_miss`, `request_rejected`, `request_routed`, `request_completed`, and `health_probe` entry matched exactly, not just the aggregate summary. This is a stronger check than 005-B/005-D's transition-only comparisons, made possible specifically by recording the richer per-event-type trace this experiment's design called for.
+2. **Prediction 2 confirmed, with the lag arithmetically exact**: `edge-b-fast` fails at t=500ms but isn't marked UNHEALTHY until **t=600ms** — one full probe interval later. With a 100ms probe interval and a fail threshold of 2, the first failed probe (t=500ms) only registers one consecutive failure; the second (t=600ms) crosses the threshold. Routing continued considering `edge-b-fast` available for that entire 100ms window — a real, measured detection lag, not an assumption.
+3. **The non-prediction held, informatively**: only 4 distinct cache keys exist, but the cache recorded 8 misses, not 4. Multiple requests for the same key arrived before the first one's dispatch completed and filled the cache, so each raced to its own independent miss and dispatch — precisely the pre-coalescing race Stage 4's 004-A first stumbled into unplanned, now reproduced deterministically on purpose. `completed-by-target` sums to exactly 8 (2+4+2), matching `Fills:8` exactly — a direct internal consistency check that every miss led to exactly one completion and one fill, with nothing lost or double-counted.
+
+### Interpretation
+
+Nothing in this experiment required new domain logic — the one line of genuinely new integration code was the `registry.IsAvailable` filter placed in front of `selector.SelectTarget`. Everything else is 005-C, 005-D, and 005-E's already-proven pieces sharing a clock and an event queue. That's exactly what makes the result meaningful rather than merely convenient: determinism held not because this experiment was built to be simple, but because every piece feeding into it was already individually deterministic, and composing deterministic pieces without introducing new shared mutable state accessed out of order stays deterministic. The detection-lag measurement is the clearest illustration of why this experiment needed the composition to exist at all — 005-D alone could show failure and recovery landing at precise timestamps, but only with routing in the loop does "the router kept sending traffic to a target for 100ms after it broke" become an observable, quantified consequence rather than an assumption about how the pieces would interact.

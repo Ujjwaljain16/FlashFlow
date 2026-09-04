@@ -1,0 +1,30 @@
+{
+  "experiment": "005-G-full-deterministic-edge-scenario",
+  "timestamp": "2026-09-04T23:21:51Z",
+  "runs": 20,
+  "trace_length": 379,
+  "all_identical": true,
+  "result": {
+    "cache_stats": {
+      "lookups": 300,
+      "hits": 292,
+      "misses": 8,
+      "expired": 0,
+      "fills": 8
+    },
+    "health_final_states": {
+      "edge-a-slow": "HEALTHY",
+      "edge-b-fast": "HEALTHY",
+      "edge-c-fast": "HEALTHY"
+    },
+    "completed_by_target": {
+      "edge-a-slow": 2,
+      "edge-b-fast": 4,
+      "edge-c-fast": 2
+    },
+    "rejected_count": 0,
+    "cache_hits": 292,
+    "cache_misses": 8
+  },
+  "findings": "All 20 runs of the combined scenario (300 requests, 3 targets, a mid-run failure and recovery on the fast target edge-b-fast) produced byte-for-byte identical 379-event traces and identical summary results: cache {Lookups:300 Hits:292 Misses:8 Expired:0 Fills:8}, completed-by-target map[edge-a-slow:2 edge-b-fast:4 edge-c-fast:2], 0 rejected, final health map[edge-a-slow:HEALTHY edge-b-fast:HEALTHY edge-c-fast:HEALTHY]. This experiment exercises cache behavior, routing, load/latency state, health detection lag, and failure/recovery together -- it does NOT exercise request coalescing, which was never wired into the virtual engine and is not claimed here."
+}

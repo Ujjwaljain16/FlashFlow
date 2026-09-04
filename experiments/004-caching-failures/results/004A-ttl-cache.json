@@ -1,0 +1,31 @@
+{
+  "experiment": "004-A-cache-baseline",
+  "timestamp": "2026-09-04T19:53:55Z",
+  "cell": "ttl-cache",
+  "concurrency": 30,
+  "requests": 3000,
+  "origin_delay_ms": 15,
+  "cache_ttl_ms": 5000,
+  "hot_key_share_percent_configured": 50,
+  "successful_requests": 3000,
+  "failed_requests": 0,
+  "throughput_rps": 21652.504725659153,
+  "client_latencies": {
+    "p50": 0,
+    "p95": 5234100,
+    "p99": 17409200,
+    "min": 0,
+    "max": 23283700
+  },
+  "edge_origin_requests": 37,
+  "upstream_equals_success": true,
+  "cache_stats": {
+    "lookups": 3000,
+    "hits": 2963,
+    "misses": 37,
+    "expired": 0,
+    "fills": 37
+  },
+  "hit_ratio_percent": 98.76666666666667,
+  "findings": "TTL-Cache (ttl=5s): 3000/3000 succeeded, RPS=21652.5, p50=0s p95=5.2341ms p99=17.4092ms. Hit ratio=98.77% (2963 hits / 3000 lookups), 37 misses, 37 fills, 0 expired. Upstream requests=37 (equals misses: true). 9 distinct keys means a theoretical minimum of 9 misses if each key's very first request is the only miss it ever gets; 37 actual misses recorded is 4x that minimum -- a preview of concurrent first-touch stampede at c=30, before Experiment 004-C studies it directly. The warmup phase (30 requests, 1 static path, same concurrency) showed this even more starkly: baseline cache stats recorded 30 misses and 0 hits for 30 requests to the exact same key."
+}

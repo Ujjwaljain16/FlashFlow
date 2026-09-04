@@ -47,4 +47,46 @@ This required one small, reusable addition to shared infrastructure: `httpx.Benc
 
 ### Interpretation
 
-This run does exactly what it was built to do: it's boring, and that's correct. The interesting question — how much of this upstream work and latency a cache eliminates — has no answer yet, because there's nothing to compare it against. That comparison is Experiment 004-A's second half, once `internal/topology`'s `EdgeServer` gains a TTL cache using the semantics decided before implementation (cache key = `method+path+query`, GET-only, 2xx-only, lazy expiration, no LRU/SWR yet — see the Stage 4 recon in the session record). Nothing about caching, coalescing, or failure behavior is claimed yet; this experiment's only job was to make sure the later claims have a real baseline to stand on.
+This run does exactly what it was built to do: it's boring, and that's correct. The interesting question — how much of this upstream work and latency a cache eliminates — is answered next.
+
+---
+
+## 4. Implementation: TTL Cache
+
+Semantics decided before writing any code (see the Stage 4 recon in the session record), implemented in `internal/cache/cache.go` and wired into `internal/topology/edge.go`:
+
+- **Ownership**: each `EdgeServer` owns one independent `*cache.Cache` (opt-in via `EdgeConfig.CacheTTL > 0` — `0`, the default, matches `DefaultDelay`'s existing "0 means off" convention on the same struct, so every pre-existing Stage 2/3 caller is unaffected).
+- **Key**: `method + path + query`, deliberately excluding headers — `X-Request-ID` alone would make every request unique and defeat caching entirely.
+- **Cacheable scope**: GET only, and only 2xx responses are ever stored — a failed refresh never gets cached, and repeated requests to a broken endpoint keep reaching Origin rather than getting stuck serving (or blocked behind) a cached failure.
+- **TTL**: one fixed duration per `Cache`, no `Cache-Control` parsing (Origin doesn't send cache headers; full RFC cache semantics aren't needed by any experiment planned this stage).
+- **Expiration**: lazy — checked and evicted on the next `Get` for that key, no background sweeper, no timer to leak.
+- **Concurrency**: `sync.RWMutex` around the entry map, `atomic.Uint64` counters for stats — same shape as Stage 3's `LoadTracker`/`LatencyTracker`.
+- **Time**: injected `clock.Clock`, not `time.Now()` — the existing `mockClock` in `internal/clock`'s own tests was promoted to an exported `MockClock` so cache TTL tests (and any future Stage 4 test needing deterministic time) don't need to sleep-and-hope.
+- **A cache hit skips the edge's artificial-delay hook entirely** — a hit means no Origin round trip happens, so there's nothing left for that delay to simulate. Documented as a modeling choice, not settled science; whether a hit should still cost the edge *some* minimal time of its own is a good question for a later experiment.
+- **Observability**: `EdgeServer.CacheStats()` exposes lookups/hits/misses/expired/fills; every cache-affected response also carries an `X-Cache-Status: HIT|MISS` header — a second, independent way to verify cache behavior from outside the process, matching the two-independent-instrumentation-points discipline established in Stage 3.
+
+Tested at two levels: `internal/cache/cache_test.go` (7 tests, white-box, including a targeted concurrency test and a direct check that an expired entry is actually removed from the map, not just reported as a miss) and `internal/topology/topology_test.go` (5 new tests proving the behavior end-to-end over real HTTP: miss-then-hit with byte-identical reconstructed responses, TTL expiration triggering a real re-fetch, GET-only scope, never-cache-5xx, and no-op when disabled).
+
+---
+
+## 5. Results: Experiment 004-A — TTL Cache vs. No-Cache
+
+**Hypothesis (H2)**: see `hypotheses.md`. Same topology, same hot/cold key workload as the No-Cache baseline, TTL=5s (longer than the whole ~1.5s run, so no mid-run expiry confounds this comparison).
+
+| Cell | RPS | p50 | p95 | p99 | Upstream requests | Hit ratio |
+|---|---:|---:|---:|---:|---:|---:|
+| No-Cache | 1870.1 | 15.64ms | 17.41ms | 19.43ms | 3000 | — |
+| TTL-Cache | **21652.5** | **~0ms*** | 5.23ms | 17.41ms | **37** | **98.77%** |
+
+\* p50 reads as `0s` — a real measurement-resolution artifact, not a claim of zero latency (the same Windows nanosecond-rounding limitation noted in Stage 1). With 98.77% of requests served as sub-millisecond edge-local hits, the true p50 is simply below what this measurement can resolve.
+
+### Findings
+
+1. **Prediction 1 confirmed emphatically**: upstream requests dropped from 3000 to 37 — a 98.77% reduction — and throughput rose 11.6× (1870→21652 RPS).
+2. **Prediction 2 confirmed, including its asymmetry**: p50 collapsed (dominated by cache hits, which skip Origin's 15ms entirely) while p99 barely moved (19.43ms→17.41ms) — p99 is disproportionately made up of the unavoidable misses, each of which still pays Origin's full cost. This is exactly the shape predicted: caching helps the *typical* request far more than the *tail*.
+3. **The "explicit non-prediction" happened, and is the most interesting result of this run.** 37 misses were recorded against a theoretical minimum of 9 (one per distinct key) — roughly 4× the minimum. Even more starkly, the discarded warmup phase (30 requests, all to the *same single* static path, at the same c=30 concurrency) recorded **30 misses and 0 hits** — every single warmup request missed, because all 30 concurrent workers reached the cache before any of them had completed the first fetch and called `Set`. This is a real, reproducible instance of the exact cache-stampede mechanism Experiment 004-C is designed to study directly, showing up unplanned in what was supposed to be a quiet warmup phase.
+4. **A real measurement bug was caught and fixed before trusting any of this**: the first run of this comparison reported `misses (67) != upstream requests (37)` and the invariant check correctly refused to proceed. The cause: `Cache.Snapshot()`'s counters, like the edge's transport counters, accumulate across warmup *and* measured traffic — but only the transport counters were being baseline-subtracted. Fixed by baselining cache stats the same way. This is the same class of mistake Experiment 003-A's original warmup-contamination bug was, for a counter that didn't exist yet at the time that lesson was learned — a reminder that "we already learned this lesson" doesn't automatically generalize to every new piece of state a system grows.
+
+### Interpretation
+
+Caching works exactly as hoped on the metric it's meant to help (upstream load, and the typical-case latency that follows from avoiding Origin entirely) and, correctly, does *not* meaningfully help the metric it was never going to help (tail latency, still dominated by real misses paying Origin's real cost). The stampede signal that emerged from this run — unplanned, in a phase meant only to warm up connection pools — is strong independent evidence that Experiment 004-C's premise is real and worth studying carefully, not a hypothetical concern invented to justify building request coalescing.

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"math/rand"
 	"net/http"
 	"testing"
 	"time"
@@ -445,5 +446,99 @@ func TestProxy_EWMA_NoObservationOnUpstreamError(t *testing.T) {
 
 	if _, ok := pxy.LatencyTracker().Estimate(unreachable); ok {
 		t.Fatalf("expected no latency observation to be recorded for a failed round trip")
+	}
+}
+
+// TestProxy_P2C_EndToEnd_AvoidsBusyEdge proves P2CSelector wired through
+// the real ServeHTTP lifecycle (using the proxy's own LoadTracker, the
+// same instance ServeHTTP increments/decrements) correctly steers traffic
+// away from an edge that is kept artificially busy by slow requests,
+// across real concurrent HTTP traffic rather than a synthetic tracker.
+func TestProxy_P2C_EndToEnd_AvoidsBusyEdge(t *testing.T) {
+	origin := topology.NewOriginServer(topology.OriginConfig{Instance: "origin-p2c"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	slowEdge, err := topology.NewEdgeServer(topology.EdgeConfig{
+		Instance: "edge-slow", OriginURL: origin.URL(), DefaultDelay: 150 * time.Millisecond,
+	})
+	if err != nil {
+		t.Fatalf("failed to create slow edge: %v", err)
+	}
+	if err := slowEdge.Start(); err != nil {
+		t.Fatalf("failed to start slow edge: %v", err)
+	}
+	defer slowEdge.Stop(context.Background())
+
+	fastEdge, err := topology.NewEdgeServer(topology.EdgeConfig{
+		Instance: "edge-fast", OriginURL: origin.URL(), DefaultDelay: 0,
+	})
+	if err != nil {
+		t.Fatalf("failed to create fast edge: %v", err)
+	}
+	if err := fastEdge.Start(); err != nil {
+		t.Fatalf("failed to start fast edge: %v", err)
+	}
+	defer fastEdge.Stop(context.Background())
+
+	clk := clock.NewWallClock()
+	cfg := Config{
+		Targets:         []string{slowEdge.URL(), fastEdge.URL()},
+		TransportConfig: transport.DefaultTransportConfig("proxy_upstream"),
+		HealthConfig:    health.DefaultConfig(),
+		ProberConfig:    health.DefaultCheckerConfig(),
+	}
+	pxy := NewReverseProxy(cfg, clk, nil)
+	pxy.SetSelector(NewP2CSelector(ScorerFromLoad(pxy.LoadTracker()), rand.New(rand.NewSource(1))))
+
+	if err := pxy.Start(); err != nil {
+		t.Fatalf("failed to start proxy: %v", err)
+	}
+	defer pxy.Stop(context.Background())
+
+	// Fire 40 concurrent requests. Whichever edge is currently busier
+	// (the slow one, since its requests take much longer to complete)
+	// should lose most P2C comparisons it's sampled into once real
+	// concurrent load builds up on it.
+	const totalRequests = 40
+	results := make(chan string, totalRequests)
+	client := &http.Client{Timeout: 5 * time.Second}
+	for i := 0; i < totalRequests; i++ {
+		go func() {
+			resp, err := client.Get(pxy.URL() + "/data")
+			if err != nil {
+				results <- "error"
+				return
+			}
+			edgeID := resp.Header.Get(httpx.HeaderEdgeID)
+			_, _ = io.ReadAll(resp.Body)
+			_ = resp.Body.Close()
+			results <- edgeID
+		}()
+	}
+
+	counts := map[string]int{}
+	for i := 0; i < totalRequests; i++ {
+		counts[<-results]++
+	}
+
+	if counts["error"] > 0 {
+		t.Fatalf("expected no request errors, got %d (counts=%v)", counts["error"], counts)
+	}
+	if counts["edge-fast"] <= counts["edge-slow"] {
+		t.Fatalf("expected edge-fast to receive more traffic than edge-slow under real concurrent load, got %v", counts)
+	}
+
+	// The deferred Decrement fires on the server's own goroutine stack
+	// unwind, which can trail the client finishing its read by a hair;
+	// give it a moment to settle before asserting the final count.
+	time.Sleep(20 * time.Millisecond)
+	if got := pxy.LoadTracker().Get(slowEdge.URL()); got != 0 {
+		t.Fatalf("expected slow edge in-flight count to return to 0 after all requests complete, got %d", got)
+	}
+	if got := pxy.LoadTracker().Get(fastEdge.URL()); got != 0 {
+		t.Fatalf("expected fast edge in-flight count to return to 0 after all requests complete, got %d", got)
 	}
 }

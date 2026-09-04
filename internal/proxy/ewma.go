@@ -2,7 +2,6 @@ package proxy
 
 import (
 	"net/http"
-	"time"
 )
 
 // EWMASelector prefers the available target with the lowest EWMA latency
@@ -16,6 +15,16 @@ import (
 // sustained ties (low concurrency). Ties among unobserved or numerically
 // equal targets fall back to `available` order, but only after every
 // target has already had its one guaranteed try.
+//
+// KNOWN LIMITATION (Experiment 003-D, left unfixed deliberately — see the
+// Stage 3 README §H4): past cold-start this is pure-greedy with no ongoing
+// exploration. Among genuinely equal targets, whichever wins the first few
+// noisy samples wins every selection after — the losers stop being
+// selected, so they stop being observed, so their estimate freezes
+// forever. Consequence: it can lock onto a wildly uneven split (e.g.
+// 100/0/0) among interchangeable targets, and it can never detect that an
+// unselected target's true performance has since changed. This is the
+// evidence-based motivation for P2C's random sampling (Experiment 003-E).
 type EWMASelector struct {
 	tracker *LatencyTracker
 }
@@ -34,24 +43,15 @@ func (s *EWMASelector) SelectTarget(r *http.Request, available []string) (string
 
 	best := available[0]
 	bestLatency, bestOK := s.tracker.Estimate(best)
+	bestScore := float64(bestLatency)
 	for _, t := range available[1:] {
 		latency, ok := s.tracker.Estimate(t)
-		if preferCandidate(latency, ok, bestLatency, bestOK) {
-			best, bestLatency, bestOK = t, latency, ok
+		score := float64(latency)
+		// preferScore (p2c.go) is shared with P2CSelector rather than
+		// duplicated — same unobserved-beats-observed / lower-wins rule.
+		if preferScore(score, ok, bestScore, bestOK) {
+			best, bestScore, bestOK = t, score, ok
 		}
 	}
 	return best, nil
-}
-
-// preferCandidate: unobserved beats observed unconditionally; between two
-// candidates in the same observed/unobserved state, lower latency wins and
-// ties keep the current best.
-func preferCandidate(latency time.Duration, ok bool, bestLatency time.Duration, bestOK bool) bool {
-	if ok != bestOK {
-		return !ok
-	}
-	if !ok {
-		return false
-	}
-	return latency < bestLatency
 }

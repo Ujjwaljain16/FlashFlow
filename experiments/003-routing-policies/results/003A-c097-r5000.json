@@ -1,0 +1,45 @@
+{
+  "experiment": "003-A-round-robin-fairness-baseline",
+  "timestamp": "2026-09-04T18:05:03Z",
+  "concurrency": 97,
+  "requests": 5000,
+  "edge_delay_ms": 1,
+  "successful_requests": 5000,
+  "failed_requests": 0,
+  "throughput_rps": 2759.0988319686185,
+  "client_latencies": {
+    "p50": 8113200,
+    "p95": 116259300,
+    "p99": 205225200,
+    "min": 1000000,
+    "max": 268641400
+  },
+  "per_edge_counts": [
+    {
+      "instance": "edge-a",
+      "url": "http://127.0.0.1:50503",
+      "proxy_recorded_count": 1667,
+      "edge_forwarded_count": 1667,
+      "counts_agree": true
+    },
+    {
+      "instance": "edge-b",
+      "url": "http://127.0.0.1:50504",
+      "proxy_recorded_count": 1667,
+      "edge_forwarded_count": 1667,
+      "counts_agree": true
+    },
+    {
+      "instance": "edge-c",
+      "url": "http://127.0.0.1:50505",
+      "proxy_recorded_count": 1666,
+      "edge_forwarded_count": 1666,
+      "counts_agree": true
+    }
+  ],
+  "ideal_count_per_edge": 1666.6666666666667,
+  "max_min_count_diff": 1,
+  "coefficient_of_variation": 0.000282842712474619,
+  "client_server_outcome_mismatch": 0,
+  "findings": "Round Robin distributed 5000 requests across 3 homogeneous edges with a max-min spread of 1 (coefficient of variation 0.0003) against an ideal of 1666.7/edge. Proxy-recorded and edge-forwarded counts agreed for all edges: true. Client-vs-server outcome mismatch: 0 (requests the proxy fully processed but the client benchmark harness recorded as failed)."
+}

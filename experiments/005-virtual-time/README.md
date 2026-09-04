@@ -128,3 +128,32 @@ All 20 runs produced this exact 3-transition sequence. Raw data: `experiments/00
 ### Interpretation
 
 `health.Registry`'s state machine — Stage 2's design, unmodified — needed nothing added for this. What changed is entirely on the scheduling side: `health.Checker`'s real ticker and real HTTP probing were replaced by a virtual `Ticker` consulting a ground-truth schedule instead of dialing a live target, with the *same* `RecordProbeResult` call driving the *same* state machine either way. This is Stage 5's port-domain-logic-don't-copy-real-implementation-blindly principle working exactly as designed: the thing that's genuinely different between real and virtual health checking is how the probe result is obtained, not what happens once it is. And the same-timestamp result above is the first piece of direct evidence in this stage that explicit ordering isn't just a defensive design choice — it produces a specific, predictable, explainable answer to a question ("did the probe see the failure that happened at the same instant?") that would otherwise have no principled answer at all.
+
+---
+
+## 7. Results: Experiment 005-E — Stateful Routing Under Virtual Time
+
+**Hypothesis (H5)**: see `hypotheses.md`. One slow target (100ms) and two fast targets (20ms), 300 requests on a fixed 5ms arrival schedule, one run per policy, all reusing Stage 3's `internal/proxy` selectors and trackers with zero modification.
+
+| Policy | edge-a-slow | edge-b-fast | edge-c-fast |
+|---|---:|---:|---:|
+| Round Robin | 100 | 100 | 100 |
+| Least Connections | 42 | 139 | 119 |
+| EWMA | 21 | 274 | 5 |
+| P2C (load) | 42 | 130 | 128 |
+
+Raw data: `experiments/005-virtual-time/results/005E-stateful-routing.json`. Every distribution above reproduced identically across repeated runs (no randomness in the workload; P2C's seed fixed).
+
+### A real bug, caught and fixed before trusting this result
+
+The first run of this experiment showed EWMA sending **all 300 requests to the slow target** — the opposite of what a latency-aware policy should do. Rather than report that as a surprising finding, I traced the actual event ordering by hand (arrival sequence numbers versus dynamically-scheduled completion sequence numbers) and confirmed `EWMASelector`'s cold-start logic *should* switch to a fast target as soon as the slow one becomes observed. That meant the bug was in the experiment, not the selector: the `runCell` helper was constructing a fresh, throwaway `LatencyTracker` internally instead of using the exact instance `EWMASelector` had been built with — so the selector was reading a tracker that `Observe` was never actually called on, permanently stuck in "everything is unobserved, fall back to `available[0]`." Fixed by passing the same tracker instance through explicitly rather than letting the helper construct its own. This is the same class of mistake Stage 4's 004-A cache-stats bug was: a measurement/wiring bug that produces a plausible-looking but wrong number, caught by checking the result against what the code's own logic predicts rather than trusting the first output.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**: Round Robin split 100/100/100 — perfectly even, completely blind to the 5× service-time difference, matching Stage 3's own characterization of RR.
+2. **Prediction 2 confirmed**: Least Connections (42/139/119) and P2C-over-load (42/130/128) both shifted the large majority of traffic onto the two fast targets, with a near-even split between the two fast targets themselves — consistent with Stage 3's finding that load-based policies are self-correcting since in-flight count is live state, not a memory.
+3. **Prediction 3 confirmed, precisely reproducing Stage 3's headline finding**: EWMA locked onto one fast target (274 of 300) rather than splitting evenly between the two fast options. The mechanism is fully traceable: whichever fast target's first request happens to complete (and become "observed") while the other fast target is still unobserved wins the "unobserved beats observed" comparison and starts dominating; once *both* fast targets are observed with numerically identical 20ms estimates, the earlier-observed one keeps winning every subsequent tie (`score < bestScore` is false for equal scores, so `best` never changes on a genuine tie) — the exact pure-greedy lock-in mechanism Experiment 003-D described, now reproduced with full causal traceability instead of Stage 3's own "we don't fully understand this" caveat on a related result.
+
+### Interpretation
+
+Every Stage 3 routing policy needed zero modification to run correctly under a purely virtual, event-driven notion of concurrency — the strongest possible confirmation that `LoadTracker`, `LatencyTracker`, and the selectors themselves were already engine-agnostic pure logic, exactly as the Phase A/B audit found. The bug caught along the way is arguably as valuable as the clean result: it's a concrete demonstration of why Stage 5's emphasis on tracing an unexpected result to its actual mechanism (rather than reporting it as a "finding") matters in practice, not just as a stated principle.

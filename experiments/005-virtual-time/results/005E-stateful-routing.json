@@ -1,0 +1,49 @@
+{
+  "experiment": "005-E-stateful-routing",
+  "timestamp": "2026-09-04T23:12:05Z",
+  "targets": [
+    "edge-a-slow",
+    "edge-b-fast",
+    "edge-c-fast"
+  ],
+  "requests": 300,
+  "cells": [
+    {
+      "policy": "round-robin",
+      "distribution": {
+        "edge-a-slow": 100,
+        "edge-b-fast": 100,
+        "edge-c-fast": 100
+      },
+      "findings": "capacity-blind by design: distributes evenly across all three targets regardless of service time."
+    },
+    {
+      "policy": "least-connections",
+      "distribution": {
+        "edge-a-slow": 42,
+        "edge-b-fast": 139,
+        "edge-c-fast": 119
+      },
+      "findings": "reacts to in-flight count: should favor the two fast targets once the slow target's backlog grows."
+    },
+    {
+      "policy": "ewma",
+      "distribution": {
+        "edge-a-slow": 21,
+        "edge-b-fast": 274,
+        "edge-c-fast": 5
+      },
+      "findings": "reacts to observed latency: should favor the two fast targets once each has been sampled at least once."
+    },
+    {
+      "policy": "p2c-load",
+      "distribution": {
+        "edge-a-slow": 42,
+        "edge-b-fast": 130,
+        "edge-c-fast": 128
+      },
+      "findings": "randomized pairwise comparison over load: should also favor the fast targets, with a fixed seed here only to confirm it runs under virtual time -- 005-F is the dedicated seed-reproducibility proof."
+    }
+  ],
+  "findings": "All four policies ran 300 requests over a fixed, deterministic arrival schedule (no wall-clock, no real goroutines) against one slow (100ms) and two fast (20ms) targets. Round Robin split evenly across all three regardless of speed; Least Connections, EWMA, and P2C-over-load all shifted traffic toward the two fast targets once they had something to react to -- reproducing Stage 3's own qualitative routing findings, now under a fully virtual clock."
+}

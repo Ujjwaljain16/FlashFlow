@@ -34,3 +34,27 @@ func NewWallClock() WallClock {
 func (WallClock) Now() VirtualTime {
 	return VirtualTime(time.Now().UnixNano())
 }
+
+// MockClock is a manually-advanced Clock for deterministic tests —
+// anything whose correctness depends on elapsed time (e.g. cache TTL
+// expiration) needs to control time directly rather than sleeping and
+// hoping. Zero value starts at VirtualTime 0; use NewMockClock to start
+// at a specific time.
+type MockClock struct {
+	current VirtualTime
+}
+
+// NewMockClock creates a MockClock starting at start.
+func NewMockClock(start VirtualTime) *MockClock {
+	return &MockClock{current: start}
+}
+
+// Now returns the clock's current (manually set) time.
+func (m *MockClock) Now() VirtualTime {
+	return m.current
+}
+
+// Advance moves the clock forward by d.
+func (m *MockClock) Advance(d time.Duration) {
+	m.current += VirtualTime(d.Nanoseconds())
+}

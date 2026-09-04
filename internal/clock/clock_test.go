@@ -5,18 +5,6 @@ import (
 	"time"
 )
 
-type mockClock struct {
-	current VirtualTime
-}
-
-func (m *mockClock) Now() VirtualTime {
-	return m.current
-}
-
-func (m *mockClock) Advance(d time.Duration) {
-	m.current += VirtualTime(d.Nanoseconds())
-}
-
 func TestWallClock_Now(t *testing.T) {
 	wc := NewWallClock()
 	t1 := wc.Now()
@@ -34,7 +22,7 @@ func TestWallClock_Now(t *testing.T) {
 }
 
 func TestMockClock_DeterministicAdvance(t *testing.T) {
-	mc := &mockClock{current: 1000}
+	mc := NewMockClock(1000)
 	if mc.Now() != 1000 {
 		t.Fatalf("expected 1000, got %d", mc.Now())
 	}

@@ -43,17 +43,18 @@ type Config struct {
 
 // ReverseProxy is a custom, observable HTTP reverse proxy.
 type ReverseProxy struct {
-	mu        sync.RWMutex
-	config    Config
-	clock     clock.Clock
-	registry  *health.Registry
-	checker   *health.Checker
-	selector  TargetSelector
-	transport *transport.TrackedTransport
-	server    *http.Server
-	listener  net.Listener
-	addrPort  string
-	onRecord  TelemetryCallback
+	mu          sync.RWMutex
+	config      Config
+	clock       clock.Clock
+	registry    *health.Registry
+	checker     *health.Checker
+	selector    TargetSelector
+	loadTracker *LoadTracker
+	transport   *transport.TrackedTransport
+	server      *http.Server
+	listener    net.Listener
+	addrPort    string
+	onRecord    TelemetryCallback
 }
 
 // NewReverseProxy creates a fully configured ReverseProxy instance.
@@ -79,12 +80,13 @@ func NewReverseProxy(cfg Config, clk clock.Clock, sel TargetSelector) *ReversePr
 	tt := transport.NewTrackedTransport(tCfg)
 
 	return &ReverseProxy{
-		config:    cfg,
-		clock:     clk,
-		registry:  reg,
-		checker:   chk,
-		selector:  sel,
-		transport: tt,
+		config:      cfg,
+		clock:       clk,
+		registry:    reg,
+		checker:     chk,
+		selector:    sel,
+		loadTracker: NewLoadTracker(),
+		transport:   tt,
 	}
 }
 
@@ -110,6 +112,13 @@ func (p *ReverseProxy) TransportStats() transport.TransportStats {
 // Registry returns the active health registry.
 func (p *ReverseProxy) Registry() *health.Registry {
 	return p.registry
+}
+
+// LoadTracker exposes the tracker ServeHTTP updates, for constructing a
+// state-aware TargetSelector (e.g. LeastConnectionsSelector) to attach via
+// SetSelector — must be the same instance the proxy writes to.
+func (p *ReverseProxy) LoadTracker() *LoadTracker {
+	return p.loadTracker
 }
 
 // ServeHTTP handles incoming client requests, executes forwarding, and measures latencies.
@@ -155,6 +164,12 @@ func (p *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	// One defer covers every remaining return path below (malformed
+	// target, request construction failure, RoundTrip error, success) so
+	// no error branch can forget to decrement.
+	p.loadTracker.Increment(target)
+	defer p.loadTracker.Decrement(target)
 
 	// Safe target URL parsing
 	targetURL, parseErr := url.Parse(target)

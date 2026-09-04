@@ -269,3 +269,93 @@ func TestProxy_NoHealthyTargets_503(t *testing.T) {
 		t.Fatalf("expected 503 Service Unavailable, got %d", resp.StatusCode)
 	}
 }
+
+// TestProxy_LeastConnections_DecrementsAfterSuccess proves the real
+// ServeHTTP lifecycle (not just the isolated LoadTracker unit tests) pairs
+// every Increment with exactly one Decrement on the ordinary success path.
+func TestProxy_LeastConnections_DecrementsAfterSuccess(t *testing.T) {
+	origin := topology.NewOriginServer(topology.OriginConfig{Instance: "origin-lc"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	clk := clock.NewWallClock()
+	cfg := Config{
+		Targets:         []string{origin.URL()},
+		TransportConfig: transport.DefaultTransportConfig("proxy_upstream"),
+		HealthConfig:    health.DefaultConfig(),
+		ProberConfig:    health.DefaultCheckerConfig(),
+	}
+	pxy := NewReverseProxy(cfg, clk, nil)
+	sel := NewLeastConnectionsSelector(pxy.LoadTracker())
+	pxy.SetSelector(sel)
+
+	if err := pxy.Start(); err != nil {
+		t.Fatalf("failed to start proxy: %v", err)
+	}
+	defer pxy.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	for i := 0; i < 5; i++ {
+		resp, err := client.Get(pxy.URL() + "/data")
+		if err != nil {
+			t.Fatalf("request %d failed: %v", i, err)
+		}
+		_, _ = io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("request %d: expected 200, got %d", i, resp.StatusCode)
+		}
+
+		if got := pxy.LoadTracker().Get(origin.URL()); got != 0 {
+			t.Fatalf("request %d: expected in-flight count 0 after response fully read, got %d", i, got)
+		}
+	}
+}
+
+// TestProxy_LeastConnections_DecrementsAfterUpstreamError proves the load
+// tracker does not leak when the upstream RoundTrip itself fails (target
+// unreachable) — the exact "increment succeeds, request fails, decrement
+// forgotten" leak scenario that would slowly poison Least Connections
+// decisions if the defer in ServeHTTP did not cover this path.
+func TestProxy_LeastConnections_DecrementsAfterUpstreamError(t *testing.T) {
+	const unreachable = "http://127.0.0.1:59999" // same convention as TestProxy_NoHealthyTargets_503
+
+	clk := clock.NewWallClock()
+	cfg := Config{
+		Targets:         []string{unreachable},
+		TransportConfig: transport.DefaultTransportConfig("proxy_upstream"),
+		HealthConfig:    health.DefaultConfig(),
+		ProberConfig:    health.DefaultCheckerConfig(),
+	}
+	pxy := NewReverseProxy(cfg, clk, nil)
+	sel := NewLeastConnectionsSelector(pxy.LoadTracker())
+	pxy.SetSelector(sel)
+	// Registry defaults new targets to HEALTHY, and the background prober
+	// is never started in this test, so the target stays selectable —
+	// selection must succeed and then the transport RoundTrip must fail.
+
+	if err := pxy.Start(); err != nil {
+		t.Fatalf("failed to start proxy: %v", err)
+	}
+	defer pxy.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	for i := 0; i < 5; i++ {
+		resp, err := client.Get(pxy.URL() + "/data")
+		if err != nil {
+			t.Fatalf("request %d: client-level error (expected a 502 from the proxy, not a transport error): %v", i, err)
+		}
+		_, _ = io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		if resp.StatusCode != http.StatusBadGateway {
+			t.Fatalf("request %d: expected 502 Bad Gateway from unreachable upstream, got %d", i, resp.StatusCode)
+		}
+
+		if got := pxy.LoadTracker().Get(unreachable); got != 0 {
+			t.Fatalf("request %d: expected in-flight count 0 after upstream error, got %d — decrement leaked on the error path",
+				i, got)
+		}
+	}
+}

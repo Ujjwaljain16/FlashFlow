@@ -31,6 +31,7 @@ const DefaultMaxEvents = 1_000_000
 type Engine struct {
 	clock *clock.MockClock
 	queue *EventQueue
+	trace Trace
 
 	processed uint64
 	maxEvents uint64
@@ -43,6 +44,19 @@ func NewEngine(start clock.VirtualTime) *Engine {
 		queue:     NewEventQueue(),
 		maxEvents: DefaultMaxEvents,
 	}
+}
+
+// Record appends one entry to the engine's trace, stamped with the
+// engine's current virtual time. Call this from event callbacks to build
+// up the experiment's execution history — see TraceEvent's doc comment
+// for what belongs in typ/entity/fields.
+func (e *Engine) Record(typ, entity string, fields map[string]any) {
+	e.trace.record(e.clock.Now(), typ, entity, fields)
+}
+
+// Trace returns the engine's recorded trace so far.
+func (e *Engine) Trace() *Trace {
+	return &e.trace
 }
 
 // SetMaxEvents overrides DefaultMaxEvents.

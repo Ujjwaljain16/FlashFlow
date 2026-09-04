@@ -359,3 +359,91 @@ func TestProxy_LeastConnections_DecrementsAfterUpstreamError(t *testing.T) {
 		}
 	}
 }
+
+// TestProxy_EWMA_ObservesLatencyOnSuccess proves the real ServeHTTP
+// lifecycle records a latency observation after an ordinary successful
+// round trip, using the origin's artificial-delay hook to make the
+// expected latency easy to bound.
+func TestProxy_EWMA_ObservesLatencyOnSuccess(t *testing.T) {
+	origin := topology.NewOriginServer(topology.OriginConfig{Instance: "origin-ewma", DefaultDelay: 20 * time.Millisecond})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	clk := clock.NewWallClock()
+	cfg := Config{
+		Targets:         []string{origin.URL()},
+		TransportConfig: transport.DefaultTransportConfig("proxy_upstream"),
+		HealthConfig:    health.DefaultConfig(),
+		ProberConfig:    health.DefaultCheckerConfig(),
+	}
+	pxy := NewReverseProxy(cfg, clk, nil)
+	pxy.SetSelector(NewEWMASelector(pxy.LatencyTracker()))
+
+	if err := pxy.Start(); err != nil {
+		t.Fatalf("failed to start proxy: %v", err)
+	}
+	defer pxy.Stop(context.Background())
+
+	if _, ok := pxy.LatencyTracker().Estimate(origin.URL()); ok {
+		t.Fatalf("expected no latency estimate before any request")
+	}
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Get(pxy.URL() + "/data")
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	_, _ = io.ReadAll(resp.Body)
+	_ = resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200, got %d", resp.StatusCode)
+	}
+
+	got, ok := pxy.LatencyTracker().Estimate(origin.URL())
+	if !ok {
+		t.Fatalf("expected a latency observation to have been recorded after a successful request")
+	}
+	if got < 20*time.Millisecond {
+		t.Fatalf("expected observed latency to be at least the origin's 20ms artificial delay, got %v", got)
+	}
+}
+
+// TestProxy_EWMA_NoObservationOnUpstreamError proves a RoundTrip failure
+// does NOT produce a latency observation — the deliberate design decision
+// documented on LatencyTracker (failures are a health concern, not a
+// latency concern).
+func TestProxy_EWMA_NoObservationOnUpstreamError(t *testing.T) {
+	const unreachable = "http://127.0.0.1:59999"
+
+	clk := clock.NewWallClock()
+	cfg := Config{
+		Targets:         []string{unreachable},
+		TransportConfig: transport.DefaultTransportConfig("proxy_upstream"),
+		HealthConfig:    health.DefaultConfig(),
+		ProberConfig:    health.DefaultCheckerConfig(),
+	}
+	pxy := NewReverseProxy(cfg, clk, nil)
+	pxy.SetSelector(NewEWMASelector(pxy.LatencyTracker()))
+
+	if err := pxy.Start(); err != nil {
+		t.Fatalf("failed to start proxy: %v", err)
+	}
+	defer pxy.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Get(pxy.URL() + "/data")
+	if err != nil {
+		t.Fatalf("client-level error (expected a 502 from the proxy): %v", err)
+	}
+	_, _ = io.ReadAll(resp.Body)
+	_ = resp.Body.Close()
+	if resp.StatusCode != http.StatusBadGateway {
+		t.Fatalf("expected 502 Bad Gateway, got %d", resp.StatusCode)
+	}
+
+	if _, ok := pxy.LatencyTracker().Estimate(unreachable); ok {
+		t.Fatalf("expected no latency observation to be recorded for a failed round trip")
+	}
+}

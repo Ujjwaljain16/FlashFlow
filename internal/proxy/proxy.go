@@ -39,22 +39,27 @@ type Config struct {
 	HealthConfig       health.Config             `json:"health_config"`
 	ProberConfig       health.CheckerConfig      `json:"prober_config"`
 	ExposeDebugHeaders bool                      `json:"expose_debug_headers"`
+	// EWMAAlpha is the always-present LatencyTracker's smoothing factor;
+	// 0 uses defaultEWMAAlpha (see NewLatencyTracker). Harmless for
+	// selectors that don't read LatencyTracker.
+	EWMAAlpha float64 `json:"ewma_alpha"`
 }
 
 // ReverseProxy is a custom, observable HTTP reverse proxy.
 type ReverseProxy struct {
-	mu          sync.RWMutex
-	config      Config
-	clock       clock.Clock
-	registry    *health.Registry
-	checker     *health.Checker
-	selector    TargetSelector
-	loadTracker *LoadTracker
-	transport   *transport.TrackedTransport
-	server      *http.Server
-	listener    net.Listener
-	addrPort    string
-	onRecord    TelemetryCallback
+	mu             sync.RWMutex
+	config         Config
+	clock          clock.Clock
+	registry       *health.Registry
+	checker        *health.Checker
+	selector       TargetSelector
+	loadTracker    *LoadTracker
+	latencyTracker *LatencyTracker
+	transport      *transport.TrackedTransport
+	server         *http.Server
+	listener       net.Listener
+	addrPort       string
+	onRecord       TelemetryCallback
 }
 
 // NewReverseProxy creates a fully configured ReverseProxy instance.
@@ -80,13 +85,14 @@ func NewReverseProxy(cfg Config, clk clock.Clock, sel TargetSelector) *ReversePr
 	tt := transport.NewTrackedTransport(tCfg)
 
 	return &ReverseProxy{
-		config:      cfg,
-		clock:       clk,
-		registry:    reg,
-		checker:     chk,
-		selector:    sel,
-		loadTracker: NewLoadTracker(),
-		transport:   tt,
+		config:         cfg,
+		clock:          clk,
+		registry:       reg,
+		checker:        chk,
+		selector:       sel,
+		loadTracker:    NewLoadTracker(),
+		latencyTracker: NewLatencyTracker(cfg.EWMAAlpha),
+		transport:      tt,
 	}
 }
 
@@ -119,6 +125,13 @@ func (p *ReverseProxy) Registry() *health.Registry {
 // SetSelector — must be the same instance the proxy writes to.
 func (p *ReverseProxy) LoadTracker() *LoadTracker {
 	return p.loadTracker
+}
+
+// LatencyTracker exposes the tracker ServeHTTP updates, for constructing
+// a latency-aware TargetSelector (e.g. EWMASelector) to attach via
+// SetSelector — must be the same instance the proxy writes to.
+func (p *ReverseProxy) LatencyTracker() *LatencyTracker {
+	return p.latencyTracker
 }
 
 // ServeHTTP handles incoming client requests, executes forwarding, and measures latencies.
@@ -263,6 +276,10 @@ func (p *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	p.registry.RecordAppResult(target, resp.StatusCode)
+	// Recorded regardless of resp.StatusCode — a non-2xx response still
+	// measured real latency; only a RoundTrip error (handled above,
+	// returns before this line) skips it. See LatencyTracker for why.
+	p.latencyTracker.Observe(target, t3.Sub(t2))
 
 	// Copy only end-to-end response headers back to downstream client
 	httpx.CopyEndToEndHeaders(w.Header(), resp.Header)

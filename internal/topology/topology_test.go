@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"flashflow/internal/cache"
 	"flashflow/internal/clock"
 	"flashflow/internal/httpx"
 	"flashflow/internal/transport"
@@ -400,5 +401,200 @@ func TestEdgeServer_Cache_DisabledByDefault(t *testing.T) {
 
 	if stats := edge.TransportStats(); stats.RequestsCompleted != 2 {
 		t.Fatalf("expected both requests to reach origin, got %d", stats.RequestsCompleted)
+	}
+}
+
+// TestEdgeServer_Coalesce_ConcurrentMissesShareOneUpstreamFetch is the
+// direct EdgeServer-level version of Experiment 004-C's stampede: a burst
+// of concurrent requests for the same never-cached key must collapse into
+// exactly one origin fetch when coalescing is enabled.
+func TestEdgeServer_Coalesce_ConcurrentMissesShareOneUpstreamFetch(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-coalesce-hit", DefaultDelay: 50 * time.Millisecond})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:  "edge-coalesce-hit",
+		OriginURL: origin.URL(),
+		CacheTTL:  time.Minute,
+		Coalesce:  true,
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 5 * time.Second}
+	const n = 20
+	var wg sync.WaitGroup
+	cacheStatuses := make([]string, n)
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			resp, err := client.Get(edge.URL() + "/data/hot")
+			if err != nil {
+				t.Errorf("request %d failed: %v", i, err)
+				return
+			}
+			defer resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				t.Errorf("request %d: expected 200, got %d", i, resp.StatusCode)
+			}
+			cacheStatuses[i] = resp.Header.Get(httpx.HeaderCacheStatus)
+		}(i)
+	}
+	wg.Wait()
+
+	if stats := edge.TransportStats(); stats.RequestsCompleted != 1 {
+		t.Fatalf("expected exactly one upstream fetch for %d coalesced misses, got %d", n, stats.RequestsCompleted)
+	}
+
+	leaders, shared := 0, 0
+	for i, s := range cacheStatuses {
+		switch s {
+		case "MISS":
+			leaders++
+		case "MISS-COALESCED":
+			shared++
+		default:
+			t.Fatalf("request %d: unexpected cache status %q", i, s)
+		}
+	}
+	if leaders != 1 || shared != n-1 {
+		t.Fatalf("expected 1 leader (MISS) and %d waiters (MISS-COALESCED), got %d and %d", n-1, leaders, shared)
+	}
+
+	coalesceStats := edge.CoalesceStats()
+	if coalesceStats.Leads != 1 || coalesceStats.Shared != n-1 {
+		t.Fatalf("expected CoalesceStats{Leads:1, Shared:%d}, got %+v", n-1, coalesceStats)
+	}
+}
+
+// TestEdgeServer_Coalesce_DisabledByDefault proves Coalesce is opt-in:
+// with CacheTTL set but Coalesce left false, a concurrent burst against a
+// cold key produces duplicate upstream fetches, same as Stage 4 step 3's
+// stampede finding before coalescing existed at all.
+func TestEdgeServer_Coalesce_DisabledByDefault(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-no-coalesce", DefaultDelay: 50 * time.Millisecond})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:  "edge-no-coalesce",
+		OriginURL: origin.URL(),
+		CacheTTL:  time.Minute,
+		// Coalesce intentionally left at its zero value (false).
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 5 * time.Second}
+	const n = 20
+	var wg sync.WaitGroup
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			resp, err := client.Get(edge.URL() + "/data/hot")
+			if err == nil {
+				resp.Body.Close()
+			}
+		}()
+	}
+	wg.Wait()
+
+	if stats := edge.TransportStats(); stats.RequestsCompleted <= 1 {
+		t.Fatalf("expected multiple duplicate upstream fetches with coalescing disabled, got %d", stats.RequestsCompleted)
+	}
+	if coalesceStats := edge.CoalesceStats(); coalesceStats != (cache.CoalesceStats{}) {
+		t.Fatalf("expected zero CoalesceStats when coalescing is disabled, got %+v", coalesceStats)
+	}
+}
+
+// TestEdgeServer_Coalesce_LeaderCancellationDoesNotAbortWaiters is the
+// master-context invariant that motivates using context.Background() for
+// the shared fetch instead of the leader's own r.Context(): the leader's
+// downstream client disconnecting must not cancel the fetch for waiters
+// still behind it.
+func TestEdgeServer_Coalesce_LeaderCancellationDoesNotAbortWaiters(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-coalesce-cancel", DefaultDelay: 150 * time.Millisecond})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:  "edge-coalesce-cancel",
+		OriginURL: origin.URL(),
+		CacheTTL:  time.Minute,
+		Coalesce:  true,
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 5 * time.Second}
+
+	leaderCtx, cancelLeader := context.WithCancel(context.Background())
+	leaderDone := make(chan struct{})
+	go func() {
+		defer close(leaderDone)
+		req, _ := http.NewRequestWithContext(leaderCtx, http.MethodGet, edge.URL()+"/data/hot", nil)
+		resp, err := client.Do(req)
+		if err == nil {
+			resp.Body.Close()
+		}
+		// The leader's own request is expected to fail client-side once
+		// cancelled below; that failure is not what this test checks.
+	}()
+
+	// Give the leader time to register itself as in-flight and start the
+	// (150ms) origin fetch before cutting it off.
+	time.Sleep(30 * time.Millisecond)
+	cancelLeader()
+
+	const waiters = 5
+	var wg sync.WaitGroup
+	statuses := make([]int, waiters)
+	for i := 0; i < waiters; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			resp, err := client.Get(edge.URL() + "/data/hot")
+			if err != nil {
+				t.Errorf("waiter %d failed: %v", i, err)
+				return
+			}
+			defer resp.Body.Close()
+			statuses[i] = resp.StatusCode
+		}(i)
+	}
+	wg.Wait()
+	<-leaderDone
+
+	for i, code := range statuses {
+		if code != http.StatusOK {
+			t.Fatalf("waiter %d: expected 200 despite the leader's cancellation, got %d", i, code)
+		}
+	}
+	if stats := edge.TransportStats(); stats.RequestsCompleted != 1 {
+		t.Fatalf("expected the leader's cancellation to still leave exactly one completed upstream fetch, got %d", stats.RequestsCompleted)
 	}
 }

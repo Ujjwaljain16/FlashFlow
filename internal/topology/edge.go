@@ -30,6 +30,12 @@ type EdgeConfig struct {
 	// this same struct). 0 (the default) means no caching at all — every
 	// existing Stage 2/3 caller is unaffected.
 	CacheTTL time.Duration `json:"cache_ttl"`
+	// Coalesce deduplicates concurrent cache misses for the same key into
+	// a single origin fetch. Only meaningful when CacheTTL > 0; ignored
+	// otherwise. Kept as a separate opt-in flag (rather than always-on
+	// once caching is enabled) so experiments can hold everything else
+	// fixed and compare with/without coalescing directly.
+	Coalesce bool `json:"coalesce"`
 	// Clock is used for cache TTL checks. Defaults to WallClock if nil.
 	Clock clock.Clock `json:"-"`
 }
@@ -47,6 +53,7 @@ type EdgeServer struct {
 	artificialDelay time.Duration
 	clock           clock.Clock
 	cache           *cache.Cache
+	coalescer       *cache.Coalescer
 }
 
 // NewEdgeServer constructs an Edge forwarding server.
@@ -75,8 +82,12 @@ func NewEdgeServer(cfg EdgeConfig) (*EdgeServer, error) {
 	}
 
 	var c *cache.Cache
+	var co *cache.Coalescer
 	if cfg.CacheTTL > 0 {
 		c = cache.New(clk, cfg.CacheTTL)
+		if cfg.Coalesce {
+			co = cache.NewCoalescer()
+		}
 	}
 
 	return &EdgeServer{
@@ -87,6 +98,7 @@ func NewEdgeServer(cfg EdgeConfig) (*EdgeServer, error) {
 		artificialDelay: cfg.DefaultDelay,
 		clock:           clk,
 		cache:           c,
+		coalescer:       co,
 	}, nil
 }
 
@@ -109,6 +121,36 @@ func (e *EdgeServer) CacheStats() cache.Stats {
 		return cache.Stats{}
 	}
 	return e.cache.Snapshot()
+}
+
+// CoalesceStats returns the edge's request-coalescing activity counters,
+// or a zero CoalesceStats if this edge has coalescing disabled.
+func (e *EdgeServer) CoalesceStats() cache.CoalesceStats {
+	if e.coalescer == nil {
+		return cache.CoalesceStats{}
+	}
+	return e.coalescer.Snapshot()
+}
+
+// resolveDelay applies the same per-request delay overrides (query param,
+// then header) on top of the configured default, shared by both the
+// cacheable and non-cacheable request paths.
+func (e *EdgeServer) resolveDelay(r *http.Request) time.Duration {
+	e.mu.RLock()
+	delay := e.artificialDelay
+	e.mu.RUnlock()
+
+	if delayParam := r.URL.Query().Get("edge_delay_ms"); delayParam != "" {
+		if ms, err := strconv.Atoi(delayParam); err == nil && ms > 0 {
+			delay = time.Duration(ms) * time.Millisecond
+		}
+	}
+	if delayHeader := r.Header.Get("X-Edge-Delay-Ms"); delayHeader != "" {
+		if ms, err := strconv.Atoi(delayHeader); err == nil && ms > 0 {
+			delay = time.Duration(ms) * time.Millisecond
+		}
+	}
+	return delay
 }
 
 // Handler returns the HTTP router for the edge server.
@@ -154,30 +196,98 @@ func (e *EdgeServer) Handler() http.Handler {
 			}
 		}
 
-		// 1. Artificial application delay (e.g. Experiment 002-D)
-		e.mu.RLock()
-		delay := e.artificialDelay
-		e.mu.RUnlock()
+		delay := e.resolveDelay(r)
 
-		if delayParam := r.URL.Query().Get("edge_delay_ms"); delayParam != "" {
-			if ms, err := strconv.Atoi(delayParam); err == nil && ms > 0 {
-				delay = time.Duration(ms) * time.Millisecond
+		if cacheable {
+			// The fetch — including the artificial delay — must happen at
+			// most once no matter how many concurrent requests miss on
+			// this exact key. It deliberately builds its outbound request
+			// on context.Background() rather than r.Context(): this fetch
+			// may end up shared by other waiting callers, and the leader's
+			// own client disconnecting must not cancel work they still
+			// need. See cache.Coalescer's doc comment.
+			fetch := func() (cache.Entry, error) {
+				if delay > 0 {
+					time.Sleep(delay)
+				}
+
+				outURL := *e.originURL
+				outURL.Path = r.URL.Path
+				outURL.RawQuery = r.URL.RawQuery
+
+				outReq, err := http.NewRequestWithContext(context.Background(), r.Method, outURL.String(), nil)
+				if err != nil {
+					return cache.Entry{}, fmt.Errorf("failed to construct origin request: %w", err)
+				}
+				httpx.CopyEndToEndHeaders(outReq.Header, r.Header)
+				outReq.Header.Set(httpx.HeaderRequestID, reqID)
+				outReq.Header.Set(httpx.HeaderEdgeID, e.config.Instance)
+
+				resp, err := e.httpClient.Do(outReq)
+				if err != nil {
+					return cache.Entry{}, fmt.Errorf("origin unreachable: %w", err)
+				}
+				defer resp.Body.Close()
+
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					return cache.Entry{}, fmt.Errorf("failed to read origin response: %w", err)
+				}
+
+				entryHeaders := http.Header{}
+				httpx.CopyEndToEndHeaders(entryHeaders, resp.Header)
+				entry := cache.Entry{
+					StatusCode: resp.StatusCode,
+					Header:     entryHeaders,
+					Body:       body,
+					StoredAt:   e.clock.Now(),
+				}
+				if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+					e.cache.Set(cacheKey, &entry)
+				}
+				return entry, nil
 			}
-		}
-		if delayHeader := r.Header.Get("X-Edge-Delay-Ms"); delayHeader != "" {
-			if ms, err := strconv.Atoi(delayHeader); err == nil && ms > 0 {
-				delay = time.Duration(ms) * time.Millisecond
+
+			var entry cache.Entry
+			var err error
+			var shared bool
+			if e.coalescer != nil {
+				entry, err, shared = e.coalescer.Do(cacheKey, fetch)
+			} else {
+				entry, err = fetch()
 			}
+			if err != nil {
+				_ = httpx.WriteJSON(w, http.StatusBadGateway, httpx.ErrorResponse{
+					Error:     err.Error(),
+					Code:      http.StatusBadGateway,
+					RequestID: reqID,
+				})
+				return
+			}
+
+			status := "MISS"
+			if shared {
+				status = "MISS-COALESCED"
+			}
+			httpx.CopyEndToEndHeaders(w.Header(), entry.Header)
+			w.Header().Set(httpx.HeaderRequestID, reqID)
+			w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
+			w.Header().Set(httpx.HeaderCacheStatus, status)
+			w.WriteHeader(entry.StatusCode)
+			_, _ = w.Write(entry.Body)
+			return
 		}
+
+		// Non-cacheable path: stream straight through, exactly as before
+		// caching or coalescing existed. Never coalesced — there is no
+		// cache key to dedupe on.
+		outURL := *e.originURL
+		outURL.Path = r.URL.Path
+		outURL.RawQuery = r.URL.RawQuery
 
 		if delay > 0 {
 			time.Sleep(delay)
 		}
-
-		// 2. Build upstream request to origin
-		outURL := *e.originURL
-		outURL.Path = r.URL.Path
-		outURL.RawQuery = r.URL.RawQuery
 
 		outReq, err := http.NewRequestWithContext(r.Context(), r.Method, outURL.String(), r.Body)
 		if err != nil {
@@ -188,13 +298,10 @@ func (e *EdgeServer) Handler() http.Handler {
 			})
 			return
 		}
-
-		// Copy headers (stripping hop-by-hop headers per RFC 7230)
 		httpx.CopyEndToEndHeaders(outReq.Header, r.Header)
 		outReq.Header.Set(httpx.HeaderRequestID, reqID)
 		outReq.Header.Set(httpx.HeaderEdgeID, e.config.Instance)
 
-		// 3. Dispatch to origin
 		resp, err := e.httpClient.Do(outReq)
 		if err != nil {
 			_ = httpx.WriteJSON(w, http.StatusBadGateway, httpx.ErrorResponse{
@@ -206,37 +313,6 @@ func (e *EdgeServer) Handler() http.Handler {
 		}
 		defer resp.Body.Close()
 
-		// 4a. Cacheable success: buffer the body so it can be stored and
-		// written to the client from the same bytes, then fill the cache
-		// before responding.
-		if cacheable && resp.StatusCode >= 200 && resp.StatusCode < 300 {
-			body, readErr := io.ReadAll(resp.Body)
-			if readErr == nil {
-				entryHeaders := http.Header{}
-				httpx.CopyEndToEndHeaders(entryHeaders, resp.Header)
-				e.cache.Set(cacheKey, &cache.Entry{
-					StatusCode: resp.StatusCode,
-					Header:     entryHeaders,
-					Body:       body,
-					StoredAt:   e.clock.Now(),
-				})
-			}
-			// readErr != nil: body read failed partway through. We still
-			// respond with whatever bytes were captured (best-effort,
-			// matching this file's existing error-handling level for
-			// stream failures) but skip caching rather than store a
-			// possibly-truncated entry.
-			httpx.CopyEndToEndHeaders(w.Header(), resp.Header)
-			w.Header().Set(httpx.HeaderRequestID, reqID)
-			w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
-			w.Header().Set(httpx.HeaderCacheStatus, "MISS")
-			w.WriteHeader(resp.StatusCode)
-			_, _ = w.Write(body)
-			return
-		}
-
-		// 4b. Non-cacheable path: stream straight through, as before
-		// caching existed.
 		httpx.CopyEndToEndHeaders(w.Header(), resp.Header)
 		w.Header().Set(httpx.HeaderRequestID, reqID)
 		w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)

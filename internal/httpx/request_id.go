@@ -21,6 +21,14 @@ const (
 
 	// HeaderUpstreamLatency is an optional debug header showing upstream response time.
 	HeaderUpstreamLatency = "X-Upstream-Latency-Ms"
+
+	// HeaderCacheStatus reports HIT or MISS for a cache-enabled edge's
+	// response. Set only when the edge has caching enabled and the
+	// request is eligible for the cache to have an opinion about;
+	// absent for non-cacheable methods/responses passing through
+	// unaffected. A second, independent way to verify cache behavior
+	// beyond the Cache type's own internal Stats.
+	HeaderCacheStatus = "X-Cache-Status"
 )
 
 // GenerateRequestID generates an opaque 16-byte cryptographically secure random ID

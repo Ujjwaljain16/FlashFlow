@@ -12,6 +12,8 @@ import (
 	"sync"
 	"time"
 
+	"flashflow/internal/cache"
+	"flashflow/internal/clock"
 	"flashflow/internal/httpx"
 	"flashflow/internal/transport"
 )
@@ -23,6 +25,13 @@ type EdgeConfig struct {
 	OriginURL       string                    `json:"origin_url"`
 	DefaultDelay    time.Duration             `json:"default_delay"`
 	TransportConfig transport.TransportConfig `json:"transport_config"`
+	// CacheTTL enables a fixed-TTL response cache for GET requests when
+	// > 0 (matching DefaultDelay's existing "0 means off" convention on
+	// this same struct). 0 (the default) means no caching at all — every
+	// existing Stage 2/3 caller is unaffected.
+	CacheTTL time.Duration `json:"cache_ttl"`
+	// Clock is used for cache TTL checks. Defaults to WallClock if nil.
+	Clock clock.Clock `json:"-"`
 }
 
 // EdgeServer is a thin forwarding service with explicit instance identity.
@@ -36,6 +45,8 @@ type EdgeServer struct {
 	trackedTrans    *transport.TrackedTransport
 	httpClient      *http.Client
 	artificialDelay time.Duration
+	clock           clock.Clock
+	cache           *cache.Cache
 }
 
 // NewEdgeServer constructs an Edge forwarding server.
@@ -58,12 +69,24 @@ func NewEdgeServer(cfg EdgeConfig) (*EdgeServer, error) {
 	}
 	tt := transport.NewTrackedTransport(tCfg)
 
+	clk := cfg.Clock
+	if clk == nil {
+		clk = clock.NewWallClock()
+	}
+
+	var c *cache.Cache
+	if cfg.CacheTTL > 0 {
+		c = cache.New(clk, cfg.CacheTTL)
+	}
+
 	return &EdgeServer{
 		config:          cfg,
 		originURL:       u,
 		trackedTrans:    tt,
 		httpClient:      tt.HTTPClient(10 * time.Second),
 		artificialDelay: cfg.DefaultDelay,
+		clock:           clk,
+		cache:           c,
 	}, nil
 }
 
@@ -77,6 +100,15 @@ func (e *EdgeServer) SetArtificialDelay(d time.Duration) {
 // TransportStats returns the connection metrics between this Edge and Origin.
 func (e *EdgeServer) TransportStats() transport.TransportStats {
 	return e.trackedTrans.Snapshot()
+}
+
+// CacheStats returns the edge's cache activity counters, or a zero Stats
+// if this edge has no cache enabled (CacheTTL <= 0).
+func (e *EdgeServer) CacheStats() cache.Stats {
+	if e.cache == nil {
+		return cache.Stats{}
+	}
+	return e.cache.Snapshot()
 }
 
 // Handler returns the HTTP router for the edge server.
@@ -100,6 +132,27 @@ func (e *EdgeServer) Handler() http.Handler {
 		reqID := httpx.ExtractOrGenerateRequestID(r)
 		w.Header().Set(httpx.HeaderRequestID, reqID)
 		w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
+
+		// Cache lookup happens before anything else — including the
+		// artificial delay below. A hit means no origin round trip
+		// happens at all, so there is nothing for that delay to be
+		// simulating latency for. Whether a hit should still cost some
+		// minimal edge-side time of its own is a reasonable question for
+		// a later experiment, not one this increment answers.
+		cacheable := e.cache != nil && r.Method == http.MethodGet
+		var cacheKey string
+		if cacheable {
+			cacheKey = cache.Key(r.Method, r.URL.Path, r.URL.RawQuery)
+			if entry, ok := e.cache.Get(cacheKey); ok {
+				httpx.CopyEndToEndHeaders(w.Header(), entry.Header)
+				w.Header().Set(httpx.HeaderRequestID, reqID)
+				w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
+				w.Header().Set(httpx.HeaderCacheStatus, "HIT")
+				w.WriteHeader(entry.StatusCode)
+				_, _ = w.Write(entry.Body)
+				return
+			}
+		}
 
 		// 1. Artificial application delay (e.g. Experiment 002-D)
 		e.mu.RLock()
@@ -153,7 +206,37 @@ func (e *EdgeServer) Handler() http.Handler {
 		}
 		defer resp.Body.Close()
 
-		// 4. Stream response headers and body back
+		// 4a. Cacheable success: buffer the body so it can be stored and
+		// written to the client from the same bytes, then fill the cache
+		// before responding.
+		if cacheable && resp.StatusCode >= 200 && resp.StatusCode < 300 {
+			body, readErr := io.ReadAll(resp.Body)
+			if readErr == nil {
+				entryHeaders := http.Header{}
+				httpx.CopyEndToEndHeaders(entryHeaders, resp.Header)
+				e.cache.Set(cacheKey, &cache.Entry{
+					StatusCode: resp.StatusCode,
+					Header:     entryHeaders,
+					Body:       body,
+					StoredAt:   e.clock.Now(),
+				})
+			}
+			// readErr != nil: body read failed partway through. We still
+			// respond with whatever bytes were captured (best-effort,
+			// matching this file's existing error-handling level for
+			// stream failures) but skip caching rather than store a
+			// possibly-truncated entry.
+			httpx.CopyEndToEndHeaders(w.Header(), resp.Header)
+			w.Header().Set(httpx.HeaderRequestID, reqID)
+			w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
+			w.Header().Set(httpx.HeaderCacheStatus, "MISS")
+			w.WriteHeader(resp.StatusCode)
+			_, _ = w.Write(body)
+			return
+		}
+
+		// 4b. Non-cacheable path: stream straight through, as before
+		// caching existed.
 		httpx.CopyEndToEndHeaders(w.Header(), resp.Header)
 		w.Header().Set(httpx.HeaderRequestID, reqID)
 		w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)

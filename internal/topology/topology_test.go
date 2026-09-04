@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"net"
 	"net/http"
 	"sync"
 	"testing"
@@ -596,5 +597,128 @@ func TestEdgeServer_Coalesce_LeaderCancellationDoesNotAbortWaiters(t *testing.T)
 	}
 	if stats := edge.TransportStats(); stats.RequestsCompleted != 1 {
 		t.Fatalf("expected the leader's cancellation to still leave exactly one completed upstream fetch, got %d", stats.RequestsCompleted)
+	}
+}
+
+// TestEdgeServer_Coalesce_FailureCleansUpAndRecovers is the real-failure
+// counterpart to coalesce_test.go's synthetic error/panic cases: origin is
+// actually stopped (a genuine connection-refused failure, not a mocked
+// error), so a coalesced burst for a never-cached key must fail cleanly
+// with the same failure shared by every waiter, the key must not be left
+// stuck once the burst is over, and the same key must fetch successfully
+// again once origin comes back.
+func TestEdgeServer_Coalesce_FailureCleansUpAndRecovers(t *testing.T) {
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to reserve a free port: %v", err)
+	}
+	fixedAddr := ln.Addr().String()
+	ln.Close()
+
+	origin := NewOriginServer(OriginConfig{Addr: fixedAddr, Instance: "origin-coalesce-fail"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:  "edge-coalesce-fail",
+		OriginURL: origin.URL(),
+		CacheTTL:  time.Minute,
+		Coalesce:  true,
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	// Sanity-check origin is actually healthy before injecting any failure,
+	// so a later failure can't be mistaken for a setup bug.
+	sanity, err := client.Get(edge.URL() + "/data/outage-key")
+	if err != nil || sanity.StatusCode != http.StatusOK {
+		t.Fatalf("expected the pre-outage sanity request to succeed, err=%v resp=%v", err, sanity)
+	}
+	sanity.Body.Close()
+
+	if err := origin.Stop(context.Background()); err != nil {
+		t.Fatalf("failed to stop origin: %v", err)
+	}
+
+	// A connection-refused failure returns almost instantly, so without
+	// some delay the leader's fetch could fail and clear the in-flight
+	// entry before the rest of the burst even reaches Do — some callers
+	// would start their own leader attempt instead of coalescing. An
+	// artificial edge-side delay (origin's own delay is moot while it's
+	// down) widens that window, the same trick 004-C used via Origin's
+	// delay to make sure a burst actually races concurrently.
+	edge.SetArtificialDelay(50 * time.Millisecond)
+
+	// A concurrent burst for a different, never-cached key while origin is
+	// down: coalescing should still collapse this into one dial attempt,
+	// and the resulting failure should be shared by every caller.
+	const n = 10
+	var wg sync.WaitGroup
+	statuses := make([]int, n)
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			resp, err := client.Get(edge.URL() + "/data/outage-burst")
+			if err != nil {
+				statuses[i] = -1
+				return
+			}
+			defer resp.Body.Close()
+			statuses[i] = resp.StatusCode
+		}(i)
+	}
+	wg.Wait()
+
+	for i, code := range statuses {
+		if code != http.StatusBadGateway {
+			t.Fatalf("request %d during outage: expected 502, got %d", i, code)
+		}
+	}
+	// One lead from the pre-outage sanity request (a different key, so it
+	// coalesced alone) plus one lead from the burst; every burst caller,
+	// leader included, counted as a failure.
+	if stats := edge.CoalesceStats(); stats.Leads != 2 || stats.Shared != n-1 || stats.Failures != n {
+		t.Fatalf("expected 2 leads, %d shared, %d failures, got %+v", n-1, n, stats)
+	}
+	if stats := edge.TransportStats(); stats.FailedDials < 1 {
+		t.Fatalf("expected at least one failed dial while origin was down, got %+v", stats)
+	}
+
+	// The in-flight entry for outage-burst must not be left stuck: a fresh
+	// request for the same key, still during the outage, must reach a
+	// fresh attempt (fail again cleanly) rather than hang forever.
+	resp2, err := client.Get(edge.URL() + "/data/outage-burst")
+	if err != nil {
+		t.Fatalf("post-burst request during outage failed unexpectedly: %v", err)
+	}
+	defer resp2.Body.Close()
+	if resp2.StatusCode != http.StatusBadGateway {
+		t.Fatalf("expected the post-burst request to also fail with 502, got %d", resp2.StatusCode)
+	}
+
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to restart origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	resp3, err := client.Get(edge.URL() + "/data/outage-burst")
+	if err != nil {
+		t.Fatalf("post-recovery request failed: %v", err)
+	}
+	defer resp3.Body.Close()
+	if resp3.StatusCode != http.StatusOK {
+		t.Fatalf("expected the same key to succeed once origin recovered, got %d", resp3.StatusCode)
+	}
+	if got := resp3.Header.Get(httpx.HeaderCacheStatus); got != "MISS" {
+		t.Fatalf("expected a fresh MISS on recovery (nothing was ever successfully cached for this key), got %q", got)
 	}
 }

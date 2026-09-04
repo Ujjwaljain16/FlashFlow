@@ -29,10 +29,16 @@ type TargetHealth struct {
 }
 
 // Config defines thresholds for health state transitions.
+//
+// DegradedErrorRate is evaluated against cumulative lifetime stats
+// (TotalAppErrors/TotalAppRequests since registration), not a rolling
+// window — deliberately simple for Stage 2, but it means a target can
+// stay effectively degraded long after the underlying problem clears,
+// since old errors dilute slowly. Rolling-window rate is deferred.
 type Config struct {
 	UnhealthyFailThreshold int     `json:"unhealthy_fail_threshold"`  // Probe failures to become UNHEALTHY (default 2)
 	RecoveryPassThreshold  int     `json:"recovery_pass_threshold"`   // Probe successes to become HEALTHY from RECOVERING (default 2)
-	DegradedErrorRate      float64 `json:"degraded_error_rate"`       // Application 5xx error rate threshold (default 0.20 / 20%)
+	DegradedErrorRate      float64 `json:"degraded_error_rate"`       // Cumulative lifetime 5xx error rate threshold (default 0.20)
 	MinAppRequestsForRate  uint64  `json:"min_app_requests_for_rate"` // Min requests before evaluating error rate (default 10)
 }
 
@@ -148,6 +154,9 @@ func (r *Registry) RecordProbeResult(target string, success bool) State {
 }
 
 // RecordAppResult records live application traffic status codes (e.g. 502/503/500).
+//
+// TotalAppRequests/TotalAppErrors accumulate for the lifetime of the target
+// (see Config doc comment) — this is not a rolling window.
 func (r *Registry) RecordAppResult(target string, statusCode int) State {
 	r.mu.Lock()
 	defer r.mu.Unlock()

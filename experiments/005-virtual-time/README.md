@@ -105,3 +105,26 @@ Raw data: `experiments/005-virtual-time/results/005C-virtual-cache-expiration.js
 ### Interpretation
 
 This is the cleanest possible confirmation of the Phase A/B audit's central claim: Stage 2–4's discipline of injecting `clock.Clock` rather than reaching for `time.Now()` wasn't just tidy engineering, it was the specific decision that made this experiment nearly free to write. Nothing about `cache.Cache`'s TTL logic, lazy eviction, or stats tracking had any idea it was running under a virtual clock instead of a real one — which is exactly the point. The domain behavior and the execution environment were already separated; Stage 5 just proved it.
+
+---
+
+## 6. Results: Experiment 005-D — Deterministic Failure Schedule
+
+**Hypothesis (H4)**: see `hypotheses.md`. `edge-2` fails at t=5s, recovers at t=10s, probed every 1s via a virtual `Ticker`; `health.Registry` reused unmodified with `health.DefaultConfig()` (fail threshold 2, recovery-pass threshold 2). The failure and recovery timestamps were deliberately chosen to coincide exactly with a scheduled probe tick.
+
+| Virtual time | New state |
+|---:|---|
+| 6000ms | UNHEALTHY |
+| 10000ms | RECOVERING |
+| 11000ms | HEALTHY |
+
+All 20 runs produced this exact 3-transition sequence. Raw data: `experiments/005-virtual-time/results/005D-failure-schedule.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed**: the transition timestamps are exactly what the probe interval and thresholds predict — the first failed probe at t=5000ms (silent, threshold not yet met) plus a second failed probe at t=6000ms crosses the fail threshold; the first passing probe at t=10000ms moves UNHEALTHY→RECOVERING, and the second passing probe at t=11000ms crosses the recovery threshold into HEALTHY. Identical across all 20 runs.
+2. **Prediction 2 confirmed, and mechanistically explained, not just observed**: the probe at t=5000ms already saw the failure, and the probe at t=10000ms already saw the recovery — both ties resolved the same direction. The reason is exactly what the hypothesis predicted before running: the one-shot failure/recovery events were scheduled once at setup time, carrying low insertion-sequence numbers, while the probe ticks at those same timestamps are dynamically rescheduled by several prior firings during the run and carry much later sequence numbers. `EventQueue`'s documented `(timestamp, sequence)` rule resolves the tie in the failure/recovery event's favor every time, for a reason that can be stated in one sentence rather than shrugged off as "however the engine happened to order it."
+
+### Interpretation
+
+`health.Registry`'s state machine — Stage 2's design, unmodified — needed nothing added for this. What changed is entirely on the scheduling side: `health.Checker`'s real ticker and real HTTP probing were replaced by a virtual `Ticker` consulting a ground-truth schedule instead of dialing a live target, with the *same* `RecordProbeResult` call driving the *same* state machine either way. This is Stage 5's port-domain-logic-don't-copy-real-implementation-blindly principle working exactly as designed: the thing that's genuinely different between real and virtual health checking is how the probe result is obtained, not what happens once it is. And the same-timestamp result above is the first piece of direct evidence in this stage that explicit ordering isn't just a defensive design choice — it produces a specific, predictable, explainable answer to a question ("did the probe see the failure that happened at the same instant?") that would otherwise have no principled answer at all.

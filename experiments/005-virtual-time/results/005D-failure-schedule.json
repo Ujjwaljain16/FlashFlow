@@ -1,0 +1,28 @@
+{
+  "experiment": "005-D-deterministic-failure-schedule",
+  "timestamp": "2026-09-04T23:05:21Z",
+  "target": "edge-2",
+  "probe_interval_ms": 1000,
+  "failure_at_ms": 5000,
+  "recovery_at_ms": 10000,
+  "transitions": [
+    {
+      "virtual_time_ms": 6000,
+      "target": "edge-2",
+      "new_state": "UNHEALTHY"
+    },
+    {
+      "virtual_time_ms": 10000,
+      "target": "edge-2",
+      "new_state": "RECOVERING"
+    },
+    {
+      "virtual_time_ms": 11000,
+      "target": "edge-2",
+      "new_state": "HEALTHY"
+    }
+  ],
+  "runs": 20,
+  "all_runs_identical": true,
+  "findings": "Failure at t=5s and recovery at t=10s (probe interval 1s) reproduced the identical 3-transition state sequence across all 20 runs: UNHEALTHY@6000ms, RECOVERING@10000ms, HEALTHY@11000ms. health.Registry required no modification -- only its probe-scheduling mechanism (a real ticker + real HTTP in health.Checker) was replaced with a virtual Ticker feeding it a ground-truth schedule instead of a live network probe."
+}

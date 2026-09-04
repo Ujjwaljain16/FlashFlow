@@ -1,0 +1,48 @@
+{
+  "experiment": "003-C-least-connections-unequal-duration",
+  "timestamp": "2026-09-04T18:23:53Z",
+  "scenario": "static-heterogeneous",
+  "policy": "round-robin",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 480.2465009239943,
+      "client_latencies": {
+        "p50": 2902800,
+        "p95": 103953500,
+        "p99": 110922700,
+        "min": 1013000,
+        "max": 113242100
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 33.333333333333336
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 33.333333333333336
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 200,
+          "edge_forwarded_count": 200,
+          "counts_agree": true,
+          "share_percent": 33.333333333333336
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "round-robin under static 1ms/1ms/100ms: RPS=480.2 p95=103.9535ms p99=110.9227ms edge-c share=33.33%."
+}

@@ -1,0 +1,85 @@
+{
+  "experiment": "003-C-least-connections-unequal-duration",
+  "timestamp": "2026-09-04T18:23:59Z",
+  "scenario": "dynamic-degradation",
+  "policy": "least-connections",
+  "concurrency": 30,
+  "requests": 600,
+  "phases": [
+    {
+      "phase": "phase1-homogeneous",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 1745.9172452684916,
+      "client_latencies": {
+        "p50": 11093100,
+        "p95": 42961300,
+        "p99": 68008200,
+        "min": 1022400,
+        "max": 83599000
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 216,
+          "edge_forwarded_count": 216,
+          "counts_agree": true,
+          "share_percent": 36
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 187,
+          "edge_forwarded_count": 187,
+          "counts_agree": true,
+          "share_percent": 31.166666666666668
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 197,
+          "edge_forwarded_count": 197,
+          "counts_agree": true,
+          "share_percent": 32.833333333333336
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    },
+    {
+      "phase": "phase2-degraded",
+      "successful_requests": 600,
+      "failed_requests": 0,
+      "throughput_rps": 1255.8864444222106,
+      "client_latencies": {
+        "p50": 7787500,
+        "p95": 47908300,
+        "p99": 115825500,
+        "min": 1127400,
+        "max": 126252800
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 295,
+          "edge_forwarded_count": 295,
+          "counts_agree": true,
+          "share_percent": 49.166666666666664
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 278,
+          "edge_forwarded_count": 278,
+          "counts_agree": true,
+          "share_percent": 46.333333333333336
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 27,
+          "edge_forwarded_count": 27,
+          "counts_agree": true,
+          "share_percent": 4.5
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "least-connections: phase1 (homogeneous) edge-c share=32.83%, RPS=1745.9. phase2 (edge-c degraded to 100ms, no reconfiguration) edge-c share=4.50%, RPS=1255.9, p95=47.9083ms, p99=115.8255ms."
+}

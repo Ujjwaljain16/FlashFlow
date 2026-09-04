@@ -1,0 +1,48 @@
+{
+  "experiment": "003-C-least-connections-unequal-duration",
+  "timestamp": "2026-09-04T18:24:11Z",
+  "scenario": "low-concurrency-signal-starvation",
+  "policy": "least-connections",
+  "concurrency": 1,
+  "requests": 300,
+  "phases": [
+    {
+      "phase": "measured",
+      "successful_requests": 300,
+      "failed_requests": 0,
+      "throughput_rps": 384.65054562038813,
+      "client_latencies": {
+        "p50": 2442200,
+        "p95": 3971900,
+        "p99": 5457300,
+        "min": 1079600,
+        "max": 9009100
+      },
+      "per_edge_counts": [
+        {
+          "instance": "edge-a",
+          "proxy_recorded_count": 300,
+          "edge_forwarded_count": 300,
+          "counts_agree": true,
+          "share_percent": 100
+        },
+        {
+          "instance": "edge-b",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        },
+        {
+          "instance": "edge-c",
+          "proxy_recorded_count": 0,
+          "edge_forwarded_count": 0,
+          "counts_agree": true,
+          "share_percent": 0
+        }
+      ],
+      "client_server_outcome_mismatch": 0
+    }
+  ],
+  "findings": "least-connections at c=1 under static 1ms/1ms/100ms: RPS=384.7 p95=3.9719ms p99=5.4573ms edge-c share=0.00%."
+}

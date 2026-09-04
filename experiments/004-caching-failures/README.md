@@ -185,3 +185,49 @@ Raw data: `experiments/004-caching-failures/results/004E-origin-outage-and-recov
 ### Interpretation
 
 This is the result that ties Stage 4 together: 004-A through 004-D established that caching and coalescing reduce *unnecessary* work when Origin is healthy, but H5 was the open question of whether either mechanism does anything useful — or anything harmful — when Origin is genuinely broken. The answer on both counts is exactly what the invariants were designed to guarantee: the cache fully insulates already-warm data from an outage it has no way to know is even happening, and the coalescer turns what would have been 30 wasted failed connection attempts into 1, without introducing a single new failure mode of its own (no stuck requests, no poisoned keys, no special-cased recovery). None of this was a new capability built for this experiment — it is the cache and coalescer's existing design from earlier in this stage, specifically the "no abandoned in-flight entry" invariant, surviving contact with a real failure instead of a mocked one.
+
+---
+
+## 10. Implementation: Network Degradation Without `tc netem`
+
+Stage 4's design assumed OS-level network shaping via `tc netem`. That's Linux-only, and this project's experiments run on Windows — a real environment constraint, not a design preference, and worth naming plainly rather than glossing over.
+
+`internal/netsim` substitutes an application-layer simulator instead: `netsim.Transport` wraps an `http.RoundTripper`, injecting a fixed added latency (with optional uniform jitter, clamped so a delay is never simulated as negative) and a configurable packet-loss probability before delegating to the real transport. A dropped request never reaches the underlying transport at all — it fails the way a real connection into a lossy link would, not as a fabricated HTTP error after the fact. Wired into `EdgeServer` as `EdgeConfig.NetworkConditions` (zero value = perfect link, matching every other opt-in knob on that struct), sitting between the edge's `http.Client` and the existing tracked transport, so `TransportStats()`'s dial/completion counters still mean what they always meant.
+
+This is a real limitation, stated honestly: a request-level simulator can't reproduce packet-level effects like reordering, partial-write corruption, or the exact queueing behavior of a kernel qdisc. It reproduces what this stage's experiments actually needed to ask — does added latency or loss reach the caller, and does it reach every caller the same way — and no more, matching this project's earn-the-abstraction discipline rather than building a full netem-equivalent nobody yet needs.
+
+Tested at the transport level (`internal/netsim/netsim_test.go` — latency actually adds wall-clock time, jitter stays within range and never goes negative, a 100%-loss transport never calls its base RoundTripper at all, context cancellation during the injected delay returns promptly instead of waiting out the full delay, and one end-to-end test against a real `httptest.Server`) and at the edge level (`internal/topology/topology_test.go` — a cache hit is unaffected by simulated latency or loss, only a miss pays for either).
+
+---
+
+## 11. Results: Experiment 004-F — Network Degradation
+
+**Hypothesis (H6)**: see `hypotheses.md`. Three sections, each on its own fresh `Origin`+`Edge` pair.
+
+**Section 1 — insulation under a degraded (not dead) link.** 60ms simulated latency, 50% simulated loss.
+
+| Check | Result |
+|---|---:|
+| Miss latency (pays the simulated link) | 62.2ms |
+| Hit latency (unaffected) | 1.2ms |
+| Independent cold-key requests failed | 23 / 60 (38.3%, near the 50% target) |
+| Priming attempts needed under 50% loss | 1 |
+
+**Section 2 — does coalescing correlate failure within a burst?** 50 bursts of 10 concurrent requests each, a fresh never-cached key per burst, 30% simulated loss, 20ms simulated latency (just enough to widen the coalescing window — a dropped dial returns almost instantly otherwise, the same reasoning 004-C and 004-E needed delay for).
+
+| Cell | All-or-nothing bursts | Partial bursts | Request-level failure rate |
+|---|---:|---:|---:|
+| Coalesced | **50 / 50** | **0** | 32.0% |
+| Independent (no coalescing) | 1 / 50 | **49** | 29.2% |
+
+Raw data: `experiments/004-caching-failures/results/004F-network-degradation.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**: miss latency (62.2ms) tracks the simulated 60ms almost exactly; hit latency (1.2ms) is unaffected — consistent with 004-E's outage-insulation finding, now shown for latency specifically rather than a hard failure.
+2. **Prediction 2 confirmed**: independent cold-key requests failed at 38.3%, in the right neighborhood of the 50% configured loss rate (a single run's sample, not a large-N statistical estimate — the point was to show a real, non-zero, non-total failure rate exists, not to pin down the constant precisely). Priming the warm key needed only 1 attempt this run, but the retry loop existed specifically because that isn't guaranteed — an honest acknowledgment that even establishing a cache entry isn't certain on a lossy link, not something worth hiding by disabling loss during setup.
+3. **Prediction 3 confirmed, sharply**: with coalescing, all 50 bursts were all-or-nothing — every single burst either succeeded completely or failed completely, never a mix. Without coalescing, 49 of 50 bursts were partial — a binomial-looking spread of some-succeed-some-fail within nearly every burst, exactly the shape independent per-request dialing should produce. Both cells still landed close to the configured 30% loss rate in aggregate (32.0% vs 29.2%) — the *average* failure rate barely moved, but the *distribution of who fails together* changed completely.
+
+### Interpretation
+
+This is Stage 4's clearest demonstration that coalescing is a genuine tradeoff, not a strictly-better mechanism. 004-C, 004-D, and 004-E all showed coalescing eliminating pure waste — duplicate fetches for data that either all should have succeeded or (under a total outage) all had to fail anyway. A partially lossy link is different: it's the first scenario in this stage where independent dialing would have let *some* of a burst's callers succeed even while others failed, and coalescing forecloses that possibility by design — one dial's outcome becomes everyone's outcome. That's exactly what makes coalescing valuable against a stampede (004-C) and harmless against a total outage (004-E), and it's exactly what makes it a real cost here: a caller's success or failure now depends partly on who else happened to be asking for the same key at the same moment, a dependency that doesn't exist without coalescing. Nothing about this is a bug — `Coalescer`'s own doc comment already frames the leader/waiter contract this plainly — but it's a cost worth naming rather than only celebrating coalescing's upside, and it's a genuinely new piece of evidence this experiment needed a lossy (not just up-or-down) link to produce.

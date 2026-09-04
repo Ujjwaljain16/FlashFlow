@@ -1,0 +1,21 @@
+{
+  "experiment": "004-F-network-degradation",
+  "timestamp": "2026-09-04T22:13:19Z",
+  "simulated_latency_ms": 60,
+  "miss_latency_ms": 62.217,
+  "hit_latency_ms": 1.191,
+  "insulation_loss_rate": 0.5,
+  "cold_key_trials": 60,
+  "cold_key_failures": 23,
+  "priming_attempts": 1,
+  "burst_size": 10,
+  "burst_count": 50,
+  "burst_loss_rate": 0.3,
+  "coalesced_all_or_nothing_bursts": 50,
+  "coalesced_partial_bursts": 0,
+  "coalesced_request_failure_rate": 0.32,
+  "independent_all_or_nothing_bursts": 1,
+  "independent_partial_bursts": 49,
+  "independent_request_failure_rate": 0.292,
+  "findings": "Insulation: miss=62.2ms vs hit=1.2ms under 60ms simulated latency; 23/60 independent cold requests failed under 50% loss (warm key needed 1 priming attempt(s) under the same loss). Correlation: with coalescing, 50/50 bursts of 10 were all-or-nothing (only 0 partial) at 30% loss, request failure rate 32.0%; without coalescing, 1/50 bursts were all-or-nothing (49 partial), request failure rate 29.2%. Both cells land near the target loss rate at the request-count level, but coalescing concentrates failure onto whole bursts instead of spreading it across individual requests within one."
+}

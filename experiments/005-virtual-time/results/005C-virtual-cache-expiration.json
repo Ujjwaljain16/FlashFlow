@@ -1,0 +1,50 @@
+{
+  "experiment": "005-C-virtual-cache-expiration",
+  "timestamp": "2026-09-04T23:02:36Z",
+  "ttl_ms": 100,
+  "steps": [
+    {
+      "virtual_time_ms": 0,
+      "action": "set",
+      "key": "GET /data/hot",
+      "expected": "FILLED",
+      "got": "FILLED",
+      "match": true
+    },
+    {
+      "virtual_time_ms": 99,
+      "action": "get",
+      "key": "GET /data/hot",
+      "expected": "HIT",
+      "got": "HIT",
+      "match": true
+    },
+    {
+      "virtual_time_ms": 101,
+      "action": "get",
+      "key": "GET /data/hot",
+      "expected": "MISS",
+      "got": "MISS",
+      "match": true
+    },
+    {
+      "virtual_time_ms": 101,
+      "action": "set",
+      "key": "GET /data/hot",
+      "expected": "FILLED",
+      "got": "FILLED",
+      "match": true
+    },
+    {
+      "virtual_time_ms": 150,
+      "action": "get",
+      "key": "GET /data/hot",
+      "expected": "HIT",
+      "got": "HIT",
+      "match": true
+    }
+  ],
+  "real_elapsed_ms": 0,
+  "all_expectations_met": true,
+  "findings": "All 5 cache operations under virtual time matched their expected outcome with zero real sleeping (scenario completed in 0.000ms of real time). Final cache stats: {Lookups:3 Hits:2 Misses:1 Expired:1 Fills:2}. cache.Cache required no modification -- it already took an injected clock.Clock before this stage existed."
+}

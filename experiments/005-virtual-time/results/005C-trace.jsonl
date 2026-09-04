@@ -1,0 +1,5 @@
+{"t":0,"seq":0,"type":"set","entity":"GET /data/hot","fields":{"expected":"FILLED","got":"FILLED","match":true}}
+{"t":99000000,"seq":1,"type":"get","entity":"GET /data/hot","fields":{"expected":"HIT","got":"HIT","match":true}}
+{"t":101000000,"seq":2,"type":"get","entity":"GET /data/hot","fields":{"expected":"MISS","got":"MISS","match":true}}
+{"t":101000000,"seq":3,"type":"set","entity":"GET /data/hot","fields":{"expected":"FILLED","got":"FILLED","match":true}}
+{"t":150000000,"seq":4,"type":"get","entity":"GET /data/hot","fields":{"expected":"HIT","got":"HIT","match":true}}

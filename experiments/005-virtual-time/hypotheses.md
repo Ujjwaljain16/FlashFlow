@@ -17,3 +17,12 @@ Section 11 of the Stage 5 design is explicit that same-timestamp ordering is par
 - *Prediction 1*: every run produces the exact same order for same-timestamp events — insertion order, per `EventQueue`'s documented (timestamp, sequence) rule — with zero variation across repeated runs.
 - *Prediction 2*: this holds even when the same-timestamp events are scheduled by different, interleaved callers (not just scheduled back-to-back in one place), since the ordering rule is about *when Schedule was called*, not about proximity in source code.
 - *Purpose*: this is the first experiment to actually test the reproducibility invariant (`same config + same seed + same initial state = same trace`) rather than merely asserting the mechanism exists. A single passing run proves nothing about determinism; only repeated runs with an explicit comparison do.
+
+## H3 — Stage 4's Cache Runs Correctly Under Virtual Time With Zero Modification
+
+The Phase A/B audit found `cache.Cache` already takes an injected `clock.Clock` rather than calling `time.Now()` — this hypothesis is the direct test of whether that was actually sufficient, or whether some hidden assumption still ties it to wall-clock time.
+
+- *Setup*: the canonical scenario from the Stage 5 design (item 32): insert an entry with a 100ms TTL at t=0, confirm a HIT at t=99ms, confirm a MISS at t=101ms (past expiry), refill, and confirm a fresh HIT at t=150ms (proving the refill started its own TTL window rather than inheriting the expired entry's).
+- *Prediction 1*: every step produces exactly the expected HIT/MISS outcome, with `cache.Cache` used completely unmodified — `Engine.Clock()` standing in for any `clock.Clock` the type already accepted.
+- *Prediction 2*: the entire scenario, spanning 150ms of virtual time, completes in a negligible fraction of a real millisecond — no `time.Sleep` anywhere in the path from experiment setup to cache state changes.
+- *Purpose*: this is the clearest possible demonstration of why Stage 2–4's clock-injection discipline mattered — not as an abstract good practice, but as the specific thing that makes this experiment nearly free to write.

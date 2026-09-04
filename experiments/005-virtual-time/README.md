@@ -77,3 +77,31 @@ Raw data: `experiments/005-virtual-time/results/005B-event-ordering.json`.
 ### Interpretation
 
 Both results are exactly what `EventQueue`'s and `Engine`'s own design (built and unit-tested before either experiment ran) predicted — no surprises here yet, no divergence to chase down. That is itself the correct outcome for this pair of experiments: 005-A and 005-B exist to establish the foundation everything else in this stage builds on, and a foundation that behaves exactly as designed is what makes the more interesting integration work (cache, failure schedules, stateful routing) trustworthy once it starts producing results that *aren't* fully predictable in advance.
+
+---
+
+## 5. Results: Experiment 005-C — Virtual Cache Expiration
+
+**Hypothesis (H3)**: see `hypotheses.md`. The canonical insert/hit/expire/miss/refill/hit scenario, using `cache.Cache` — Stage 4's own type — with zero modification, driven entirely by `Engine.Clock()`.
+
+| t (virtual) | Action | Expected | Got |
+|---:|---|:---:|:---:|
+| 0ms | set | FILLED | FILLED |
+| 99ms | get | HIT | HIT |
+| 101ms | get | MISS | MISS |
+| 101ms | set | FILLED | FILLED |
+| 150ms | get | HIT | HIT |
+
+Real elapsed time for the full 150ms-virtual scenario: **0.000ms**. Final cache stats: `{Lookups:3, Hits:2, Misses:1, Expired:1, Fills:2}`.
+
+Raw data: `experiments/005-virtual-time/results/005C-virtual-cache-expiration.json`, full trace at `005C-trace.jsonl`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**: all 5 operations matched their expected outcome, including the t=150ms check that the refill at t=101ms started a genuinely fresh 100ms TTL window rather than inheriting anything from the expired entry it replaced.
+2. **Prediction 2 confirmed**: 150ms of virtual time (TTL expiry included) cost an unmeasurable fraction of a real millisecond — no sleeping anywhere in the path.
+3. **`cache.Cache` needed zero source changes.** The only new code this experiment required was the scenario itself (`cmd/experiment-005c/main.go`) — every line of `internal/cache` is exactly what Stage 4 left it as.
+
+### Interpretation
+
+This is the cleanest possible confirmation of the Phase A/B audit's central claim: Stage 2–4's discipline of injecting `clock.Clock` rather than reaching for `time.Now()` wasn't just tidy engineering, it was the specific decision that made this experiment nearly free to write. Nothing about `cache.Cache`'s TTL logic, lazy eviction, or stats tracking had any idea it was running under a virtual clock instead of a real one — which is exactly the point. The domain behavior and the execution environment were already separated; Stage 5 just proved it.

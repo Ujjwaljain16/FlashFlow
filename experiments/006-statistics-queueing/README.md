@@ -166,3 +166,25 @@ p50 shift: Cliff's Delta = −1.00 (complete separation), median difference 111.
 ### Interpretation
 
 This is the decomposition item 20 and item 24 describe, done with the discipline item 68 demands: the claim is "83% of this specific elevated p99, in this specific controlled scenario, is waiting time" — not "queueing generally accounts for 83% of FlashFlow's tail latency." The distinction matters because the attribution's entire credibility rests on Origin's service time being a known, fixed, independently-verified constant rather than another unknown being solved for simultaneously. Where that constant isn't available — a real production system where "true service time" isn't directly configurable — this exact method wouldn't transfer without first establishing an equivalent independent baseline, which is itself a limitation worth stating rather than eliding.
+
+---
+
+## 7. Results: Experiment 006-F — Real vs Virtual Statistical Comparison
+
+**Hypothesis (H6)**: see `hypotheses.md`. 15 independent real replicates of 005-H's exact stampede scenario, plus 5 reconfirmation runs of the virtual side.
+
+| | Real (n=15) | Virtual (n=5) |
+|---|---|---|
+| Upstream requests | median 30, stddev 0.000 | exactly 30, every run |
+| p99 | median 106.74ms, 95% bootstrap CI [105.32, 109.48] | 100.00ms, byte-identical every run |
+
+Real-vs-virtual p99 gap: **6.74ms, 95% CI [5.32, 9.48]** — clearly excludes zero. Raw data: `experiments/006-statistics-queueing/results/006F-real-vs-virtual-comparison.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**: upstream requests were exactly 30 in every one of 15 independent real replicates (stddev 0.000) — 005-H's structural match wasn't a coincidence of the one real run it happened to record; it's as deterministic on the real side as the virtual side, for the reason 004-C/004-D already established (nothing deduplicates concurrent misses in either engine, in this scenario).
+2. **Prediction 2 confirmed, with the interesting asymmetry made explicit**: real p99 is genuinely noisy (a real 95% CI spanning about 4ms), while virtual p99 is a fixed constant, confirmed byte-identical across 5 fresh reconfirmation runs. Despite that real-side noise, the gap between them never approaches zero — the bootstrap CI on the gap, [5.32, 9.48], sits entirely above zero.
+
+### Interpretation
+
+This closes the loop 005-H opened: a single-pair comparison can suggest a gap exists but can't rule out that a differently-timed pair of runs might have shown something else. Replicating the real side and directly quantifying the gap's own confidence interval turns "the real engine measured higher p99 than the virtual engine, once" into "the real engine reliably measures higher p99 than the virtual engine, and here is the range that gap actually occupies." That's a stronger, more specific claim than 005-H could make on its own, and it costs nothing conceptually new — no new mechanism, just applying 006-A's already-validated statistical tools to a question 005-H had already posed but couldn't fully answer with the data it collected.

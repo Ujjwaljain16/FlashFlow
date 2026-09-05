@@ -1,0 +1,85 @@
+{
+  "experiment": "006-F-real-vs-virtual-statistical-comparison",
+  "timestamp": "2026-09-05T07:24:34Z",
+  "burst_size": 30,
+  "num_real_replicates": 15,
+  "real_replicates": [
+    {
+      "upstream_requests": 30,
+      "p99_ms": 104.99681
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 106.75037999999999
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 105.447
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 104.95335
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 106.047
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 106.74171
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 105.06
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 105.114
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 109.90168
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 107.024
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 105.32477
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 109.466
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 109.92
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 114.799
+    },
+    {
+      "upstream_requests": 30,
+      "p99_ms": 187.197
+    }
+  ],
+  "real_upstream_stddev": 0,
+  "real_p99_median": 106.74171,
+  "real_p99_bootstrap_ci": {
+    "estimate": 106.74171,
+    "lower": 105.32477,
+    "upper": 109.47689199999984,
+    "confidence": 0.95,
+    "n_resamples": 5000,
+    "sample_size": 15
+  },
+  "virtual_upstream": 30,
+  "virtual_p99": 100,
+  "virtual_all_identical_across_5_runs": true,
+  "real_virtual_p99_gap_estimate": 6.741709999999998,
+  "real_virtual_p99_gap_ci_lower": 5.324770000000001,
+  "real_virtual_p99_gap_ci_upper": 9.476891999999836,
+  "findings": "The upstream-request-count match 005-H found (both engines produce exactly 30 for a 30-request burst) is confirmed stable across 15 independent real replicates: stddev 0.000 -- a deterministic structural property on the real side too, not a one-off coincidence in 005-H's single real run. The virtual side's determinism was reconfirmed directly: 5 runs, byte-identical p99 every time (true). The real side's p99 is NOT a fixed constant -- median 106.74ms with a 95% bootstrap CI of [105.32, 109.48] across 15 replicates, real OS/network scheduling noise genuinely varies it run to run. The real-vs-virtual GAP itself, however, remains clearly separated regardless of that noise: 6.74ms (95% CI [5.32, 9.48]), never close to zero across the observed real variability -- 005-H's single-pair comparison was not a lucky or unlucky draw, the gap it measured is a stable, replicable property of the two engines' different latency models, not an artifact of comparing exactly one real run to one virtual run."
+}

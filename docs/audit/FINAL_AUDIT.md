@@ -1,5 +1,12 @@
 # FlashFlow — Final Independent Audit (Post-Stage-8)
 
+> **Status update (Stage 9, post-remediation):** every finding below has since been fixed or
+> explicitly disclosed — see [RESOLUTION.md](RESOLUTION.md) for the full per-finding disposition and
+> `docs/StageArtifacts/Stage9.md` for the narrative. This document is preserved as-written: the
+> audit's own point-in-time snapshot and verdict, not retroactively edited to reflect the fixes that
+> followed. Read it as "what an adversarial review found the day Stage 8 was declared complete," not
+> as this repository's current state.
+
 **Audit date:** 2026-09-05
 **Scope:** Full repository as of the current working tree (HEAD `cf60268`, plus all uncommitted
 Stage 8 work — see [F-03](FINDINGS.md)), against `prd.md`, `trd.md`, `research.md`, all 8

@@ -1,0 +1,43 @@
+{
+  "experiment": "006-A-statistical-validation",
+  "timestamp": "2026-09-05T06:56:23Z",
+  "all_pass": true,
+  "scenarios": [
+    {
+      "name": "identical_distributions",
+      "pass": true,
+      "detail": "p=0.1285 (want \u003e0.05), cliffs_delta=-0.0879 magnitude=negligible (want negligible)",
+      "findings": "Two samples from the same normal(100,10) should show no evidence of a shift and a negligible effect size."
+    },
+    {
+      "name": "clearly_shifted_distributions",
+      "pass": true,
+      "detail": "p=0.000000 (want \u003c0.001), cliffs_delta=-0.9805 magnitude=large (want large)",
+      "findings": "A 3-sigma shift (normal(100,10) vs normal(130,10)) should be detected with a small p-value and a large effect size."
+    },
+    {
+      "name": "same_effect_different_sample_size",
+      "pass": true,
+      "detail": "n=20: cliffs_delta=-0.490 CI_width=12.950 | n=400: cliffs_delta=-0.309 CI_width=2.854 (want similar delta, narrower CI at n=400)",
+      "findings": "The same underlying 5-unit mean shift should produce a similar Cliff's Delta at n=20 and n=400, but a visibly narrower bootstrap CI at n=400 -- sample size buys precision, not a bigger effect."
+    },
+    {
+      "name": "outlier_heavy_distribution",
+      "pass": true,
+      "detail": "mean shift=4496.9 (want \u003e1000, outlier-driven), median shift=0.126 (want \u003c1, outlier-robust), cliffs_delta=-0.0269 magnitude=negligible (want not large)",
+      "findings": "Injecting 3 extreme outliers into a 100-point sample should distort the mean drastically while leaving the median and the rank-based effect size largely unaffected -- exactly why this project prefers percentile/rank statistics for latency data."
+    },
+    {
+      "name": "known_bootstrap_case",
+      "pass": true,
+      "detail": "95% CI=[48.726, 51.249] for true mean=50.0 (want true mean inside the interval)",
+      "findings": "A 2000-point sample from Uniform(0,100) has a true mean of exactly 50; the bootstrap CI for the sample mean should contain it."
+    },
+    {
+      "name": "deterministic_analysis_seed",
+      "pass": true,
+      "detail": "run1={Estimate:99.9637933044906 Lower:98.13536104316799 Upper:102.00941848326568 Confidence:0.95 NResamples:2000 SampleSize:100} run2={Estimate:99.9637933044906 Lower:98.13536104316799 Upper:102.00941848326568 Confidence:0.95 NResamples:2000 SampleSize:100} (want identical)",
+      "findings": "Same data + same analysis seed must produce the exact same bootstrap confidence interval, every time."
+    }
+  ]
+}

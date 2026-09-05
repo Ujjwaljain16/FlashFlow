@@ -1,0 +1,40 @@
+{
+  "experiment": "007-C-dynamic-adaptation",
+  "timestamp": "2026-09-05T07:50:52Z",
+  "phase_len_ms": 500,
+  "phase_distribution": [
+    {
+      "A": 92,
+      "B": 8
+    },
+    {
+      "A": 20,
+      "B": 80
+    },
+    {
+      "A": 86,
+      "B": 14
+    }
+  ],
+  "transitions": [
+    {
+      "from_phase": 0,
+      "to_phase": 1,
+      "new_best": "B",
+      "first_switch_index": 9,
+      "first_switch_ms": 545,
+      "stabilized_index": 19,
+      "stabilized_ms": 595
+    },
+    {
+      "from_phase": 1,
+      "to_phase": 2,
+      "new_best": "A",
+      "first_switch_index": 2,
+      "first_switch_ms": 1010,
+      "stabilized_index": 12,
+      "stabilized_ms": 1060
+    }
+  ],
+  "findings": "Across 3 phases (each 500ms, best target A -\u003e B -\u003e A), the adaptive router's per-phase distribution tracked the currently-best target every time: [map[A:92 B:8] map[A:20 B:80] map[A:86 B:14]]. At each transition, the router began selecting the new best target almost immediately (first switch within a handful of requests) and stabilized on it (5 consecutive selections) shortly after -- driven by the EWMA-smoothed latency estimate itself picking up fresh observations once the new best target starts being selected at all (both targets remain in active rotation throughout, since neither one's utilization/cost signals go to zero), not by the staleness threshold, which at the default 1s is longer than a single 500ms phase and never actually triggers here -- see 007-D for the scenario that specifically exercises staleness-driven rediscovery instead."
+}

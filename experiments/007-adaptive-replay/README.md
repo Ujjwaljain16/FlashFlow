@@ -74,3 +74,31 @@ Raw data: `experiments/007-adaptive-replay/results/007B-adaptive-heterogeneity.j
 ### Interpretation
 
 This is exactly the shape of result item 76 says is legitimate and item 41 says is necessary: not "Adaptive wins everywhere," but "Adaptive matched Round Robin's fairness where no signal mattered, and specifically avoided the one failure mode (equal-target lock-in) that a single-signal greedy policy still exhibits even in the easiest possible scenario." The mechanism is traceable directly to two design decisions from `internal/proxy/adaptive.go`: utilization (load/capacity) is self-correcting the same way Least Connections' load signal is, and neutral cold start prevents the "first mover wins forever" dynamic that gives EWMA's tie-break rule its bite. Neither decision was tuned to produce this result — both were made before this experiment ran, motivated directly by Stage 3 and Stage 6 evidence, and predicted this outcome in `hypotheses.md` before the experiment was executed.
+
+---
+
+## 4. Results: Experiment 007-C — Adaptation Under Dynamic Change
+
+**Hypothesis (H3)**: see `hypotheses.md`. 2 targets, 3 phases of 500ms (A best → B best → A best again), default `AdaptiveConfig` (`StaleAfter`=1s, longer than a phase).
+
+| Phase | Best | Distribution |
+|---|---|---|
+| 0 (0–500ms) | A | A=92, B=8 |
+| 1 (500ms–1s) | B | A=20, **B=80** |
+| 2 (1s–1.5s) | A | **A=86**, B=14 |
+
+| Transition | First switch | Stabilized (5 consecutive) |
+|---|---|---|
+| Phase 0→1 (new best B) | request #9 (t=545ms, 45ms into phase) | request #19 (t=595ms, 95ms in) |
+| Phase 1→2 (new best A) | request #2 (t=1010ms, 10ms into phase) | request #12 (t=1060ms, 60ms in) |
+
+Raw data: `experiments/007-adaptive-replay/results/007C-dynamic-adaptation.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed in all three phases**, including the recovery phase — the distribution flips to favor whichever target is actually best, every time, with no degradation on the "recovery" transition compared to the first one.
+2. **Prediction 2 confirmed, and the actual mechanism is identifiable rather than assumed**: adaptation happened within 2–9 requests (10–45ms) of each transition — far faster than the 1s staleness threshold could possibly explain, since that threshold never had time to trigger within a 500ms phase. The real mechanism, visible directly in the data: the "losing" target in each phase still received a meaningful minority of traffic (8–20%) throughout, meaning it stayed in active rotation and its `LatencyTracker` estimate kept receiving fresh observations the entire time — the EWMA smoothing itself tracked the environment change, with no staleness-driven reset required at all.
+
+### Interpretation
+
+This result usefully separates two mechanisms this design provides and shows which one is doing the work here: staleness-driven neutral reset (for a target that stops being selected almost entirely) versus ordinary EWMA tracking (for a target that keeps receiving occasional traffic even while "losing"). Because Adaptive's utilization signal is self-correcting and its cold start is neutral rather than winner-take-all, the losing target in this scenario never gets pushed all the way to zero selections the way EWMA locked a target to near-zero in 007-B's homogeneous case — and that residual minority traffic is precisely what lets the latency estimate stay current without needing the staleness mechanism at all. Experiment 007-D is deliberately designed to isolate the *other* mechanism — genuine staleness-driven rediscovery of a target that receives no traffic for an extended stretch — which this experiment's phase lengths were too short to exercise.

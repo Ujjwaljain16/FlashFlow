@@ -18,3 +18,11 @@ Stage 3/5/6 established that Least Connections and P2C-over-load avoid a slow ta
 - *Setup, homogeneous cell (the negative case)*: 3 genuinely equal targets (20ms each), same workload, same five policies — a scenario where Round Robin is already sufficient and no signal should provide an advantage.
 - *Prediction 1*: Adaptive avoids the slow target roughly as well as Least Connections/P2C (self-correcting load), while also splitting the two fast targets far more evenly than EWMA does — combining load's self-correction with neutral (not optimistic) cold start should prevent the specific lock-in mechanism 006-B characterized.
 - *Prediction 2*: in the homogeneous scenario, Adaptive's distribution should closely resemble Round Robin's even split, not EWMA's lock-in — demonstrating that combining signals doesn't manufacture an advantage, or a pathology, where none exists.
+
+## H3 — Adaptation Under Dynamic Change
+
+Item 43's 007-C scenario literally: target A is best, then B becomes best, then A recovers. This tests whether Adaptive's combination of signals can track a changing environment, not just a static heterogeneous one.
+
+- *Setup*: 2 targets, 3 phases of 500ms each (300 requests total, 5ms spacing) — phase 1: A fast (20ms)/B slow (100ms); phase 2: A slow/B fast; phase 3: A fast/B slow again. Default `AdaptiveConfig` (1s `StaleAfter`), deliberately much longer than a single 500ms phase.
+- *Prediction 1*: the per-phase traffic distribution tracks whichever target is actually best during that phase, in all three phases including the "recovery" one.
+- *Prediction 2*: adaptation happens within a small number of requests after each transition, not the full phase — and because the staleness threshold (1s) is longer than a phase (500ms), any observed adaptation must be explained by a different mechanism than staleness-driven neutral reset; the actual mechanism should be identifiable from the data, not assumed in advance.

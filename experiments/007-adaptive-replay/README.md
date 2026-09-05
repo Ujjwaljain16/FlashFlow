@@ -133,3 +133,29 @@ Raw data: `experiments/007-adaptive-replay/results/007D-exploration-recovery.jso
 ### Interpretation
 
 Two distinct mechanisms are visible here in sequence, and this experiment is the first to cleanly separate them: staleness-driven neutral reset is what gets a locked-out target re-observed at all, and ordinary EWMA smoothing is what gates how fast that re-observation turns into sustained preference. Rediscovery is real — the router did not need any explicit forced-exploration algorithm to find A again — but it is not instantaneous, and treating "not instantaneous" as a defect would have been the wrong conclusion. As with every experiment in this stage, the failed first attempt was worth keeping in the record: it is a genuine finding about how utilization and cold-start latency interact under an extreme, unrealistic parameter choice, not a mistake to quietly erase once the second attempt worked.
+
+---
+
+## 6. Results: Experiment 007-E — Failure and Health
+
+**Hypothesis (H5)**: see `hypotheses.md`. 3 equally-good targets (20ms each), reusing 005-D/005-G's `health.Registry` + ground-truth up/down map + probe `Ticker` pattern unmodified. B fails at t=500ms, recovers at t=1600ms (a 1.1s outage, deliberately longer than the default 1s `StaleAfter`). 500 requests, rotating cache keys.
+
+| Metric | Value |
+|---|---|
+| Availability transitions for B | false at t=600ms, true at t=1700ms (detection lag ≈100ms each direction) |
+| B selections during confirmed-unhealthy window | **0** |
+| Gap since B's last selection when it rejoins | 1120ms (> 1000ms `StaleAfter`) — data stale on return |
+| Distribution before failure | A=41, B=40, C=39 |
+| Distribution early after recovery (first 300ms) | A=20, B=20, C=20 |
+| Distribution late steady state | A=20, B=20, C=20 |
+
+Raw data: `experiments/007-adaptive-replay/results/007E-failure-and-health.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly.** B received zero selections during the entire confirmed-unhealthy window. This holds by construction — `AdaptiveSelector` never receives B as a candidate at all, the same upstream `available := filter(allTargets, registry.IsAvailable)` pattern used for every earlier policy — but confirming it directly, rather than trusting the pattern was wired correctly from a code read, is the point of running the experiment.
+2. **Prediction 2 confirmed, cleanly.** By the time B rejoins the candidate list, 1120ms have elapsed since its last selection — past the 1000ms `StaleAfter` threshold — so its latency estimate resets to neutral (0.5) exactly as 007-D characterized. B's distribution snaps back to parity with A and C immediately (20/20/20 in the first 300ms after recovery, unchanged into steady state), matching the near-even pre-failure split (41/40/39). There is no post-recovery warm-up penalty and no unearned advantage.
+
+### Interpretation
+
+This experiment doesn't introduce a new mechanism — it demonstrates that two independently-validated mechanisms compose correctly at a boundary neither one was built specifically to handle. Health eligibility (upstream filtering, unchanged since Stage 3) keeps `AdaptiveSelector` from ever considering an unhealthy target; staleness (validated in 007-D for the unrelated case of exploration/rediscovery) happens to also be exactly the right behavior when a target returns from a health-driven absence, because absence-from-traffic and staleness-of-data are the same underlying condition regardless of *why* a target stopped being selected. No special-cased "recovery" logic was written, and none was needed — which is itself evidence that `AdaptiveSelector`'s signal design in `internal/proxy/adaptive.go` decomposes health, staleness, and load/latency scoring into genuinely independent concerns rather than a bundle of case-specific rules.

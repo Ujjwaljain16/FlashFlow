@@ -1,0 +1,35 @@
+{
+  "experiment": "007-E-failure-and-health",
+  "timestamp": "2026-09-05T08:08:59Z",
+  "fail_target": "B",
+  "availability_transitions": [
+    {
+      "virtual_time_ms": 600,
+      "available": false
+    },
+    {
+      "virtual_time_ms": 1700,
+      "available": true
+    }
+  ],
+  "selections_during_outage": 0,
+  "gap_at_return_ms": 1120,
+  "stale_after_ms": 1000,
+  "data_stale_on_return": true,
+  "distribution_pre_failure": {
+    "A": 41,
+    "B": 40,
+    "C": 39
+  },
+  "distribution_early_recovery": {
+    "A": 20,
+    "B": 20,
+    "C": 20
+  },
+  "distribution_late_steady": {
+    "A": 20,
+    "B": 20,
+    "C": 20
+  },
+  "findings": "B was excluded from the candidate list for the entire confirmed-unhealthy window [600ms, 1700ms) -- 0 selections of B in that window, confirming AdaptiveSelector never had the chance to violate health eligibility, because it never saw B as a candidate at all (the same upstream available-list filtering 005-D/005-G established, with zero health-specific code inside AdaptiveSelector itself). By the time B rejoined the candidate list, 1120ms had elapsed since its last selection -- exceeding the 1000ms StaleAfter threshold (data stale on return: true) -- so the staleness mechanism validated independently in Experiment 007-D also handles the health-recovery case for free: B's latency estimate resets to neutral on return rather than staying artificially penalized (it was never degraded to begin with, since it received zero traffic while excluded) or artificially advantaged. Distribution early after recovery (map[A:20 B:20 C:20]) and late in steady state (map[A:20 B:20 C:20]) both show B back in rough parity with A and C, the same shape as the pre-failure distribution (map[A:41 B:40 C:39]) -- recovery is not merely permitted, it is unremarkable, which is exactly what 'no special-cased recovery logic' should look like."
+}

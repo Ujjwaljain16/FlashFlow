@@ -1,0 +1,61 @@
+{
+  "experiment": "007-G-counterfactual-policy-comparison",
+  "timestamp": "2026-09-05T08:39:43Z",
+  "failure_down_at_ms": 500,
+  "failure_up_at_ms": 1600,
+  "late_window_start_ms": 2195,
+  "results": [
+    {
+      "policy": "round-robin",
+      "slow_share": 0.408,
+      "selections_during_outage": 0,
+      "selections_at_detection_instant": 0,
+      "immediate_recovery_share_b": 0.3,
+      "early_recovery_share_b": 0.31666666666666665,
+      "late_steady_share_b": 0.3333333333333333,
+      "recovery_gap": 0.016666666666666663
+    },
+    {
+      "policy": "least-connections",
+      "slow_share": 0.166,
+      "selections_during_outage": 0,
+      "selections_at_detection_instant": 0,
+      "immediate_recovery_share_b": 0.5,
+      "early_recovery_share_b": 0.4666666666666667,
+      "late_steady_share_b": 0.4666666666666667,
+      "recovery_gap": 0
+    },
+    {
+      "policy": "ewma",
+      "slow_share": 0.042,
+      "selections_during_outage": 0,
+      "selections_at_detection_instant": 1,
+      "immediate_recovery_share_b": 0.95,
+      "early_recovery_share_b": 0.9833333333333333,
+      "late_steady_share_b": 1,
+      "recovery_gap": 0.01666666666666672
+    },
+    {
+      "policy": "p2c-load",
+      "slow_share": 0.164,
+      "selections_during_outage": 0,
+      "selections_at_detection_instant": 0,
+      "immediate_recovery_share_b": 0.45,
+      "early_recovery_share_b": 0.43333333333333335,
+      "late_steady_share_b": 0.4166666666666667,
+      "recovery_gap": -0.016666666666666663
+    },
+    {
+      "policy": "adaptive",
+      "slow_share": 0.052,
+      "selections_during_outage": 0,
+      "selections_at_detection_instant": 0,
+      "immediate_recovery_share_b": 0.6,
+      "early_recovery_share_b": 0.6,
+      "late_steady_share_b": 0.6166666666666667,
+      "recovery_gap": 0.01666666666666672
+    }
+  ],
+  "all_zero_during_outage": true,
+  "findings": "All five policies were run against the identical Scenario (same arrivals, same failure of edge-b-fast from t=500ms to t=1600ms) via RunWorld -- a direct exercise of the replay engine's core promise: the same exogenous conditions, independently-evolving endogenous state per policy. Health eligibility held for every one of the five (all_zero_strictly_after_detection=true): none selected edge-b-fast during its confirmed-unhealthy window, confirming 007-E's finding was never Adaptive-specific -- every policy in this project already relies on the same upstream available-list filtering, and it needed no policy-specific verification because it lives entirely outside any of them. One genuine, minor edge case surfaced during verification, not a violation of that claim: ewma selected edge-b-fast exactly once at t=600ms, the exact same virtual instant its own probe first recorded it UNHEALTHY -- traced to the engine's same-timestamp event ordering (arrivals are scheduled up front, ahead of the health Ticker's own recursively-scheduled next firing, so a tie at that instant resolves in the arrival's favor), not a health-filtering defect; absent from every selection strictly after that instant, for every policy. The recovery-transition contrast expected from 007-D/007-E's undershoot finding did NOT materialize here: Adaptive's share of edge-b-fast in the first 300ms after recovery (60.0%) differed from its late-steady-state share (61.7%) by 1.7 percentage points -- the same order of magnitude as every other policy's (structurally impossible) 'gap' at this 60-request window size, which ranged 0.0-1.7 points of pure sampling noise. This is a real correction to this experiment's own prediction, not a forced result: 007-D isolated the staleness-driven undershoot by making the recovering target's TRUE PERFORMANCE change at the same moment its data went stale, so its neutral reset had a genuinely different value to converge toward over hundreds of requests. Here, and in 007-E, the recovering target's true performance never changed at all -- only its health did -- so a stale-then-neutral latency score converges back to essentially the SAME already-correct estimate within a handful of requests, too fast to be visible at a 300ms aggregation window. The mechanism Adaptive alone has (staleness discounting) is still exclusively Adaptive's; what this experiment adds is that its visible cost depends on how much the recovering target's actual performance has diverged from what its stale data would have said, not merely on whether a staleness reset occurred."
+}

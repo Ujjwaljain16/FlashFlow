@@ -136,6 +136,53 @@ Two distinct mechanisms are visible here in sequence, and this experiment is the
 
 ---
 
+## 7. Results: Experiment 007-F — Counterfactual Identity
+
+**Hypothesis (H6)**: see `hypotheses.md`. 007-B's exact heterogeneous scenario (1 slow=100ms, 2 fast=20ms, 300 requests), run through `AdaptivePolicy` via `internal/replay.RunWorld` -- the auditable, recorded counterpart to `internal/replay/world_test.go`'s unit tests, on a real, previously-studied scenario rather than a synthetic fixture.
+
+| Property | Result |
+|---|---|
+| Identity (2 runs, same Scenario+PolicySpec) | 600-event traces, byte-for-byte identical: **true** |
+| Divergence (failure introduced at t=150ms) | Trace diverged at t=200ms, at/after the cutoff: **true** |
+| Isolation (unrelated run interleaved) | Outcome unchanged: **true** |
+
+Raw data: `experiments/007-adaptive-replay/results/007F-counterfactual-identity.json`.
+
+### Findings
+
+All three properties held on a real scenario this project has already studied and trusted, exactly as they do in the unit tests -- but on evidence independent of them. The divergence check specifically avoided the pitfall `world_test.go`'s own first draft hit (see internal/replay's commit history): both the with-failure and without-failure variants run identical always-on health-probe machinery, so the only difference between their traces is the failure's actual effect, not the mere presence of probe events.
+
+### Interpretation
+
+This matches the precedent 006-A and 007-A set: unit tests establish a mechanism's internal correctness; a recorded experiment establishes the same claims as auditable evidence, on a scenario worth trusting for its own sake. `internal/replay` is now validated on both fronts before any counterfactual comparison built on top of it (007-G, 007-H) is asked to carry any evidentiary weight.
+
+---
+
+## 8. Results: Experiment 007-G — Counterfactual Policy Comparison
+
+**Hypothesis (H7)**: see `hypotheses.md`. One shared Scenario (1 slow=100ms target, 2 fast=20ms targets, one fast target fails from t=500ms to t=1600ms), run through all five policies via `RunWorld` -- the same exogenous conditions, five independently-evolving endogenous states.
+
+| Policy | Slow share | Selections during outage | Early-recovery share (fast-B) | Late-steady share (fast-B) | Gap |
+|---|---:|---:|---:|---:|---:|
+| Round Robin | 40.8% | 0 | 31.7% | 33.3% | 1.7pp |
+| Least Connections | 16.6% | 0 | 46.7% | 46.7% | 0.0pp |
+| EWMA | 4.2% | 0 | 98.3% | 100.0% | 1.7pp |
+| P2C-load | 16.4% | 0 | 43.3% | 41.7% | -1.7pp |
+| Adaptive | 5.2% | 0 | 60.0% | 61.7% | 1.7pp |
+
+Raw data: `experiments/007-adaptive-replay/results/007G-counterfactual-policy-comparison.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed, with one instructive edge case investigated rather than dismissed.** Every policy selected the failed target zero times strictly after its detection as unhealthy. During verification, EWMA showed one selection at exactly t=600ms -- the identical virtual instant its own probe first recorded it UNHEALTHY. Tracing it down: arrivals are scheduled up front in `RunWorld`, ahead of the health Ticker's own recursively-scheduled next firing, so a tie at that exact timestamp resolves in the arrival's favor -- a same-timestamp event-ordering question the engine answers deterministically, not a health-filtering defect. It was absent from every selection strictly after that instant, for all five policies. 007-E's health-eligibility claim generalizes cleanly: it was never Adaptive-specific, because it lives entirely in upstream filtering, outside any selector.
+2. **Prediction 2 did NOT hold, and the reason is itself the finding.** Adaptive's gap between its early-post-recovery share (60.0%) and late-steady-state share (61.7%) of the recovered target was 1.7 percentage points -- the same order of magnitude as every other policy's own (structurally impossible, since none of them has any per-target memory that could produce one) "gap" at this 60-request window size, which ranged 0.0-1.7 points of pure sampling noise. The undershoot 007-D demonstrated is real, but this experiment shows it is not automatic: 007-D isolated it by making the recovering target's *true performance* change at the same moment its data went stale, giving its neutral reset a genuinely different value to converge toward over hundreds of requests. Here (and in 007-E), the recovering target's true performance never changed -- only its health did -- so a stale-then-neutral latency score converges back to essentially the *same* already-correct estimate within a handful of requests, too fast to show up in a 300ms aggregation window.
+
+### Interpretation
+
+This experiment's value is in the prediction it corrected, not just the one it confirmed. Health eligibility is confirmed policy-agnostic -- a property of the upstream filtering pattern used since Stage 3, not of any one selector. The staleness mechanism remains exclusively Adaptive's among the five, but this result adds a real qualification 007-D and 007-E's individual scenarios couldn't reveal on their own: the mechanism's *visible cost* depends on how much the recovering target's actual performance has diverged from what its stale data implied, not merely on whether a staleness reset occurred at all. A router feature can be real, mechanistically distinct from every alternative, and still produce no measurable difference in a specific scenario -- and the honest way to find that out is to run the comparison, not to assume the mechanism's existence guarantees its visibility everywhere.
+
+---
+
 ## 6. Results: Experiment 007-E — Failure and Health
 
 **Hypothesis (H5)**: see `hypotheses.md`. 3 equally-good targets (20ms each), reusing 005-D/005-G's `health.Registry` + ground-truth up/down map + probe `Ticker` pattern unmodified. B fails at t=500ms, recovers at t=1600ms (a 1.1s outage, deliberately longer than the default 1s `StaleAfter`). 500 requests, rotating cache keys.

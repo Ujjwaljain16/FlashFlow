@@ -1,0 +1,13 @@
+{
+  "experiment": "007-F-counterfactual-identity",
+  "timestamp": "2026-09-05T08:29:19Z",
+  "identity_confirmed": true,
+  "trace_length": 600,
+  "divergence_confirmed": true,
+  "divergence_time_ms": 200,
+  "divergence_not_before_cutoff": true,
+  "cutoff_ms": 150,
+  "isolation_confirmed": true,
+  "all_confirmed": true,
+  "findings": "On 007-B's real heterogeneous scenario (not a synthetic unit-test fixture), all three properties internal/replay's design depends on held: identity (two runs of the same Scenario+PolicySpec produced byte-for-byte identical 600-event traces), divergence-only-after-intervention (introducing a failure at t=150ms caused the trace to diverge starting at t=200ms, at or after the intervention and never before it -- a causality check, not just an equality check), and isolation (an unrelated Scenario+PolicySpec run in between two identical runs changed nothing). This is the auditable, recorded counterpart to internal/replay/world_test.go's unit tests, matching the precedent set by 006-A (statistics) and 007-A (adaptive signals): unit tests establish internal correctness, this experiment establishes the same claims as evidence, on a scenario this project has already studied and trusted."
+}

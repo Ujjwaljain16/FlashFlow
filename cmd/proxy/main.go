@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"os/signal"
 	"strings"
@@ -16,12 +18,48 @@ import (
 	"flashflow/internal/transport"
 )
 
+// buildSelector constructs the named routing policy wired to pxy's own
+// shared LoadTracker/LatencyTracker (the same instances ServeHTTP already
+// updates), the pattern every cmd/experiment-* binary that exercises a
+// non-default policy against a real ReverseProxy already uses (e.g.
+// cmd/experiment-003c/003d/003e). Before this flag existed, this shipped
+// binary could only ever run Round Robin despite every one of these
+// selectors being the identical, shared code the virtual engine and every
+// experiment already exercise (F-30).
+func buildSelector(name string, pxy *proxy.ReverseProxy, targets []string) (proxy.TargetSelector, error) {
+	switch name {
+	case "round-robin":
+		return proxy.NewRoundRobinSelector(), nil
+	case "weighted-round-robin":
+		// No per-target capacity data is available from this minimal
+		// CLI (unlike an experiment scenario's known ServiceTime) --
+		// equal weights here are a documented starting point, not a
+		// claim of matching each target's real capacity.
+		weights := make(proxy.TargetWeights, len(targets))
+		for _, t := range targets {
+			weights[t] = 1
+		}
+		return proxy.NewWeightedRoundRobinSelector(weights), nil
+	case "least-connections":
+		return proxy.NewLeastConnectionsSelector(pxy.LoadTracker()), nil
+	case "ewma":
+		return proxy.NewEWMASelector(pxy.LatencyTracker()), nil
+	case "p2c-load":
+		return proxy.NewP2CSelector(proxy.ScorerFromLoad(pxy.LoadTracker()), rand.New(rand.NewSource(time.Now().UnixNano()))), nil
+	case "adaptive":
+		return proxy.NewAdaptiveSelector(pxy.LoadTracker(), pxy.LatencyTracker(), nil, nil, nil, proxy.DefaultAdaptiveConfig()), nil
+	default:
+		return nil, fmt.Errorf("unknown -policy %q (want one of: round-robin, weighted-round-robin, least-connections, ewma, p2c-load, adaptive)", name)
+	}
+}
+
 func main() {
 	addr := flag.String("addr", ":8080", "Proxy listen address")
 	targetsList := flag.String("targets", "http://127.0.0.1:8001,http://127.0.0.1:8002,http://127.0.0.1:8003", "Comma-separated upstream targets")
 	checkIntervalMs := flag.Int("check-interval-ms", 500, "Health check interval in milliseconds")
 	checkTimeoutMs := flag.Int("check-timeout-ms", 200, "Health check timeout in milliseconds")
 	debugHeaders := flag.Bool("debug-headers", true, "Expose debug headers in response")
+	policyName := flag.String("policy", "round-robin", "Routing policy: round-robin, weighted-round-robin, least-connections, ewma, p2c-load, adaptive")
 	flag.Parse()
 
 	var targets []string
@@ -51,11 +89,17 @@ func main() {
 	}
 
 	pxy := proxy.NewReverseProxy(cfg, clk, proxy.NewRoundRobinSelector())
+	sel, err := buildSelector(*policyName, pxy, targets)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+	pxy.SetSelector(sel)
+
 	if err := pxy.Start(); err != nil {
 		log.Fatalf("failed to start proxy: %v", err)
 	}
 
-	log.Printf("[FlashFlow Proxy] Listening on %s routing to [%s]", pxy.AddrPort(), strings.Join(targets, ", "))
+	log.Printf("[FlashFlow Proxy] Listening on %s routing to [%s] using policy %q", pxy.AddrPort(), strings.Join(targets, ", "), *policyName)
 
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()

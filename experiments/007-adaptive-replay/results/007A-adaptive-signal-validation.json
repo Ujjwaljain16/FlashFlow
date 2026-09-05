@@ -1,0 +1,43 @@
+{
+  "experiment": "007-A-adaptive-signal-validation",
+  "timestamp": "2026-09-05T07:43:56Z",
+  "all_pass": true,
+  "checks": [
+    {
+      "name": "load_monotonicity",
+      "pass": true,
+      "detail": "load levels [0 1 2 5 10 20] -\u003e scores [0.7000000000000001 0.30000000000000004 0.30000000000000004 0.30000000000000004 0.30000000000000004 0.30000000000000004] (want non-increasing)",
+      "findings": "Increasing load (relative to fixed capacity) must never increase a target's score."
+    },
+    {
+      "name": "latency_monotonicity",
+      "pass": true,
+      "detail": "latencies [1ms 10ms 50ms 100ms 500ms 2s] -\u003e scores [0.8960396039603961 0.8636363636363636 0.7666666666666667 0.7000000000000001 0.5666666666666667 0.5190476190476191] (want non-increasing)",
+      "findings": "Increasing observed latency must never increase a target's score."
+    },
+    {
+      "name": "cost_monotonicity",
+      "pass": true,
+      "detail": "costs [1 2 5 10 20] -\u003e scores [0.7000000000000001 0.6000000000000001 0.6000000000000001 0.6000000000000001 0.6000000000000001] (want non-increasing)",
+      "findings": "Increasing a target's configured cost, relative to a fixed rival, must never increase its score."
+    },
+    {
+      "name": "cold_start_neutrality",
+      "pass": true,
+      "detail": "bad=0.020 cold=0.500 good=0.990 (want bad \u003c cold == 0.5 \u003c good)",
+      "findings": "An unobserved target must score exactly neutral (0.5) on latency -- worse than a good observed target, better than a bad observed one, never automatically winning or losing the way EWMA's optimistic cold-start rule (proven to cause lock-in in Experiment 006-B) would."
+    },
+    {
+      "name": "staleness_collapses_to_neutral",
+      "pass": true,
+      "detail": "stale-but-excellent=0.500, stale-but-terrible=0.500 (want both == 0.5)",
+      "findings": "Once a target's data is stale, its score must fall back to neutral regardless of whether the untrusted underlying estimate was good or bad -- old information is never treated as current truth, the direct fix for the staleness blind spot Stage 3/6 demonstrated in EWMA."
+    },
+    {
+      "name": "cache_affinity_specificity",
+      "pass": true,
+      "detail": "edge-a on key-x=1 (want 1), edge-b on key-x=0 (want 0), edge-a on key-y=0 (want 0)",
+      "findings": "Cache affinity must contribute only for the exact target that last served the exact key -- never for a different target on the same key, never for the same target on a different key."
+    }
+  ]
+}

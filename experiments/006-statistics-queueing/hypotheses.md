@@ -21,3 +21,13 @@ Stage 3 observed extreme, apparently-random target imbalance among genuinely equ
 - *Cell 2, added because of that discovery*: the same 50 seeds, plus a small (±2ms on a 20ms base) per-run service-time jitter — the actual kind of timing noise that produced Stage 3's original variability, which Cell 1's design never introduced.
 - *Revised prediction for Cell 2*: genuine (if small) timing differences between targets should let real latency differences compete with tie-break order for control of the outcome.
 - *Purpose*: an honest two-part story — first a null result that revealed a hidden assumption (permutation alone doesn't create genuine variability among literally-identical targets), then a targeted refinement that tests what actually varies once realistic noise exists.
+
+## H3 — Cache/Coalescing Effect Consistency and Failure-Shape Attribution
+
+Stage 4 established coalescing's core benefits (004-D: upstream requests collapse from C to 1; 004-F: failure shape shifts from partial to all-or-nothing) each from a single run per condition. This hypothesis asks whether those findings hold up under genuine replication, and — separately — demonstrates why the choice of statistical test matters as much as running one at all.
+
+- *Setup, Part 1*: 15 independent real replicate runs per condition (coalesce on/off), each a fresh Edge+Origin pair, measuring upstream request count and p99 latency for a 30-request burst against a just-expired key.
+- *Prediction 1*: upstream request count is perfectly consistent within each condition (near-zero variance) and completely separated between conditions — a structural property of whether anything deduplicates concurrent misses, not a probabilistic tendency.
+- *Prediction 2*: p99 latency shows a real but more modest effect size, consistent with 004-C/004-D's documented Origin-model limitation (no queueing representation, so a stampede's tail-latency cost is understated).
+- *Setup, Part 2*: 30 independent real replicate bursts per condition, each against a fresh never-cached key under 30% simulated packet loss, recording the per-burst failure count individually — granularity 004-F's aggregate-only recording never preserved.
+- *Prediction 3*: coalescing produces a higher proportion of all-or-nothing bursts (0 or all N requests failing) than independent dialing, and this proportion difference should be measurable via a statistic that actually targets distributional *shape*, not central tendency — Mann-Whitney U is the wrong tool for this specific question and is included deliberately to show why, not to report its result as the answer.

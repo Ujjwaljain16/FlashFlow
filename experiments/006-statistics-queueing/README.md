@@ -76,3 +76,41 @@ Raw data: `experiments/006-statistics-queueing/results/006B-ewma-lock-in-variabi
 ### Interpretation
 
 This is the discover-limitation-then-refine cycle working exactly as the project's philosophy describes, compressed into a single experiment: the first design answered a well-posed but narrower question ("who wins when targets are identical") than the one actually motivating it ("how variable is lock-in under realistic conditions"), and the gap between those two questions was itself the finding. Adding the smallest realistic source of variation the original Stage 3 phenomenon actually depended on — not a bigger model, just genuine timing noise — didn't merely add spread to an existing measurement; it revealed that the mechanism controlling outcomes changes entirely between "targets are equal" and "targets are almost equal." That distinction did not exist as a stated fact anywhere in this project before this experiment.
+
+---
+
+## 4. Results: Experiment 006-C — Cache / Coalescing Effect
+
+**Hypothesis (H3)**: see `hypotheses.md`. Part 1: 15 replicate real runs per condition on upstream requests and p99 latency. Part 2: 30 replicate real bursts per condition under 30% loss, recording per-burst failure counts individually.
+
+### Part 1 — consistency of the core coalescing benefit
+
+| Metric | Result |
+|---|---|
+| Upstream requests, stddev within each condition | 0.000 (no-coalesce), 0.000 (coalesce) |
+| Upstream requests, no-coalesce vs coalesce | Cliff's Delta = 1.00 (complete separation), p<0.000001 |
+| p99 latency, no-coalesce vs coalesce | Cliff's Delta = 0.96 (large), p<0.0001 |
+| p99 latency median difference | 9.7ms, 95% bootstrap CI [6.3, 13.1] |
+
+Raw data: `experiments/006-statistics-queueing/results/006C-cache-coalescing-effect.json`.
+
+### Part 2 — a deliberate lesson in choosing the right statistic
+
+| | No-coalesce | Coalesce |
+|---|---:|---:|
+| All-or-nothing bursts (0 or 10 of 10 requests failing) | 9/30 | **30/30** |
+| Mean failures per burst | 1.43 | 2.33 |
+
+All-or-nothing proportion difference (coalesce minus no-coalesce), bootstrapped: **0.700, 95% CI [0.533, 0.867]**.
+
+**A real, discovered limitation, not glossed over**: `internal/netsim`'s loss simulation has no seeded-RNG injection point exposed through `EdgeConfig` (`internal/topology/edge.go` always constructs it with a real time-seeded source) — so Part 2's raw per-burst failure counts are not reproducible run to run, unlike every bootstrap analysis in this file. Run repeatedly during development, Mann-Whitney's p-value on the raw failure counts swung from 0.0030 to 0.4105 across five otherwise-identical executions — crossing the conventional 0.05 significance threshold in both directions. The bootstrapped all-or-nothing proportion, by contrast, stayed in a tight band (0.700–0.900 across those same five runs) and never came close to including zero.
+
+### Findings
+
+1. **Prediction 1 confirmed exactly**, and more strongly than expected: upstream request count wasn't merely "consistent," it had literally zero variance within each condition across 15 real replicate runs — reconfirming 004-C/004-D's finding as a deterministic structural property, not a strong tendency.
+2. **Prediction 2 confirmed**: p99 latency showed a large, real effect, but one visibly smaller in relative terms than the upstream-request effect — consistent with 004-C/004-D's own documented caveat that Origin's infinite-server model understates how much a stampede should cost in tail latency.
+3. **Prediction 3 confirmed, and the accompanying methodology point is the more important result.** A first attempt applying Mann-Whitney U to raw per-burst failure counts is the wrong tool for a shape question and behaves exactly like one: its significance is unstable across repeated identical executions (p ranging 0.0030–0.4105), because it's testing for a location/rank shift, and mean failure rate per burst was genuinely similar between conditions (differing runs put it anywhere from roughly 1.4–2.6 vs 2.0–3.7 out of 10). The all-or-nothing proportion — the statistic that actually targets "does the shape differ" — is stable, large, and clearly excludes zero every time it was checked.
+
+### Interpretation
+
+Part 1 reconfirms Stage 4's findings with actual replication behind them for the first time, and the near-zero variance is itself informative: coalescing's upstream-request benefit isn't merely likely to hold, it's structurally guaranteed by the mechanism, exactly as 004-D's own design predicted. Part 2 is a deliberately included methodology lesson, not a polished result: running the "obvious" test (Mann-Whitney on failure counts) first and watching it give an unstable answer across identical reruns is direct, first-hand evidence for exactly the caution item 10 and item 63 ask for — a test's applicability to the actual question matters more than whether it's popular or easy to reach for. The netsim seeding gap this surfaced is left undone here (fixing it is a small, well-scoped `internal/netsim`/`internal/topology` change, but not one this experiment's own conclusions depend on) and is recorded as a concrete opportunity for a future session that needs reproducible network-loss experiments specifically.

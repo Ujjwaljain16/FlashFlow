@@ -1,0 +1,100 @@
+{
+  "experiment": "007-B-adaptive-routing-heterogeneity",
+  "timestamp": "2026-09-05T07:46:46Z",
+  "requests": 300,
+  "heterogeneous": [
+    {
+      "scenario": "heterogeneous",
+      "policy": "round-robin",
+      "distribution": {
+        "edge-a-slow": 100,
+        "edge-b-fast": 100,
+        "edge-c-fast": 100
+      }
+    },
+    {
+      "scenario": "heterogeneous",
+      "policy": "least-connections",
+      "distribution": {
+        "edge-a-slow": 42,
+        "edge-b-fast": 139,
+        "edge-c-fast": 119
+      }
+    },
+    {
+      "scenario": "heterogeneous",
+      "policy": "ewma",
+      "distribution": {
+        "edge-a-slow": 21,
+        "edge-b-fast": 274,
+        "edge-c-fast": 5
+      }
+    },
+    {
+      "scenario": "heterogeneous",
+      "policy": "p2c-load",
+      "distribution": {
+        "edge-a-slow": 42,
+        "edge-b-fast": 130,
+        "edge-c-fast": 128
+      }
+    },
+    {
+      "scenario": "heterogeneous",
+      "policy": "adaptive",
+      "distribution": {
+        "edge-a-slow": 17,
+        "edge-b-fast": 134,
+        "edge-c-fast": 149
+      }
+    }
+  ],
+  "homogeneous": [
+    {
+      "scenario": "homogeneous",
+      "policy": "round-robin",
+      "distribution": {
+        "edge-x": 100,
+        "edge-y": 100,
+        "edge-z": 100
+      }
+    },
+    {
+      "scenario": "homogeneous",
+      "policy": "least-connections",
+      "distribution": {
+        "edge-x": 120,
+        "edge-y": 120,
+        "edge-z": 60
+      }
+    },
+    {
+      "scenario": "homogeneous",
+      "policy": "ewma",
+      "distribution": {
+        "edge-x": 290,
+        "edge-y": 5,
+        "edge-z": 5
+      }
+    },
+    {
+      "scenario": "homogeneous",
+      "policy": "p2c-load",
+      "distribution": {
+        "edge-x": 108,
+        "edge-y": 93,
+        "edge-z": 99
+      }
+    },
+    {
+      "scenario": "homogeneous",
+      "policy": "adaptive",
+      "distribution": {
+        "edge-x": 101,
+        "edge-y": 100,
+        "edge-z": 99
+      }
+    }
+  ],
+  "findings": "Heterogeneous scenario: Adaptive sent only 5.7% of traffic to the slow target (vs 7.0% for EWMA, which also locked in hard on one of the two equally-fast targets rather than splitting between them -- Experiment 006-B's proven failure mode). Homogeneous scenario (the negative case, item 41): Adaptive's maximum single-target share was 33.7% among 3 equal targets, close to Round Robin's own even split -- Adaptive does not manufacture an advantage or a pathology where none exists, matching the standard this stage's design explicitly sets: a legitimate result is 'Adaptive matched simpler-policy performance where extra signals weren't needed, and only differentiated itself where they were.'"
+}

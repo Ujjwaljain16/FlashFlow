@@ -37,3 +37,40 @@ All 6 checks passed. Raw data: `experiments/007-adaptive-replay/results/007A-ada
 ### Interpretation
 
 This experiment doesn't produce a routing finding — like 006-A, it produces the license to trust every routing decision `AdaptiveSelector` makes in the experiments that follow. Every check here targets a specific design decision documented in `internal/proxy/adaptive.go`'s own comments, verified independently rather than assumed correct because the code compiled.
+
+---
+
+## 3. Results: Experiment 007-B — Adaptive Routing Under Heterogeneity
+
+**Hypothesis (H2)**: see `hypotheses.md`. 005-E's exact heterogeneous scenario, plus a homogeneous negative-case scenario, all five policies run against both.
+
+### Heterogeneous (1 slow=100ms, 2 fast=20ms)
+
+| Policy | slow | fast-B | fast-C |
+|---|---:|---:|---:|
+| Round Robin | 100 | 100 | 100 |
+| Least Connections | 42 | 139 | 119 |
+| EWMA | 21 | **274** | **5** |
+| P2C (load) | 42 | 130 | 128 |
+| **Adaptive** | **17** | 134 | 149 |
+
+### Homogeneous (3 equal targets, 20ms each) — the negative case
+
+| Policy | x | y | z |
+|---|---:|---:|---:|
+| Round Robin | 100 | 100 | 100 |
+| Least Connections | 120 | 120 | 60 |
+| EWMA | **290** | **5** | **5** |
+| P2C (load) | 108 | 93 | 99 |
+| **Adaptive** | 101 | 100 | 99 |
+
+Raw data: `experiments/007-adaptive-replay/results/007B-adaptive-heterogeneity.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed cleanly, on both halves of the claim.** Adaptive sent only 5.7% of heterogeneous traffic to the slow target — better than Least Connections (14.0%) and P2C (14.0%), competitive with EWMA (7.0%). But unlike EWMA, Adaptive split the two *equally fast* targets almost evenly (134 vs 149, ~47%/53%) rather than locking onto one of them (EWMA: 274 vs 5, a 98%/2% split) — the exact 006-B failure mode this design was built to avoid, confirmed absent under real routing conditions, not just in isolated signal checks.
+2. **Prediction 2 confirmed strikingly.** In the homogeneous scenario, Adaptive's distribution (101/100/99) is nearly indistinguishable from Round Robin's exact even split (100/100/100) — while EWMA *still* locked in hard (290/5/5) even with zero heterogeneity to justify any preference at all. Adaptive neither manufactured an advantage nor introduced a pathology where none was warranted.
+
+### Interpretation
+
+This is exactly the shape of result item 76 says is legitimate and item 41 says is necessary: not "Adaptive wins everywhere," but "Adaptive matched Round Robin's fairness where no signal mattered, and specifically avoided the one failure mode (equal-target lock-in) that a single-signal greedy policy still exhibits even in the easiest possible scenario." The mechanism is traceable directly to two design decisions from `internal/proxy/adaptive.go`: utilization (load/capacity) is self-correcting the same way Least Connections' load signal is, and neutral cold start prevents the "first mover wins forever" dynamic that gives EWMA's tie-break rule its bite. Neither decision was tuned to produce this result — both were made before this experiment ran, motivated directly by Stage 3 and Stage 6 evidence, and predicted this outcome in `hypotheses.md` before the experiment was executed.

@@ -85,10 +85,15 @@ func (c *Coalescer) Do(key string, fn func() (Entry, error)) (entry Entry, err e
 		cl.val, cl.err = fn()
 	}()
 
+	// Signal waiters before removing the in-flight entry (canonical
+	// singleflight ordering) -- the reverse order left a narrow window
+	// where a new caller arriving between the delete and the Done() would
+	// see no in-flight entry and start a redundant fetch instead of
+	// piggy-backing on the result that was about to become available.
+	cl.wg.Done()
 	c.mu.Lock()
 	delete(c.calls, key)
 	c.mu.Unlock()
-	cl.wg.Done()
 
 	c.leads.Add(1)
 	if cl.err != nil {

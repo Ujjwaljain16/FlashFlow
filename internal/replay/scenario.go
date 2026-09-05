@@ -89,3 +89,22 @@ func (s Scenario) serviceTimes() map[string]time.Duration {
 	}
 	return m
 }
+
+// SameProtocol reports whether s and other agree on the experiment-
+// protocol fields RunWorld's own execution mechanics depend on
+// (UseHealthRegistry, ProbeInterval, Horizon) — as distinct from the
+// world's actual physics (Targets/Arrivals/Failures/Seed). These fields
+// are exogenous in the sense that both are inputs fixed before a run
+// starts, but they are protocol knobs, not world physics: nothing in the
+// type system stops constructing two Scenarios for a counterfactual
+// comparison that differ in, say, Horizon alone, which FirstDivergence
+// would then report as a policy-caused divergence when it is really just
+// a run-length artifact. Every current caller gets this right by hand
+// (copy the baseline Scenario, mutate only a physics field); SameProtocol
+// exists so that discipline can be checked instead of merely trusted —
+// see ComparePolicies.
+func (s Scenario) SameProtocol(other Scenario) bool {
+	return s.UseHealthRegistry == other.UseHealthRegistry &&
+		s.ProbeInterval == other.ProbeInterval &&
+		s.Horizon == other.Horizon
+}

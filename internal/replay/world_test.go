@@ -1,12 +1,36 @@
 package replay
 
 import (
+	"errors"
+	"net/http"
 	"reflect"
 	"testing"
 	"time"
 
 	"flashflow/internal/clock"
+	"flashflow/internal/proxy"
 )
+
+// erroringSelector fails SelectTarget for any request whose key is in
+// failKeys, and falls back to plain round-robin otherwise -- used to force
+// deterministic, independent scheduling failures without needing a
+// real-world condition to trigger one.
+type erroringSelector struct {
+	failKeys map[string]bool
+	next     int
+}
+
+func (s *erroringSelector) SelectTarget(r *http.Request, available []string) (string, error) {
+	if s.failKeys[r.URL.Path] {
+		return "", errors.New("forced selection failure for test")
+	}
+	if len(available) == 0 {
+		return "", proxy.ErrNoHealthyTargets
+	}
+	t := available[s.next%len(available)]
+	s.next++
+	return t, nil
+}
 
 func heterogeneousScenario(seed int64) Scenario {
 	const spacing = 5 * time.Millisecond
@@ -80,6 +104,15 @@ func TestRunWorld_IdentityDeterministic(t *testing.T) {
 	}
 	if !reflect.DeepEqual(result1.CompletedByTarget, result2.CompletedByTarget) {
 		t.Fatalf("identical Scenario+PolicySpec produced diverging completion counts: %+v vs %+v", result1.CompletedByTarget, result2.CompletedByTarget)
+	}
+	// Completions (added for Stage 8's tuning objective, F-44 regression):
+	// added alongside Records/CompletedByTarget but not originally
+	// covered by this identity check -- a pure function of the
+	// deterministic engine clock, so it should already be
+	// identity-stable, but this test existing is what makes that a
+	// checked property instead of an assumption.
+	if !reflect.DeepEqual(result1.Completions, result2.Completions) {
+		t.Fatalf("identical Scenario+PolicySpec produced diverging completion records:\n%+v\nvs\n%+v", result1.Completions, result2.Completions)
 	}
 }
 
@@ -175,5 +208,85 @@ func TestRunWorld_Isolation(t *testing.T) {
 	if idx, diverged := FirstDivergence(before.Trace, after.Trace); diverged {
 		t.Fatalf("running an unrelated scenario in between changed this scenario's outcome at event %d: %+v vs %+v -- shared state leaked between runs",
 			idx, before.Trace[idx], after.Trace[idx])
+	}
+	if !reflect.DeepEqual(before.Completions, after.Completions) {
+		t.Fatalf("running an unrelated scenario in between changed this scenario's Completions -- shared state leaked between runs:\n%+v\nvs\n%+v", before.Completions, after.Completions)
+	}
+}
+
+// TestRunWorld_MultipleSchedulingFailures_AllReportedAndPartialResultsKept
+// regression-tests F-28: scheduleErr was a single shared variable
+// overwritten by whichever failing arrival's closure ran last, and once
+// set, the entire WorldResult was discarded (a bare zero value returned)
+// even though most arrivals scheduled and completed successfully.
+func TestRunWorld_MultipleSchedulingFailures_AllReportedAndPartialResultsKept(t *testing.T) {
+	scenario := Scenario{
+		Targets: []TargetProfile{{Name: "only", ServiceTime: 5 * time.Millisecond}},
+		Arrivals: []Arrival{
+			{At: 0, Key: "/ok-1"},
+			{At: clock.VirtualTime((10 * time.Millisecond).Nanoseconds()), Key: "/fail-a"},
+			{At: clock.VirtualTime((20 * time.Millisecond).Nanoseconds()), Key: "/ok-2"},
+			{At: clock.VirtualTime((30 * time.Millisecond).Nanoseconds()), Key: "/fail-b"},
+			{At: clock.VirtualTime((40 * time.Millisecond).Nanoseconds()), Key: "/ok-3"},
+		},
+		Seed: 1,
+	}
+	spec := PolicySpec{
+		Name: "erroring-test-selector",
+		New: func(clk clock.Clock, seed int64, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
+			return &erroringSelector{failKeys: map[string]bool{"/fail-a": true, "/fail-b": true}}, NoInstrumentation{}
+		},
+	}
+
+	result, err := RunWorld(scenario, spec)
+	if err == nil {
+		t.Fatalf("expected a non-nil error from two forced selection failures")
+	}
+
+	var joined interface{ Unwrap() []error }
+	if !errors.As(err, &joined) {
+		t.Fatalf("expected an errors.Join-style joined error, got %T: %v", err, err)
+	}
+	if got := len(joined.Unwrap()); got != 2 {
+		t.Fatalf("expected exactly 2 joined errors (one per forced failure), got %d: %v", got, err)
+	}
+
+	// The 3 successful arrivals must still be visible, not discarded
+	// because the other 2 failed.
+	if len(result.Records) != 3 {
+		t.Fatalf("expected 3 successful selections preserved despite 2 failures, got %d", len(result.Records))
+	}
+	if len(result.Completions) != 3 {
+		t.Fatalf("expected 3 completions preserved despite 2 failures, got %d", len(result.Completions))
+	}
+}
+
+// TestRunWorld_HorizonTruncation_InFlightRequestsAreCounted
+// regression-tests F-29: a request dispatched before Horizon but whose
+// service time completes after it used to vanish from every count
+// (neither completed nor rejected) with no way to tell the run was
+// truncated at all.
+func TestRunWorld_HorizonTruncation_InFlightRequestsAreCounted(t *testing.T) {
+	scenario := Scenario{
+		Targets:  []TargetProfile{{Name: "slow", ServiceTime: 500 * time.Millisecond}},
+		Arrivals: []Arrival{{At: 0, Key: "/late"}},
+		// Horizon cuts off well before the 500ms service time elapses --
+		// the request is dispatched (a real SelectionRecord exists) but
+		// never completes within this run.
+		Horizon: clock.VirtualTime((50 * time.Millisecond).Nanoseconds()),
+		Seed:    1,
+	}
+	result, err := RunWorld(scenario, RoundRobinPolicy())
+	if err != nil {
+		t.Fatalf("RunWorld failed: %v", err)
+	}
+	if len(result.Records) != 1 {
+		t.Fatalf("expected the request to be dispatched (1 record), got %d", len(result.Records))
+	}
+	if len(result.Completions) != 0 {
+		t.Fatalf("expected 0 completions before Horizon truncation, got %d", len(result.Completions))
+	}
+	if result.InFlightAtHorizon != 1 {
+		t.Fatalf("expected InFlightAtHorizon=1 for the truncated request, got %d", result.InFlightAtHorizon)
 	}
 }

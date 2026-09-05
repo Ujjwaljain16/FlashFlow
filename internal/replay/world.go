@@ -1,6 +1,7 @@
 package replay
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +11,19 @@ import (
 	"flashflow/internal/health"
 	"flashflow/internal/proxy"
 	"flashflow/internal/vtime"
+)
+
+// Trace event types this package records via vtime.Engine.Record. Typed
+// here (rather than left as inline string literals at each call site) so
+// the vocabulary RunWorld actually emits is discoverable in one place —
+// it was previously four untyped literals scattered across this
+// function, each freely restatable without a compiler-checked link
+// between them.
+const (
+	eventHealthProbe      = "health_probe"
+	eventRequestRejected  = "request_rejected"
+	eventRequestRouted    = "request_routed"
+	eventRequestCompleted = "request_completed"
 )
 
 // Instrumentation feeds a World's dispatch/completion events into
@@ -33,10 +47,15 @@ func (NoInstrumentation) OnComplete(string, time.Duration) {}
 // selector and fresh trackers every time -- never reuse or share one
 // across calls. seed is threaded through from the Scenario so that any
 // policy needing randomness (P2C) is reproducible from the Scenario
-// alone, the same as every other exogenous input.
+// alone, the same as every other exogenous input. targets is the
+// Scenario's own target list, threaded through for the one policy that
+// needs to know it ahead of time (WeightedRoundRobinPolicy's static
+// capacity weights) -- every other policy ignores the parameter
+// entirely, the same as they already ignore clk or seed when they don't
+// need them.
 type PolicySpec struct {
 	Name string
-	New  func(clk clock.Clock, seed int64) (proxy.TargetSelector, Instrumentation)
+	New  func(clk clock.Clock, seed int64, targets []TargetProfile) (proxy.TargetSelector, Instrumentation)
 }
 
 // SelectionRecord is one endogenous decision a World made in response to
@@ -47,14 +66,39 @@ type SelectionRecord struct {
 	Target        string  `json:"target"`
 }
 
+// CompletionRecord is one request's realized latency -- separate from
+// SelectionRecord because the latency isn't known until the completion
+// callback fires, strictly after the selection that caused it. No Stage
+// 7 experiment needed raw per-request latency (they worked from
+// LatencyTracker's smoothed estimate or from selection distributions
+// alone); Stage 8's tuning objective does, since a percentile like p99
+// can't be reconstructed from an EWMA estimate or from aggregate counts.
+type CompletionRecord struct {
+	VirtualTimeMs float64       `json:"virtual_time_ms"`
+	Target        string        `json:"target"`
+	Latency       time.Duration `json:"latency_ns"`
+}
+
 // WorldResult is everything one completed World run produced: its full
 // causal Trace (for exact identity/divergence comparisons between runs)
 // plus a convenience summary for comparing policies against each other.
 type WorldResult struct {
 	Records           []SelectionRecord
+	Completions       []CompletionRecord
 	Trace             []vtime.TraceEvent
 	CompletedByTarget map[string]int
 	RejectedCount     int
+	// InFlightAtHorizon is len(Records)-len(Completions): requests that
+	// were successfully routed but whose scheduled completion had not
+	// yet fired when the run stopped (only possible when Scenario.Horizon
+	// truncates a run before every in-flight request's service time
+	// elapses — RunUntilEmpty, by definition, never leaves this nonzero).
+	// Surfaced explicitly rather than silently — len(Records) is not
+	// guaranteed to equal sum(CompletedByTarget)+RejectedCount whenever
+	// this is nonzero, and a consumer computing a completion rate without
+	// checking it would silently undercount in-flight work as neither
+	// success nor rejection.
+	InFlightAtHorizon int
 }
 
 // RunWorld constructs one completely fresh World from scenario and spec
@@ -71,7 +115,7 @@ type WorldResult struct {
 // leaving it as an unchecked design intent.
 func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 	e := vtime.NewEngine(0)
-	selector, instr := spec.New(e.Clock(), scenario.Seed)
+	selector, instr := spec.New(e.Clock(), scenario.Seed, scenario.Targets)
 
 	allTargets := scenario.TargetNames()
 	var registry *health.Registry
@@ -102,7 +146,7 @@ func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 		if _, err := e.NewTicker(0, interval, func() {
 			for _, t := range allTargets {
 				state := registry.RecordProbeResult(t, up[t])
-				e.Record("health_probe", t, map[string]any{"success": up[t], "state": string(state)})
+				e.Record(eventHealthProbe, t, map[string]any{"success": up[t], "state": string(state)})
 			}
 		}); err != nil {
 			return WorldResult{}, fmt.Errorf("replay: starting probe ticker: %w", err)
@@ -111,9 +155,14 @@ func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 
 	serviceTimes := scenario.serviceTimes()
 	var records []SelectionRecord
+	var completions []CompletionRecord
 	completedByTarget := make(map[string]int)
 	rejectedCount := 0
-	var scheduleErr error
+	// Every independent scheduling failure is appended, not overwritten —
+	// a single shared error variable previously meant that if multiple
+	// arrivals each hit a scheduling error, only the last one's message
+	// survived, with no visibility into how many were actually affected.
+	var scheduleErrs []error
 
 	for _, arrival := range scenario.Arrivals {
 		arrival := arrival
@@ -130,28 +179,30 @@ func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 			}
 			if len(available) == 0 {
 				rejectedCount++
-				e.Record("request_rejected", arrival.Key, map[string]any{"reason": "no_healthy_targets"})
+				e.Record(eventRequestRejected, arrival.Key, map[string]any{"reason": "no_healthy_targets"})
 				return
 			}
 
 			r := httptest.NewRequest(http.MethodGet, arrival.Key, nil)
 			target, err := selector.SelectTarget(r, available)
 			if err != nil {
-				scheduleErr = fmt.Errorf("replay: selection failed: %w", err)
+				scheduleErrs = append(scheduleErrs, fmt.Errorf("replay: selection failed for key %q at %v: %w", arrival.Key, e.Now(), err))
 				return
 			}
 			now := e.Now()
 			records = append(records, SelectionRecord{VirtualTimeMs: msF(now), Key: arrival.Key, Target: target})
-			e.Record("request_routed", arrival.Key, map[string]any{"target": target})
+			e.Record(eventRequestRouted, arrival.Key, map[string]any{"target": target})
 			instr.OnDispatch(target)
 
 			svc := serviceTimes[target]
 			if _, err := e.Schedule(now.Add(svc), func() {
-				instr.OnComplete(target, e.Now().Sub(now))
+				latency := e.Now().Sub(now)
+				instr.OnComplete(target, latency)
 				completedByTarget[target]++
-				e.Record("request_completed", arrival.Key, map[string]any{"target": target})
+				completions = append(completions, CompletionRecord{VirtualTimeMs: msF(e.Now()), Target: target, Latency: latency})
+				e.Record(eventRequestCompleted, arrival.Key, map[string]any{"target": target})
 			}); err != nil {
-				scheduleErr = fmt.Errorf("replay: scheduling completion: %w", err)
+				scheduleErrs = append(scheduleErrs, fmt.Errorf("replay: scheduling completion for key %q, target %q: %w", arrival.Key, target, err))
 			}
 		})
 		if err != nil {
@@ -166,16 +217,23 @@ func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 	} else if err := e.RunUntilEmpty(); err != nil {
 		return WorldResult{}, fmt.Errorf("replay: run failed: %w", err)
 	}
-	if scheduleErr != nil {
-		return WorldResult{}, scheduleErr
-	}
-
-	return WorldResult{
+	result := WorldResult{
 		Records:           records,
+		Completions:       completions,
 		Trace:             e.Trace().Events(),
 		CompletedByTarget: completedByTarget,
 		RejectedCount:     rejectedCount,
-	}, nil
+		InFlightAtHorizon: len(records) - len(completions),
+	}
+	if len(scheduleErrs) > 0 {
+		// Partial results are returned alongside the joined error (rather
+		// than a bare zero-value WorldResult) so a caller can see exactly
+		// how much of the run succeeded before the failure(s), instead of
+		// losing every arrival that scheduled cleanly because a handful
+		// of others didn't.
+		return result, errors.Join(scheduleErrs...)
+	}
+	return result, nil
 }
 
 func msF(t clock.VirtualTime) float64 { return float64(t) / 1e6 }

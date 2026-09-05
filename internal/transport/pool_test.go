@@ -9,6 +9,47 @@ import (
 	"time"
 )
 
+// TestTrackedTransport_ResponseHeaderTimeout_BoundsHungBackend
+// regression-tests F-14: RoundTrip had no ResponseHeaderTimeout, so a
+// target that accepts a connection but never writes a response would hang
+// the request indefinitely when RoundTrip is called directly (as
+// proxy.ReverseProxy does) rather than through an http.Client.Timeout.
+func TestTrackedTransport_ResponseHeaderTimeout_BoundsHungBackend(t *testing.T) {
+	neverResponds := make(chan struct{})
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-neverResponds // hang forever unless the test releases it
+	}))
+	defer ts.Close()
+	defer close(neverResponds)
+
+	cfg := DefaultTransportConfig("test_pool_hung")
+	cfg.ResponseHeaderTimeout = 100 * time.Millisecond
+	tt := NewTrackedTransport(cfg)
+
+	req, err := http.NewRequest(http.MethodGet, ts.URL, nil)
+	if err != nil {
+		t.Fatalf("failed to build request: %v", err)
+	}
+
+	done := make(chan error, 1)
+	go func() {
+		resp, err := tt.RoundTrip(req)
+		if resp != nil {
+			resp.Body.Close()
+		}
+		done <- err
+	}()
+
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Fatalf("expected RoundTrip to fail once ResponseHeaderTimeout elapsed, got nil error")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatalf("RoundTrip did not return within 2s of a 100ms ResponseHeaderTimeout -- appears unbounded")
+	}
+}
+
 func TestTrackedTransport_ConnectionReuse_KeepAliveEnabled(t *testing.T) {
 	// Start a test server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

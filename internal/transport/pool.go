@@ -18,19 +18,28 @@ type TransportConfig struct {
 	IdleConnTimeout     time.Duration `json:"idle_conn_timeout"`
 	DialTimeout         time.Duration `json:"dial_timeout"`
 	TLSHandshakeTimeout time.Duration `json:"tls_handshake_timeout"`
+	// ResponseHeaderTimeout bounds how long RoundTrip waits for the
+	// upstream's response headers after fully writing the request. Without
+	// it, a target that accepts a connection but never responds (a
+	// realistic failure mode this project's own health checks otherwise
+	// anticipate) hangs the request until the caller's own context
+	// deadline, if any — unbounded when a caller (e.g. proxy.ReverseProxy)
+	// calls RoundTrip directly rather than through an http.Client.Timeout.
+	ResponseHeaderTimeout time.Duration `json:"response_header_timeout"`
 }
 
 // DefaultTransportConfig returns standard defaults for proxy transports.
 func DefaultTransportConfig(label string) TransportConfig {
 	return TransportConfig{
-		Label:               label,
-		DisableKeepAlives:   false,
-		MaxIdleConns:        100,
-		MaxIdleConnsPerHost: 100,
-		MaxConnsPerHost:     0, // 0 = unlimited
-		IdleConnTimeout:     90 * time.Second,
-		DialTimeout:         5 * time.Second,
-		TLSHandshakeTimeout: 5 * time.Second,
+		Label:                 label,
+		DisableKeepAlives:     false,
+		MaxIdleConns:          100,
+		MaxIdleConnsPerHost:   100,
+		MaxConnsPerHost:       0, // 0 = unlimited
+		IdleConnTimeout:       90 * time.Second,
+		DialTimeout:           5 * time.Second,
+		TLSHandshakeTimeout:   5 * time.Second,
+		ResponseHeaderTimeout: 30 * time.Second,
 	}
 }
 
@@ -86,6 +95,9 @@ func NewTrackedTransport(cfg TransportConfig) *TrackedTransport {
 	if cfg.IdleConnTimeout == 0 {
 		cfg.IdleConnTimeout = 90 * time.Second
 	}
+	if cfg.ResponseHeaderTimeout == 0 {
+		cfg.ResponseHeaderTimeout = 30 * time.Second
+	}
 
 	tt := &TrackedTransport{
 		label:  cfg.Label,
@@ -110,12 +122,13 @@ func NewTrackedTransport(cfg TransportConfig) *TrackedTransport {
 			tt.activeConns.Add(1)
 			return &trackedConn{Conn: conn, parent: tt}, nil
 		},
-		DisableKeepAlives:   cfg.DisableKeepAlives,
-		MaxIdleConns:        cfg.MaxIdleConns,
-		MaxIdleConnsPerHost: cfg.MaxIdleConnsPerHost,
-		MaxConnsPerHost:     cfg.MaxConnsPerHost,
-		IdleConnTimeout:     cfg.IdleConnTimeout,
-		TLSHandshakeTimeout: cfg.TLSHandshakeTimeout,
+		DisableKeepAlives:     cfg.DisableKeepAlives,
+		MaxIdleConns:          cfg.MaxIdleConns,
+		MaxIdleConnsPerHost:   cfg.MaxIdleConnsPerHost,
+		MaxConnsPerHost:       cfg.MaxConnsPerHost,
+		IdleConnTimeout:       cfg.IdleConnTimeout,
+		TLSHandshakeTimeout:   cfg.TLSHandshakeTimeout,
+		ResponseHeaderTimeout: cfg.ResponseHeaderTimeout,
 	}
 
 	return tt

@@ -1,0 +1,1656 @@
+{
+  "experiment": "006-B-ewma-lock-in-variability",
+  "timestamp": "2026-09-05T07:02:35Z",
+  "requests": 300,
+  "fair_share": 0.3333333333333333,
+  "cell1_no_jitter": {
+    "cell": "no_jitter",
+    "num_runs": 50,
+    "median_max_share": 0.9666666666666667,
+    "median_max_share_ci": {
+      "estimate": 0.9666666666666667,
+      "lower": 0.9666666666666667,
+      "upper": 0.9666666666666667,
+      "confidence": 0.95,
+      "n_resamples": 5000,
+      "sample_size": 50
+    },
+    "p10_max_share": 0.9666666666666667,
+    "p90_max_share": 0.9666666666666667,
+    "min_max_share": 0.9666666666666667,
+    "max_max_share": 0.9666666666666667,
+    "first_order_win_rate": 1,
+    "runs": [
+      {
+        "seed": 0,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 1,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 2,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 3,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 4,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 5,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 6,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 7,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 8,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 9,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 10,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 11,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 12,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 13,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 14,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 15,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 16,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 17,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 18,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 19,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 20,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 21,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 22,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 23,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 24,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 25,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 26,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 27,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 28,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 29,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 30,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 31,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 32,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 33,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 34,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 35,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 36,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 37,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 38,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 39,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 40,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 41,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 42,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 43,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 44,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 45,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 46,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 47,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 48,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 49,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      }
+    ]
+  },
+  "cell2_with_jitter": {
+    "cell": "with_jitter",
+    "num_runs": 50,
+    "median_max_share": 0.9666666666666667,
+    "median_max_share_ci": {
+      "estimate": 0.9666666666666667,
+      "lower": 0.9666666666666667,
+      "upper": 0.97,
+      "confidence": 0.95,
+      "n_resamples": 5000,
+      "sample_size": 50
+    },
+    "p10_max_share": 0.9666666666666667,
+    "p90_max_share": 0.9733333333333334,
+    "min_max_share": 0.9666666666666667,
+    "max_max_share": 0.9733333333333334,
+    "first_order_win_rate": 0.36,
+    "runs": [
+      {
+        "seed": 0,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 291,
+          "edge-b": 5,
+          "edge-c": 4
+        },
+        "winner": "edge-a",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 1,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 291,
+          "edge-c": 4
+        },
+        "winner": "edge-b",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 2,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 291,
+          "edge-c": 4
+        },
+        "winner": "edge-b",
+        "max_share": 0.97,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 3,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 4,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 291,
+          "edge-b": 4,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 5,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 6,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 7,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 8,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 9,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 10,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 291,
+          "edge-b": 4,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 11,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 12,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 5,
+          "edge-c": 291
+        },
+        "winner": "edge-c",
+        "max_share": 0.97,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 13,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 14,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 5,
+          "edge-c": 291
+        },
+        "winner": "edge-c",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 15,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 4,
+          "edge-c": 291
+        },
+        "winner": "edge-c",
+        "max_share": 0.97,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 16,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 17,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 292,
+          "edge-b": 4,
+          "edge-c": 4
+        },
+        "winner": "edge-a",
+        "max_share": 0.9733333333333334,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 18,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 4,
+          "edge-c": 292
+        },
+        "winner": "edge-c",
+        "max_share": 0.9733333333333334,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 19,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 20,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 21,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 22,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 292,
+          "edge-b": 4,
+          "edge-c": 4
+        },
+        "winner": "edge-a",
+        "max_share": 0.9733333333333334,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 23,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 292,
+          "edge-c": 4
+        },
+        "winner": "edge-b",
+        "max_share": 0.9733333333333334,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 24,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 25,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 26,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 27,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 28,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 291,
+          "edge-b": 4,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.97,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 29,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 291,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 30,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 291,
+          "edge-c": 4
+        },
+        "winner": "edge-b",
+        "max_share": 0.97,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 31,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 291,
+          "edge-b": 5,
+          "edge-c": 4
+        },
+        "winner": "edge-a",
+        "max_share": 0.97,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 32,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 33,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 5,
+          "edge-c": 291
+        },
+        "winner": "edge-c",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 34,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 35,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 36,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 5,
+          "edge-c": 290
+        },
+        "winner": "edge-c",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 37,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 38,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 4,
+          "edge-c": 291
+        },
+        "winner": "edge-c",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 39,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 4,
+          "edge-c": 291
+        },
+        "winner": "edge-c",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 40,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 291,
+          "edge-b": 4,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 41,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 42,
+        "order": [
+          "edge-c",
+          "edge-a",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 291,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 43,
+        "order": [
+          "edge-c",
+          "edge-b",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 4,
+          "edge-b": 292,
+          "edge-c": 4
+        },
+        "winner": "edge-b",
+        "max_share": 0.9733333333333334,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 44,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 4,
+          "edge-c": 291
+        },
+        "winner": "edge-c",
+        "max_share": 0.97,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 45,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 5,
+          "edge-b": 290,
+          "edge-c": 5
+        },
+        "winner": "edge-b",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 46,
+        "order": [
+          "edge-a",
+          "edge-b",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      },
+      {
+        "seed": 47,
+        "order": [
+          "edge-b",
+          "edge-c",
+          "edge-a"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 48,
+        "order": [
+          "edge-b",
+          "edge-a",
+          "edge-c"
+        ],
+        "distribution": {
+          "edge-a": 292,
+          "edge-b": 4,
+          "edge-c": 4
+        },
+        "winner": "edge-a",
+        "max_share": 0.9733333333333334,
+        "winner_is_first_in_order": false
+      },
+      {
+        "seed": 49,
+        "order": [
+          "edge-a",
+          "edge-c",
+          "edge-b"
+        ],
+        "distribution": {
+          "edge-a": 290,
+          "edge-b": 5,
+          "edge-c": 5
+        },
+        "winner": "edge-a",
+        "max_share": 0.9666666666666667,
+        "winner_is_first_in_order": true
+      }
+    ]
+  },
+  "cell_comparison_mann_whitney": {
+    "n_a": 50,
+    "n_b": 50,
+    "u_a": 650,
+    "u_b": 1850,
+    "z": -5.547410474584875,
+    "p_value": 2.899315276749803e-8,
+    "tie_groups": 3
+  },
+  "findings": "Cell 1 (permutation only) produced ZERO variance in lock-in severity across all 50 seeds -- every single run converged to exactly the same 0.9667 max-share, only the identity of the winner changed (100% correlated with tie-break order, 50/50 runs). This was not the expected result; the original hypothesis predicted severity would vary run to run. Investigating why: permuting truly identical targets under an identical, fixed workload is a pure relabeling -- the timing dynamics that decide how many exploratory picks happen before full lock-in are isomorphic across every permutation, so the resulting severity is a deterministic structural constant of (arrival spacing, service time, request count), not a random variable at all under this design.\n\nCell 2 (adding 2ms of per-run service-time jitter, the kind of real timing noise that actually drove Stage 3's original variability) produced a second, more interesting and unexpected result: severity barely moved (median still 0.9667, spread only 0.9667 to 0.9733), but WHO wins changed dramatically -- the first-in-order target won only 18/50 runs (36.0%), close to the 33.3% a random winner among 3 targets would produce by chance alone. The mechanism: once jitter makes the targets genuinely, if slightly, unequal, EWMA's own comparison rule (lower observed latency wins, not just 'unobserved beats observed') lets whichever target happens to draw the lowest jittered service time override the tie-break-order advantage entirely. So tie-break order controls the outcome only when targets are exactly equal; the moment real timing differences exist, however small, they dominate instead. This is the discover-limitation-then-refine cycle happening within one experiment: the first design answered 'who wins when targets are identical' but couldn't ask 'how variable is lock-in under realistic conditions,' and the smallest realistic fix (per-run jitter) didn't just add variability -- it revealed a second mechanism entirely."
+}

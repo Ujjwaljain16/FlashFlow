@@ -37,3 +37,42 @@ All 6 scenarios passed. Raw data: `experiments/006-statistics-queueing/results/0
 ### Interpretation
 
 This experiment doesn't produce a FlashFlow finding — it produces the license to trust every finding that follows. Every later 006 experiment (routing variability, cache/coalescing consistency, queueing attribution, real-vs-virtual stability) reports a Mann-Whitney p-value, a Cliff's Delta, or a bootstrap CI computed by exactly this code; 006-A is the evidence that code does what it claims to do, checked against cases whose right answer was known before running anything.
+
+---
+
+## 3. Results: Experiment 006-B — Routing Policy Variability (EWMA Lock-In)
+
+**Hypothesis (H2)**: see `hypotheses.md`. This experiment's real story is that its first design produced a null result that turned out to be more informative than the originally-predicted one, and a second cell was built specifically because of what that null result revealed.
+
+### Cell 1: permutation only
+
+| | |
+|---|---|
+| Runs | 50 (one per permutation seed) |
+| Max-share median / p10 / p90 / min / max | **0.9667 / 0.9667 / 0.9667 / 0.9667 / 0.9667** |
+| Fair share (3 equal targets under Round Robin) | 0.333 |
+| Winner matched first-in-permuted-order target | 50/50 runs (100%) |
+
+**Zero variance.** Every one of 50 independent permutation seeds produced *exactly* the same 0.9667 max-share — only which target won changed, always matching the tie-break order exactly.
+
+### Cell 2: permutation + ±2ms service-time jitter
+
+| | |
+|---|---|
+| Runs | 50 (same seed sequence as Cell 1) |
+| Max-share median / p10 / p90 / min / max | 0.9667 / 0.9667 / 0.9733 / 0.9667 / 0.9733 |
+| Winner matched first-in-permuted-order target | **18/50 runs (36%)** |
+| stddev of max-share | 0.0000 (Cell 1) vs 0.0023 (Cell 2) |
+| Mann-Whitney comparing the two cells' max-share distributions | p<0.0001 |
+
+Raw data: `experiments/006-statistics-queueing/results/006B-ewma-lock-in-variability.json`.
+
+### Findings
+
+1. **Cell 1's result was not the one predicted, and is reported as such rather than smoothed over.** The original hypothesis expected lock-in *severity* to vary run to run; instead severity was a fixed constant and only the winner's identity varied. Traced to its actual mechanism rather than accepted at face value: permuting labels among genuinely, exactly identical targets under an identical fixed workload is a pure relabeling — the timing dynamics that decide how many exploratory picks happen before full lock-in are isomorphic across every permutation. There is no random variable to characterize here; the design measured a constant.
+2. **Cell 2 revealed something more interesting than "now there's variance."** Severity itself barely moved (median unchanged, spread from 0.9667 to 0.9733 — real but small). What changed dramatically was *who wins*: the first-in-order target won only 36% of the time under jitter, versus 100% without it, landing close to the 33.3% a uniformly random winner among 3 targets would produce by chance. Mechanism: once jitter makes targets genuinely (if slightly) unequal, EWMA's comparison rule — lower *observed* latency wins, not just "unobserved beats observed" — lets whichever target happens to draw the lowest jittered service time override the tie-break-order advantage entirely.
+3. **The two cells together support a precise, mechanistic claim Stage 3 and Stage 5 couldn't make**: tie-break order controls EWMA's lock-in outcome *only* when targets are exactly, unrealistically equal; the moment any real timing difference exists, however small, it dominates instead. Stage 3's own real-engine variability (94/4/2, 68/29/3, 18/79/3) is now explained, not just observed — it's the Cell 2 mechanism, not the Cell 1 one, since real targets are never *exactly* identical.
+
+### Interpretation
+
+This is the discover-limitation-then-refine cycle working exactly as the project's philosophy describes, compressed into a single experiment: the first design answered a well-posed but narrower question ("who wins when targets are identical") than the one actually motivating it ("how variable is lock-in under realistic conditions"), and the gap between those two questions was itself the finding. Adding the smallest realistic source of variation the original Stage 3 phenomenon actually depended on — not a bigger model, just genuine timing noise — didn't merely add spread to an existing measurement; it revealed that the mechanism controlling outcomes changes entirely between "targets are equal" and "targets are almost equal." That distinction did not exist as a stated fact anywhere in this project before this experiment.

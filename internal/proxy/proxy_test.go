@@ -7,6 +7,8 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -238,6 +240,99 @@ func TestProxy_EndToEnd_RequestBodyForwarding(t *testing.T) {
 	}
 	if originResp.PayloadSize != len(postPayload) {
 		t.Fatalf("expected payload size %d received by origin, got %d", len(postPayload), originResp.PayloadSize)
+	}
+}
+
+// TestProxy_ForwardsContentLength_NotAlwaysChunked regression-tests F-37:
+// outReq.ContentLength was never copied from the inbound request, so
+// http.NewRequestWithContext's ContentLength stayed 0 for any body that
+// isn't a *bytes.Buffer/*bytes.Reader/*strings.Reader (an inbound
+// *http.Request's Body never is), and net/http always sent the upstream
+// request Transfer-Encoding: chunked regardless of a real, known length.
+func TestProxy_ForwardsContentLength_NotAlwaysChunked(t *testing.T) {
+	var gotContentLength int64
+	var gotTransferEncoding []string
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotContentLength = r.ContentLength
+		gotTransferEncoding = r.TransferEncoding
+		body, _ := io.ReadAll(r.Body)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(body)
+	}))
+	defer upstream.Close()
+
+	clk := clock.NewWallClock()
+	cfg := Config{
+		Targets:         []string{upstream.URL},
+		TransportConfig: transport.DefaultTransportConfig("proxy_upstream"),
+		HealthConfig:    health.DefaultConfig(),
+		ProberConfig:    health.DefaultCheckerConfig(),
+	}
+	pxy := NewReverseProxy(cfg, clk, NewStaticSelector(upstream.URL))
+	if err := pxy.Start(); err != nil {
+		t.Fatalf("failed to start proxy: %v", err)
+	}
+	defer pxy.Stop(context.Background())
+
+	payload := strings.Repeat("x", 4096)
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Post(pxy.URL()+"/data", "text/plain", strings.NewReader(payload))
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if gotContentLength != int64(len(payload)) {
+		t.Fatalf("expected upstream to see Content-Length %d, got %d (TransferEncoding=%v)", len(payload), gotContentLength, gotTransferEncoding)
+	}
+	if len(gotTransferEncoding) != 0 {
+		t.Fatalf("expected no Transfer-Encoding (Content-Length was known), got %v", gotTransferEncoding)
+	}
+}
+
+// TestProxy_ClientCancellation_DoesNotRecordAppError regression-tests F-16:
+// a client disconnecting/timing out mid-flight made RoundTrip return an
+// error wrapping context.Canceled, which was recorded as an app-level
+// failure against the target indistinguishably from a genuine upstream
+// failure -- corrupting health telemetry for a target that never actually
+// failed.
+func TestProxy_ClientCancellation_DoesNotRecordAppError(t *testing.T) {
+	release := make(chan struct{})
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-release // hang until the test explicitly lets this request proceed
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer upstream.Close()
+	defer close(release)
+
+	clk := clock.NewWallClock()
+	cfg := Config{
+		Targets:         []string{upstream.URL},
+		TransportConfig: transport.DefaultTransportConfig("proxy_upstream"),
+		HealthConfig:    health.DefaultConfig(),
+		ProberConfig:    health.DefaultCheckerConfig(),
+	}
+	pxy := NewReverseProxy(cfg, clk, NewStaticSelector(upstream.URL))
+	if err := pxy.Start(); err != nil {
+		t.Fatalf("failed to start proxy: %v", err)
+	}
+	defer pxy.Stop(context.Background())
+
+	before, _ := pxy.Registry().GetHealth(upstream.URL)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Millisecond)
+	defer cancel()
+	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, pxy.URL()+"/data", nil)
+	//nolint:bodyclose // request is expected to fail via context deadline; no body to close
+	if _, err := http.DefaultClient.Do(req); err == nil {
+		t.Fatalf("expected request to fail via client-side context deadline")
+	}
+
+	// Give ServeHTTP's error branch time to run before checking the registry.
+	time.Sleep(50 * time.Millisecond)
+	after, _ := pxy.Registry().GetHealth(upstream.URL)
+	if after.TotalAppErrors != before.TotalAppErrors {
+		t.Fatalf("expected TotalAppErrors unchanged after client cancellation (before=%d after=%d)", before.TotalAppErrors, after.TotalAppErrors)
 	}
 }
 

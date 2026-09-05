@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"sync"
+	"time"
 
 	"flashflow/internal/clock"
 	"flashflow/internal/health"
@@ -216,6 +218,14 @@ func (p *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	outURL.RawQuery = r.URL.RawQuery
 
 	outReq, err := http.NewRequestWithContext(r.Context(), r.Method, outURL.String(), r.Body)
+	if err == nil {
+		// http.NewRequestWithContext only infers ContentLength for a
+		// handful of concrete body types (*bytes.Buffer, *bytes.Reader,
+		// *strings.Reader); an inbound *http.Request's Body is none of
+		// those, so without this the upstream request is always sent
+		// Transfer-Encoding: chunked even when the real length is known.
+		outReq.ContentLength = r.ContentLength
+	}
 	if err != nil {
 		t4 := p.clock.Now()
 		_ = httpx.WriteJSON(w, http.StatusInternalServerError, httpx.ErrorResponse{
@@ -250,7 +260,15 @@ func (p *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		t4 := p.clock.Now()
-		p.registry.RecordAppResult(target, http.StatusBadGateway)
+		// A client that cancels/times out mid-flight makes RoundTrip
+		// return an error wrapping context.Canceled/DeadlineExceeded --
+		// that says nothing about whether target itself is healthy, and
+		// must not be recorded as an app-level failure against it (a
+		// burst of impatient clients could otherwise push a perfectly
+		// healthy target into DEGRADED).
+		if r.Context().Err() == nil {
+			p.registry.RecordAppResult(target, http.StatusBadGateway)
+		}
 		_ = httpx.WriteJSON(w, http.StatusBadGateway, httpx.ErrorResponse{
 			Error:     fmt.Sprintf("upstream %s unreachable: %v", target, err),
 			Code:      http.StatusBadGateway,
@@ -326,12 +344,18 @@ func (p *ReverseProxy) Start() error {
 	p.addrPort = ln.Addr().String()
 	p.server = &http.Server{
 		Handler: p,
+		// Without this, a slow or silent client (deliberate or not) can
+		// hold a per-connection goroutine open indefinitely -- bound at
+		// least the time to read request headers.
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
 	p.checker.Start()
 
 	go func() {
-		_ = p.server.Serve(ln)
+		if err := p.server.Serve(ln); err != nil && err != http.ErrServerClosed {
+			log.Printf("proxy: Serve exited unexpectedly: %v", err)
+		}
 	}()
 
 	return nil

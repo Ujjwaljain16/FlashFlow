@@ -20,16 +20,27 @@ type Entry struct {
 	StoredAt   clock.VirtualTime
 }
 
-// Key returns the cache key for a method+path+query. Deliberately
-// excludes headers — including X-Request-ID, for example, would make
-// every request its own unique key and defeat caching entirely. Callers
-// decide which methods are worth looking up at all; Key itself doesn't
-// enforce a scope.
-func Key(method, path, rawQuery string) string {
-	if rawQuery == "" {
-		return method + " " + path
+// Key returns the cache key for a method+path+query, optionally folding in
+// extra caller-supplied dimensions. Headers are deliberately excluded by
+// default — including X-Request-ID, for example, would make every request
+// its own unique key and defeat caching entirely — but a caller whose
+// origin varies its *response* based on a specific request header (e.g. a
+// debug/override header) must pass that header's value via extra, or two
+// requests differing only in that header will collide on one cache entry
+// and serve each other's response. Callers decide which methods are worth
+// looking up at all, and which headers (if any) are response-determining;
+// Key itself doesn't enforce either.
+func Key(method, path, rawQuery string, extra ...string) string {
+	key := method + " " + path
+	if rawQuery != "" {
+		key += "?" + rawQuery
 	}
-	return method + " " + path + "?" + rawQuery
+	for _, e := range extra {
+		if e != "" {
+			key += "|" + e
+		}
+	}
+	return key
 }
 
 // Stats is a point-in-time snapshot of cache activity counters.

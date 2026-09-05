@@ -42,6 +42,52 @@ func TestCache_SetThenHit(t *testing.T) {
 	}
 }
 
+// TestStats_AreCumulativeSinceConstruction_NotPerPhase regression-tests
+// the lesson behind the 004-A cache-stats baseline-subtraction fix
+// (cmd/experiment-004a): Snapshot's counters accumulate for the cache's
+// entire lifetime, never reset — a warmup phase's own lookups/misses are
+// baked into every later Snapshot just as much as the phase actually
+// being measured. Any experiment isolating "stats for this phase alone"
+// MUST subtract a baseline Snapshot captured before that phase starts;
+// this test exists so a future change that made Snapshot phase-scoped
+// (or reset-able) — which would silently break every experiment script
+// still doing that subtraction — fails loudly here first.
+func TestStats_AreCumulativeSinceConstruction_NotPerPhase(t *testing.T) {
+	mc := clock.NewMockClock(0)
+	c := New(mc, time.Second)
+
+	// "Warmup phase": some misses that must NOT be invisible to a later
+	// Snapshot -- if they were, no baseline subtraction would ever be
+	// necessary in the first place, which is precisely the wrong model
+	// 004-A's original measurement assumed.
+	c.Get("warmup-1")
+	c.Get("warmup-2")
+	baseline := c.Snapshot()
+	if baseline.Lookups != 2 || baseline.Misses != 2 {
+		t.Fatalf("expected the warmup phase's own activity to already be counted, got %+v", baseline)
+	}
+
+	// "Measured phase".
+	c.Get("measured-1")
+	final := c.Snapshot()
+
+	// The correct pattern: subtract baseline from final to isolate the
+	// measured phase alone.
+	measuredOnly := Stats{
+		Lookups: final.Lookups - baseline.Lookups,
+		Misses:  final.Misses - baseline.Misses,
+	}
+	if measuredOnly.Lookups != 1 || measuredOnly.Misses != 1 {
+		t.Fatalf("baseline-subtracted stats should isolate exactly the measured phase, got %+v (final=%+v baseline=%+v)", measuredOnly, final, baseline)
+	}
+	// And the un-subtracted final snapshot must NOT equal the measured
+	// phase alone -- proving the subtraction is actually necessary, not
+	// a no-op that happens to produce the same number.
+	if final.Lookups == measuredOnly.Lookups {
+		t.Fatalf("test invalid: final and measured-only Lookups coincidentally equal (%d) -- baseline phase produced no distinguishing activity", final.Lookups)
+	}
+}
+
 func TestCache_ExpiredEntryIsMiss(t *testing.T) {
 	mc := clock.NewMockClock(0)
 	c := New(mc, 10*time.Millisecond)

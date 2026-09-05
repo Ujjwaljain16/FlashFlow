@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -101,7 +103,12 @@ func NewEdgeServer(cfg EdgeConfig) (*EdgeServer, error) {
 	httpClient := tt.HTTPClient(10 * time.Second)
 	var netTransport *netsim.Transport
 	if cfg.NetworkConditions != (netsim.Conditions{}) {
-		netTransport = netsim.NewTransport(tt, cfg.NetworkConditions, nil)
+		// Seed the simulated network's RNG from the configured
+		// Conditions.Seed rather than letting NewTransport fall back to a
+		// wall-clock seed -- otherwise every run's loss/jitter sequence is
+		// non-reproducible, undermining this project's determinism
+		// discipline for any real experiment that enables NetworkConditions.
+		netTransport = netsim.NewTransport(tt, cfg.NetworkConditions, rand.New(rand.NewSource(cfg.NetworkConditions.Seed)))
 		httpClient.Transport = netTransport
 	}
 
@@ -209,7 +216,14 @@ func (e *EdgeServer) Handler() http.Handler {
 		cacheable := e.cache != nil && r.Method == http.MethodGet
 		var cacheKey string
 		if cacheable {
-			cacheKey = cache.Key(r.Method, r.URL.Path, r.URL.RawQuery)
+			// X-Override-Status and X-Artificial-Delay-Ms are debug
+			// headers Origin's own handler treats as response-
+			// determining input (see origin.go), forwarded unmodified
+			// by this edge -- omitting them from the key would let two
+			// requests differing only in one of these headers collide
+			// on the same cache entry.
+			cacheKey = cache.Key(r.Method, r.URL.Path, r.URL.RawQuery,
+				r.Header.Get("X-Override-Status"), r.Header.Get("X-Artificial-Delay-Ms"))
 			if entry, ok := e.cache.Get(cacheKey); ok {
 				httpx.CopyEndToEndHeaders(w.Header(), entry.Header)
 				w.Header().Set(httpx.HeaderRequestID, reqID)
@@ -363,11 +377,14 @@ func (e *EdgeServer) Start() error {
 	e.listener = ln
 	e.addrPort = ln.Addr().String()
 	e.server = &http.Server{
-		Handler: e.Handler(),
+		Handler:           e.Handler(),
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
 	go func() {
-		_ = e.server.Serve(ln)
+		if err := e.server.Serve(ln); err != nil && err != http.ErrServerClosed {
+			log.Printf("edge %s: Serve exited unexpectedly: %v", e.config.Instance, err)
+		}
 	}()
 
 	return nil

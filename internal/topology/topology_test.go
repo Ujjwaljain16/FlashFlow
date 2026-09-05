@@ -728,6 +728,127 @@ func TestEdgeServer_Coalesce_FailureCleansUpAndRecovers(t *testing.T) {
 // simulated edge-origin latency shows up on a fetch but is completely
 // invisible on a cache hit, the same insulation property 004-E already
 // demonstrated for a total outage, now shown for partial degradation.
+// TestEdgeServer_Cache_OverrideStatusHeaderDoesNotCollide regression-tests
+// F-15: the cache key was built purely from method+path+query, while
+// X-Override-Status (and X-Artificial-Delay-Ms) are debug headers Origin
+// itself treats as response-determining and this edge forwards unmodified
+// -- so two GETs to the identical path differing only in that header used
+// to collide on one cache entry, serving whichever response was cached
+// first regardless of the second request's own override.
+func TestEdgeServer_Cache_OverrideStatusHeaderDoesNotCollide(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-override-key"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:  "edge-override-key",
+		OriginURL: origin.URL(),
+		CacheTTL:  time.Minute,
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	// First request: no override, gets cached as a 200 MISS.
+	resp, err := client.Get(edge.URL() + "/data/override-key-test")
+	if err != nil {
+		t.Fatalf("first request failed: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected first response 200, got %d", resp.StatusCode)
+	}
+	if got := resp.Header.Get(httpx.HeaderCacheStatus); got != "MISS" {
+		t.Fatalf("expected first response MISS, got %q", got)
+	}
+	resp.Body.Close()
+
+	// Second request: identical path/query but a 204 override -- must NOT
+	// hit the first entry (that would silently return 200), and must
+	// itself be served as its own, separately-cached MISS.
+	req, err := http.NewRequest(http.MethodGet, edge.URL()+"/data/override-key-test", nil)
+	if err != nil {
+		t.Fatalf("failed to build request: %v", err)
+	}
+	req.Header.Set("X-Override-Status", "204")
+	resp, err = client.Do(req)
+	if err != nil {
+		t.Fatalf("second request failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusNoContent {
+		t.Fatalf("expected overridden response 204 (not the colliding cached 200), got %d", resp.StatusCode)
+	}
+	if got := resp.Header.Get(httpx.HeaderCacheStatus); got != "MISS" {
+		t.Fatalf("expected the overridden request to be its own MISS (distinct cache key), got %q", got)
+	}
+}
+
+// TestEdgeServer_NetworkConditions_SeededIsReproducible regression-tests
+// F-13: netsim.NewTransport used to be called with a nil *rand.Rand from
+// EdgeServer, which falls back to a wall-clock-seeded source -- meaning
+// every run's loss/jitter sequence was different and non-reproducible.
+// Two EdgeServers built with the identical (non-zero) Conditions.Seed must
+// now produce the identical pass/fail sequence for the same sequential
+// request pattern.
+func TestEdgeServer_NetworkConditions_SeededIsReproducible(t *testing.T) {
+	runSequence := func(seed int64) []bool {
+		origin := NewOriginServer(OriginConfig{Instance: "origin-netsim-seed"})
+		if err := origin.Start(); err != nil {
+			t.Fatalf("failed to start origin: %v", err)
+		}
+		defer origin.Stop(context.Background())
+
+		edge, err := NewEdgeServer(EdgeConfig{
+			Instance:          "edge-netsim-seed",
+			OriginURL:         origin.URL(),
+			NetworkConditions: netsim.Conditions{LossRate: 0.5, Seed: seed},
+		})
+		if err != nil {
+			t.Fatalf("failed to create edge: %v", err)
+		}
+		if err := edge.Start(); err != nil {
+			t.Fatalf("failed to start edge: %v", err)
+		}
+		defer edge.Stop(context.Background())
+
+		client := &http.Client{Timeout: 2 * time.Second}
+		results := make([]bool, 20)
+		for i := range results {
+			// Sequential, not concurrent -- each RoundTrip's RNG draw must
+			// complete before the next request's, or ordering (not the
+			// seed) would determine the observed sequence.
+			resp, err := client.Get(edge.URL() + "/data/seeded")
+			if err != nil {
+				results[i] = false
+				continue
+			}
+			results[i] = resp.StatusCode == http.StatusOK
+			resp.Body.Close()
+		}
+		return results
+	}
+
+	first := runSequence(7)
+	second := runSequence(7)
+
+	if len(first) != len(second) {
+		t.Fatalf("sequence length mismatch: %d vs %d", len(first), len(second))
+	}
+	for i := range first {
+		if first[i] != second[i] {
+			t.Fatalf("request %d: seeded runs diverged (first=%v second=%v) -- loss sequence is not reproducible", i, first[i], second[i])
+		}
+	}
+}
+
 func TestEdgeServer_NetworkConditions_LatencyOnlyAffectsMisses(t *testing.T) {
 	origin := NewOriginServer(OriginConfig{Instance: "origin-netsim-latency"})
 	if err := origin.Start(); err != nil {

@@ -38,6 +38,11 @@ type Conditions struct {
 	// A dropped request never calls the underlying RoundTripper at all —
 	// it fails the way a real connection attempt into a lossy link would.
 	LossRate float64
+	// Seed makes the sampled delay/loss sequence reproducible when this
+	// Transport is constructed via NewTransport(..., nil) — see
+	// NewTransport's doc comment. Ignored by callers that supply their
+	// own *rand.Rand directly.
+	Seed int64
 }
 
 // enabled reports whether these conditions differ from a perfect link.
@@ -54,7 +59,12 @@ type Stats struct {
 // Transport wraps an http.RoundTripper, applying Conditions to every
 // request before delegating to Base.
 type Transport struct {
-	Base       http.RoundTripper
+	Base http.RoundTripper
+	// Conditions is exported for tests that need to change simulated
+	// network behavior mid-run (e.g. lossy -> clean transitions), but is
+	// read without synchronization by sample()/RoundTrip -- callers doing
+	// that MUST NOT mutate it concurrently with in-flight RoundTrip calls.
+	// No production code path in this repository does so today.
 	Conditions Conditions
 
 	randMu sync.Mutex
@@ -90,9 +100,14 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	delay, drop := t.sample()
 
 	if delay > 0 {
+		// time.NewTimer (not time.After) so a canceled request's timer is
+		// stopped immediately rather than left running in the background
+		// until it would have fired on its own.
+		timer := time.NewTimer(delay)
 		select {
-		case <-time.After(delay):
+		case <-timer.C:
 		case <-req.Context().Done():
+			timer.Stop()
 			return nil, req.Context().Err()
 		}
 	}

@@ -89,10 +89,18 @@ func (c *Checker) Start() {
 		return
 	}
 	c.running = true
-	c.stopCh = make(chan struct{})
+	stopCh := make(chan struct{})
+	c.stopCh = stopCh
 	c.mu.Unlock()
 
-	go c.runLoop()
+	// stopCh is captured here, not read from c.stopCh inside runLoop --
+	// a Stop() followed immediately by another Start() reassigns
+	// c.stopCh to a new, open channel, and a goroutine reading the
+	// field directly would never observe the close it was actually
+	// told to wait for, leaking a second, permanently-running probe
+	// loop. Passing the channel as a parameter makes this goroutine's
+	// stop signal immutable for its own lifetime.
+	go c.runLoop(stopCh)
 }
 
 // Stop gracefully terminates the prober loop.
@@ -145,7 +153,7 @@ func (c *Checker) probeTarget(ctx context.Context, target string) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-func (c *Checker) runLoop() {
+func (c *Checker) runLoop(stop chan struct{}) {
 	ticker := time.NewTicker(c.interval)
 	defer ticker.Stop()
 
@@ -154,7 +162,7 @@ func (c *Checker) runLoop() {
 
 	for {
 		select {
-		case <-c.stopCh:
+		case <-stop:
 			return
 		case <-ticker.C:
 			ctx, cancel := context.WithTimeout(context.Background(), c.timeout)

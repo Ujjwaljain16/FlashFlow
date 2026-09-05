@@ -87,6 +87,19 @@ func (r *Registry) RegisterTarget(target string) {
 	}
 }
 
+// Deregister removes target's health state entirely. A subsequent
+// RegisterTarget for the same name starts fresh (HEALTHY, zeroed
+// counters) rather than silently no-op-ing against stale state —
+// RegisterTarget's own no-op-if-already-present guard previously had no
+// way to be reset, a latent gap for any future dynamic-topology feature
+// that removes and later re-adds a target. No code path in this
+// repository calls this today.
+func (r *Registry) Deregister(target string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.targets, target)
+}
+
 // RecordProbeResult records the outcome of an active /health probe.
 func (r *Registry) RecordProbeResult(target string, success bool) State {
 	r.mu.Lock()
@@ -161,12 +174,23 @@ func (r *Registry) RecordAppResult(target string, statusCode int) State {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	// Auto-register on first observation, matching RecordProbeResult's
+	// behavior below -- previously these two disagreed (RecordProbeResult
+	// auto-registered, RecordAppResult silently no-opped and returned
+	// StateHealthy for an unknown target), an easy trap for any future
+	// caller that records app results before registration completes.
+	now := r.clock.Now()
 	th, exists := r.targets[target]
 	if !exists {
-		return StateHealthy
+		th = &TargetHealth{
+			Target:          target,
+			State:           StateHealthy,
+			LastCheck:       now,
+			LastStateChange: now,
+		}
+		r.targets[target] = th
 	}
 
-	now := r.clock.Now()
 	th.TotalAppRequests++
 	if statusCode >= 500 {
 		th.TotalAppErrors++

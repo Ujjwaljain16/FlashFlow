@@ -183,6 +183,29 @@ This experiment's value is in the prediction it corrected, not just the one it c
 
 ---
 
+## 9. Results: Experiment 007-H — Paired Multi-Seed Counterfactual Study
+
+**Hypothesis (H8)**: see `hypotheses.md`. 30 replicates of 007-B's heterogeneous shape, arrival timing jittered ±2ms per replicate (seeded), Least Connections and Adaptive run against the byte-for-byte identical jittered Scenario within each replicate -- a paired design exploiting the replay engine's exact counterfactual property.
+
+| Metric | Value |
+|---|---|
+| Mean paired diff (LC slow-share − Adaptive slow-share) | 0.0812 |
+| 95% bootstrap CI on the mean diff | [0.0801, 0.0823] |
+| Sign consistency | 30/30 replicates favored Adaptive |
+| Evidence tier | **strong** |
+
+Raw data: `experiments/007-adaptive-replay/results/007H-paired-multiseed-counterfactual.json`.
+
+### Findings
+
+The paired difference was positive in every single replicate, and the bootstrap CI on its mean sits entirely above zero with a narrow width (0.0801-0.0823) relative to its magnitude -- strong evidence by this project's own tiering standard. The mean (8.12 percentage points) lands almost exactly on 007-B's single-run estimate (14.0% − 5.7% = 8.3 points), which is itself informative: arrival-timing jitter alone doesn't materially perturb which target either policy's largely deterministic scoring favors, so 007-B's single run was already a reliable read of the underlying effect, not a lucky draw -- this experiment converts that single reliable-looking observation into an actual, checked claim instead of leaving it as an assumption.
+
+### Interpretation
+
+This is the capstone the whole stage was building toward: Stage 6's statistics, applied through Stage 7's replay engine, to a question about Stage 7's own router, using the correct statistical unit throughout (one full scenario replicate, never one request) and the correct tool for a paired design (bootstrapping the differences directly, not treating paired samples as independent). The result itself confirms what 007-B already suggested — Adaptive's load-based self-correction avoids a slow target at least as well as Least Connections' — but confirming it this way is the actual point: a single favorable run and a robust, statistically-supported finding look identical until someone checks, and this experiment is what checking looks like.
+
+---
+
 ## 6. Results: Experiment 007-E — Failure and Health
 
 **Hypothesis (H5)**: see `hypotheses.md`. 3 equally-good targets (20ms each), reusing 005-D/005-G's `health.Registry` + ground-truth up/down map + probe `Ticker` pattern unmodified. B fails at t=500ms, recovers at t=1600ms (a 1.1s outage, deliberately longer than the default 1s `StaleAfter`). 500 requests, rotating cache keys.

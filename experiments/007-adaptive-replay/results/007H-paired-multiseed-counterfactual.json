@@ -1,0 +1,199 @@
+{
+  "experiment": "007-H-paired-multiseed-counterfactual",
+  "timestamp": "2026-09-05T08:43:43Z",
+  "n_replicates": 30,
+  "replicates": [
+    {
+      "seed": 1,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07666666666666666
+    },
+    {
+      "seed": 2,
+      "slow_share_lc": 0.14,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08666666666666667
+    },
+    {
+      "seed": 3,
+      "slow_share_lc": 0.14,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.08333333333333334
+    },
+    {
+      "seed": 4,
+      "slow_share_lc": 0.13,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.07666666666666666
+    },
+    {
+      "seed": 5,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08333333333333331
+    },
+    {
+      "seed": 6,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08333333333333331
+    },
+    {
+      "seed": 7,
+      "slow_share_lc": 0.14333333333333334,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.08666666666666667
+    },
+    {
+      "seed": 8,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 9,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08333333333333331
+    },
+    {
+      "seed": 10,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 11,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 12,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 13,
+      "slow_share_lc": 0.14,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.08333333333333334
+    },
+    {
+      "seed": 14,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07666666666666666
+    },
+    {
+      "seed": 15,
+      "slow_share_lc": 0.14,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.08333333333333334
+    },
+    {
+      "seed": 16,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07666666666666666
+    },
+    {
+      "seed": 17,
+      "slow_share_lc": 0.14,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08666666666666667
+    },
+    {
+      "seed": 18,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08333333333333331
+    },
+    {
+      "seed": 19,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08333333333333331
+    },
+    {
+      "seed": 20,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 21,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07666666666666666
+    },
+    {
+      "seed": 22,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08333333333333331
+    },
+    {
+      "seed": 23,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 24,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 25,
+      "slow_share_lc": 0.14,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.08333333333333334
+    },
+    {
+      "seed": 26,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07666666666666666
+    },
+    {
+      "seed": 27,
+      "slow_share_lc": 0.13333333333333333,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 28,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 29,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.056666666666666664,
+      "diff": 0.07999999999999999
+    },
+    {
+      "seed": 30,
+      "slow_share_lc": 0.13666666666666666,
+      "slow_share_adaptive": 0.05333333333333334,
+      "diff": 0.08333333333333331
+    }
+  ],
+  "mean_diff": 0.08122222222222224,
+  "bootstrap_ci": {
+    "estimate": 0.08122222222222224,
+    "lower": 0.08011111111111112,
+    "upper": 0.08233333333333334,
+    "confidence": 0.95,
+    "n_resamples": 2000,
+    "sample_size": 30
+  },
+  "positive_count": 30,
+  "evidence_tier": "strong",
+  "findings": "The statistical unit here is one full scenario replicate (a complete 300-request run), not one request -- 30 independent replicates, each varying only in its arrivals' timing jitter (+/-2ms around the nominal 5ms grid, seeded per replicate), with Least Connections and Adaptive run against the byte-for-byte identical jittered Scenario within each replicate (a paired design, not two independent samples). The paired difference (LC's slow-target share minus Adaptive's) was bootstrapped directly on the 30 per-replicate differences -- BootstrapCI on the differences themselves, not BootstrapDiffCI on the two policies' raw shares treated as unpaired samples, because the pairing is exactly what should be exploited here: LC_i and Adaptive_i share the identical arrival pattern, so their difference cancels whatever that specific replicate's jitter contributed, leaving only the two policies' own behavioral gap. Mean paired diff: 0.0812 (95% CI [0.0801, 0.0823]), with 30/30 replicates favoring Adaptive. Evidence tier: strong. This extends 007-B's single-run finding (Adaptive 5.7% vs Least Connections 14.0% slow-target share) into a claim about robustness across independently-varying conditions, not just one observed run -- exactly the distinction Stage 6 established as necessary before treating a single experiment's result as more than a starting hypothesis."
+}

@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -68,6 +69,60 @@ func TestAdaptiveSelector_UtilizationAccountsForCapacity(t *testing.T) {
 	}
 	if target != "big" {
 		t.Fatalf("expected \"big\" to win on lower utilization despite higher absolute load, got %q", target)
+	}
+}
+
+// TestAdaptiveSelector_ZeroCapacityIsPenalizedNotAveraged regression-tests
+// F-26: scoreUtilization used to collapse "target absent from the capacity
+// map" (unconfigured, should default to average) and "target present with
+// capacity<=0" (explicitly configured, should mean "always fully
+// utilized") into the same default-weight-1 behavior, silently ignoring
+// an operator's attempt to pull a target out of rotation via capacity=0.
+func TestAdaptiveSelector_ZeroCapacityIsPenalizedNotAveraged(t *testing.T) {
+	lt := NewLoadTracker()
+	lt.Increment("bad") // any load at all -- capacity=0 must still score worst
+	capacity := TargetWeights{"bad": 0, "good": 10}
+
+	sel := NewAdaptiveSelector(lt, NewLatencyTracker(0.2), capacity, nil, nil, DefaultAdaptiveConfig())
+	target, err := sel.SelectTarget(req("/a"), []string{"bad", "good"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if target != "good" {
+		t.Fatalf("expected explicitly-zero-capacity target to be penalized (score 0), not averaged; got %q selected", target)
+	}
+}
+
+// TestAdaptiveSelector_ZeroReferenceLatencyDoesNotProduceNaN
+// regression-tests F-27: scoreLatency computed est/(est+ref) with no
+// guard against ref<=0, which produced NaN whenever a target's own
+// latency estimate was also exactly zero -- and because Go's NaN
+// comparisons are always false, a NaN-scored first candidate would
+// permanently lock SelectTarget onto it regardless of any other
+// candidate's real score.
+func TestAdaptiveSelector_ZeroReferenceLatencyDoesNotProduceNaN(t *testing.T) {
+	lat := NewLatencyTracker(0.2)
+	lat.Observe("a", 0) // zero-latency estimate
+	lat.Observe("z", 50*time.Millisecond)
+
+	mc := clock.NewMockClock(1000)
+	cfg := AdaptiveConfig{Weights: DefaultAdaptiveWeights(), ReferenceLatency: 0, StaleAfter: time.Second}
+	sel := NewAdaptiveSelector(NewLoadTracker(), lat, nil, nil, mc, cfg)
+	sel.lastSelected["a"] = 1000
+	sel.lastSelected["z"] = 1000
+
+	scores := sel.Explain(req("/a"), []string{"a", "z"})
+	for _, sc := range scores {
+		if math.IsNaN(sc.CombinedScore) || math.IsInf(sc.CombinedScore, 0) {
+			t.Fatalf("target %q has a non-finite CombinedScore (%v) with ReferenceLatency=0", sc.Target, sc.CombinedScore)
+		}
+	}
+
+	// "z" (alphabetically last) must remain selectable -- if "a" ever won
+	// via a NaN lock-in, this would fail regardless of the real signals.
+	target, err := sel.SelectTarget(req("/a"), []string{"z"})
+	if err != nil || target != "z" {
+		t.Fatalf("expected \"z\" selectable on its own, got %q err=%v", target, err)
 	}
 }
 

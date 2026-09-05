@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"math"
 	"net/http"
 	"sort"
 	"sync"
@@ -87,7 +88,7 @@ type TargetScore struct {
 // a target actually has. Utilization combines both properties into one
 // signal instead of two.
 type AdaptiveSelector struct {
-	mu             sync.Mutex
+	mu             sync.RWMutex
 	loadTracker    *LoadTracker
 	latencyTracker *LatencyTracker
 	capacity       TargetWeights
@@ -141,9 +142,19 @@ func requestKey(r *http.Request) string {
 // scores 0.
 func (s *AdaptiveSelector) scoreUtilization(target string) float64 {
 	load := s.loadTracker.Get(target)
-	cap := s.capacity[target]
-	if cap <= 0 {
+	cap, configured := s.capacity[target]
+	switch {
+	case !configured:
+		// No entry at all: unconfigured, treated as average (weight 1) —
+		// see NewAdaptiveSelector's doc comment.
 		cap = 1
+	case cap <= 0:
+		// A target explicitly configured with capacity<=0 means "always
+		// treat as fully utilized" (score 0 for this signal), not
+		// "unconfigured" — collapsing these two cases previously let an
+		// operator's explicit "pull this target from rotation" capacity
+		// setting be silently treated as merely average.
+		return 0
 	}
 	utilization := float64(load) / float64(cap)
 	if utilization > 1 {
@@ -178,6 +189,15 @@ func (s *AdaptiveSelector) scoreLatency(target string, now clock.VirtualTime) fl
 		return 0.5
 	}
 	ref := float64(s.cfg.ReferenceLatency)
+	if ref <= 0 {
+		// A zero/negative ReferenceLatency (reachable if a caller builds
+		// AdaptiveConfig{} directly instead of via DefaultAdaptiveConfig()
+		// or the tuner's bounded ConfigSpace) would otherwise make
+		// est/(est+ref) evaluate to 0/0 = NaN whenever the target's own
+		// estimate is also exactly zero. Treat it the same as "no signal"
+		// rather than let a malformed config poison the score.
+		return 0.5
+	}
 	est := float64(estimate)
 	return 1 - est/(est+ref)
 }
@@ -254,9 +274,11 @@ func (s *AdaptiveSelector) SelectTarget(r *http.Request, available []string) (st
 		return "", ErrNoHealthyTargets
 	}
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
+	// Scoring only reads state (lastSelected/keyAffinity lookups,
+	// capacity/cost/tracker reads) -- a read lock lets concurrent
+	// SelectTarget calls score candidates in parallel; only the two map
+	// writes at the end need exclusive access.
+	s.mu.RLock()
 	now := s.clock.Now()
 	key := requestKey(r)
 
@@ -272,14 +294,22 @@ func (s *AdaptiveSelector) SelectTarget(r *http.Request, available []string) (st
 	bestScore := s.score(best, key, now).CombinedScore
 	for _, t := range candidates[1:] {
 		sc := s.score(t, key, now).CombinedScore
-		if sc > bestScore {
+		// A non-finite score (should be unreachable given scoreLatency's
+		// own NaN guard, but defense-in-depth: Go's NaN comparisons are
+		// always false, so a NaN bestScore would otherwise permanently
+		// freeze selection on whichever candidate happened to be first —
+		// never disqualify a later, real-valued candidate on that basis).
+		if math.IsNaN(bestScore) || (!math.IsNaN(sc) && sc > bestScore) {
 			bestScore = sc
 			best = t
 		}
 	}
+	s.mu.RUnlock()
 
+	s.mu.Lock()
 	s.lastSelected[best] = now
 	s.keyAffinity[key] = best
+	s.mu.Unlock()
 	return best, nil
 }
 
@@ -288,8 +318,8 @@ func (s *AdaptiveSelector) SelectTarget(r *http.Request, available []string) (st
 // any state — for tests, tracing, and experiment analysis that need to
 // answer "why did target B win" without re-deciding.
 func (s *AdaptiveSelector) Explain(r *http.Request, available []string) []TargetScore {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 
 	now := s.clock.Now()
 	key := requestKey(r)

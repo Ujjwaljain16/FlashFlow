@@ -1,0 +1,16 @@
+# Normalize line endings to LF for all text files this repo tracks,
+# regardless of which platform a contributor checks out or commits from
+# (this project has been developed on Windows; several files already show
+# LF/CRLF warnings in `git diff` without this file present, risking
+# spurious whole-file diffs and gofmt churn for a contributor or CI runner
+# with different core.autocrlf settings).
+* text=auto eol=lf
+
+*.go text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf

@@ -24,7 +24,13 @@ type TraceEvent struct {
 	Fields map[string]any    `json:"fields,omitempty"`
 }
 
-// Trace is an ordered, append-only record of TraceEvents.
+// Trace is an ordered, append-only record of TraceEvents, held entirely
+// in memory with no capacity bound. A known, accepted limit at this
+// project's actual scale (experiments here run hundreds to ~100K events —
+// a few MB at most): a hypothetical much-longer-running or much-higher-
+// arrival-rate experiment could grow this unboundedly. Not a live issue
+// for anything this project currently runs; worth revisiting only if that
+// scale assumption changes.
 type Trace struct {
 	events []TraceEvent
 	seq    uint64

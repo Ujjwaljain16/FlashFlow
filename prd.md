@@ -11,7 +11,7 @@ Scope: Core execution and experimental engines. Complex ML models (LinUCB, DR-OP
 
 1. **Dual-Engine Architecture**: FlashFlow now explicitly defines two execution modes that share the same configuration and policies:
    - **Virtual-Time Engine**: A deterministic, discrete-event simulator for rigorous scientific research, auto-tuning, and counterfactual replay.
-   - **Real Emulation Engine**: A high-fidelity, Docker-backed validation engine using `net/http` and `tc netem` to prove policies survive contact with the real Linux networking stack.
+   - **Real Emulation Engine**: A high-fidelity validation engine using `net/http`, with network degradation applied via `internal/netsim` (an in-process Go simulator built specifically in place of `tc netem`, which was evaluated and not used — see §13 and `docs/StageArtifacts/Stage4.md`).
 2. **Canonical Event Streaming**: The system records an immutable Event Stream as the single source of truth, from which Prometheus metrics, HdrHistograms, and experiment artifacts are derived.
 3. **Queueing-Theoretic Attribution**: Added an analytical layer to explain *why* tail latencies spike (e.g., origin utilization approaching 1.0) rather than just reporting the spike.
 4. **Research-Driven Progressions**: The Auto-Tuner now evolves from Random Search to Bayesian Optimization, making the optimizer itself a research subject. Advanced ML models (LinUCB) and full live dashboards are explicitly deferred to advanced stages.
@@ -122,7 +122,7 @@ Instead of just logging latency spikes, the system automatically evaluates utili
 Constant, ramp-up, ramp-down, burst, flash-crowd. Traffic model fields: `request_id, client_id, target, method, path, payload_size, region, priority`. **Plus:** Fuze log import.
 
 ### 8.2 Global Router
-Pluggable routing strategies in progression: Round Robin $\rightarrow$ Weighted RR $\rightarrow$ Least Connections $\rightarrow$ Latency-Aware EWMA $\rightarrow$ Power of Two Choices (P2C) $\rightarrow$ Adaptive (six-signal).
+Pluggable routing strategies in progression: Round Robin $\rightarrow$ Weighted RR $\rightarrow$ Least Connections $\rightarrow$ Latency-Aware EWMA $\rightarrow$ Power of Two Choices (P2C) $\rightarrow$ Adaptive (four scored signals — Load/Latency/Cache/Cost; Health is a pre-filter, Capacity folds into Load — across six tunable parameters).
 
 ### 8.3 Reverse Proxy
 Custom HTTP proxy per edge — request parsing, upstream connections, response forwarding, connection reuse. Abstracted so the Virtual Engine can use the same policy logic.
@@ -136,8 +136,8 @@ TTL, LRU eviction, hit/miss tracking. Four policies: No Cache, TTL, LRU, Stale-W
 ### 8.6 Health Monitoring
 Full 4-state machine: HEALTHY, DEGRADED, UNHEALTHY, RECOVERING. Timers use the abstracted `Clock` interface, not hardcoded wall-clock time.
 
-### 8.7 Chaos Engine (Declarative)
-Failures are defined declaratively in YAML (e.g., `at: 15s, target: edge-a, action: delay`). The Virtual Engine translates this into modeled events; the Emulation Engine translates this into actual `tc netem` Docker commands.
+### 8.7 Chaos Engine (Declarative) — planned, not yet built (Stage 10, see §13)
+Failures are to be defined declaratively in YAML (e.g., `at: 15s, target: edge-a, action: delay`), translated into modeled events for the Virtual Engine and into `internal/netsim` condition changes for the Emulation Engine (not `tc netem` — see §13). As of Stage 9, failure schedules are hardcoded Go struct literals (`replay.FailureWindow`, `netsim.Conditions`), not YAML-driven.
 
 ### 8.8 Experiment Ledger & Provenance
 Experiments as first-class objects: `experiment_id, name, topology, traffic_profile, routing_policy`. **Added:** Immutable manifest with hierarchical seeds (Traffic, Topology, Failure, Policy) and Configuration Hashes.
@@ -160,10 +160,10 @@ The full live interactive dashboard (topology view, live metrics panel) is expli
 | 1 | Network Programming 101 | TCP client/server, basic HTTP proxy, connection tracking |
 | 2 | Eagle-Eye Networking | 3-edge topology, static routing, Real Emulation Engine (`net/http`) |
 | 3 | Server-Side Scaling | Round robin, least-connections, latency-aware EWMA |
-| 4 | Edge Cache & Failures | LRU+TTL+SWR cache, request coalescing, `tc netem` realism checks |
+| 4 | Edge Cache & Failures | TTL cache, request coalescing, `internal/netsim` realism checks (LRU/SWR deferred — see §13) |
 | 5 | The Reproducibility Wall | **Virtual-Time Engine**, Clock Abstraction, Event Stream, Manifest Ledger |
 | 6 | Statistical Science | HdrHistogram, Queueing-Theoretic Attribution, Mann-Whitney U analysis |
-| 7 | Adaptive Routing | P2C, Adaptive Router (six-signal), Counterfactual Replay |
+| 7 | Adaptive Routing | P2C, Adaptive Router (four scored signals across six tunable parameters — see §13), Counterfactual Replay |
 | 8 | Auto-Tuner & Optimization | Tuner v1 (Random Search), Train/Test generalization, Live Dashboard |
 
 ---
@@ -186,4 +186,29 @@ README should say:
 
 ## 12. Resume Line
 
-> **FlashFlow — Adaptive Edge Networking Laboratory:** Built a dual-engine distributed system in Go combining a deterministic virtual-time simulator and a real-world Docker emulator (`tc netem`); implemented adaptive routing, LRU+coalescing edge caching, and a self-tuning parameter optimizer validated via stateful counterfactual replay and statistical queueing analysis.
+> **FlashFlow — Adaptive Edge Networking Laboratory:** Built a dual-engine distributed system in Go combining a deterministic virtual-time simulator and a real HTTP emulation engine with an in-process network-degradation simulator (built specifically in place of `tc netem`, which was evaluated and not used); implemented adaptive routing, TTL+coalescing edge caching, and a self-tuning parameter optimizer validated via stateful counterfactual replay and statistical queueing analysis.
+
+---
+
+## 13. Implementation Status (added Stage 9 — post-audit)
+
+An adversarial audit after Stage 8 (`docs/audit/`) found several items in this document describe
+the originally planned architecture rather than what was actually built. Stage 9 fixed every
+correctness/security/reproducibility finding from that audit and corrected every place in this
+document that overclaimed delivered scope; it did not build the items below — that is Stage 10's
+scope. Full per-item disposition: `docs/audit/RESOLUTION.md`.
+
+| §/Feature | Planned (above) | Actually built (Stage 9 status) |
+|---|---|---|
+| §6.1 `ExperimentEngine` interface | Shared `Prepare/Run/Replay` interface unifying both engines | Not built — the two engines share routing/health code by convention (both use `internal/proxy.TargetSelector`, `internal/health.Registry`), not via a common interface |
+| §6.2 Tuner progression | Random Search → LHS → Bayesian Optimization | Only Random Search v1 shipped (`internal/tuning/search.go`) — deliberately, per Stage 8's own finding that Random Search converges well before its evaluation budget on this search space |
+| §6.4 / §8.9 Queueing attribution | Automatic ρ computation + generated causal-explanation text | A one-off, hand-verified Little's Law check exists in `cmd/experiment-006d`, not a reusable/automated engine |
+| §8.1 Traffic Generator | Constant/ramp/burst/flash-crowd + Fuze log import | Not built — every experiment uses a hardcoded arrival list |
+| §8.5 Edge Cache | 4 policies: No Cache/TTL/LRU/SWR | 2 shipped: No Cache, TTL (+coalescing). LRU was evaluated and deliberately deferred (`docs/StageArtifacts/Stage4.md`); SWR is not built |
+| §8.7 Chaos Engine | Declarative YAML, translated to `tc netem` for the real engine | Hardcoded Go struct literals for both engines; real engine uses `internal/netsim`, not `tc netem` (evaluated, not used — Linux-only, unavailable on this project's Windows host) |
+| §8.8 Experiment Ledger & Provenance | `manifest.json` with hierarchical (Traffic/Topology/Failure/Policy) seeds + config hash | Not built — `internal/replay.Scenario` carries one flat `Seed int64`; each experiment writes its own ad hoc result JSON |
+| §8.9 Metrics & Analytics | HdrHistogram + Prometheus + canonical Event Stream | `internal/statistics` (percentile/Mann-Whitney/Cliff's Delta/bootstrap) shipped and is correct and tested; HdrHistogram, Prometheus, and a typed canonical event vocabulary were not built |
+
+None of the above affects the correctness of what *was* built and validated (routing, health,
+cache/TTL+coalescing, virtual-time determinism, counterfactual replay, statistics, the tuner and
+its holdout discipline) — all of that was independently re-audited in Stage 9 and found sound.

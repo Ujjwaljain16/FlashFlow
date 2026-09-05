@@ -112,7 +112,7 @@ Progression from simple to adaptive:
 4. **Latency-Aware EWMA**
 5. **Health-Aware** (Wrapper)
 6. **Power of Two Choices (P2C)**: Samples two healthy edges, chooses the one with the lowest load/latency. Mitigates herd behavior.
-7. **Adaptive (Six-Signal)**: The flagship scored router (Latency, Load, Health, Capacity, Cache, Cost normalized to `[0,1]`).
+7. **Adaptive**: The flagship scored router. As planned here: six signals (Latency, Load, Health, Capacity, Cache, Cost normalized to `[0,1]`). As built (see §19): four scored signals (Load/Latency/Cache/Cost) — Health is a pre-filter applied before this selector runs, and Capacity is folded into Load as a utilization ratio rather than standing alone — across six tunable parameters (4 weights + 2 durations).
 
 *Note: Contextual Bandits (LinUCB) are deferred to advanced research phases.*
 
@@ -132,11 +132,15 @@ Real Proxy Component
 
 ---
 
-## 6. Network Degradation & `tc netem`
+## 6. Network Degradation & `tc netem` (planned) / `internal/netsim` (as built — see §19)
 
-Network configuration is declared logically in the YAML spec. 
+Network configuration is declared logically in the YAML spec (not yet built — see §19).
 - The **Virtual Engine** interprets latency mathematically as transmission delay.
-- The **Emulation Engine** shells into Docker and runs `tc qdisc add dev eth0 root netem delay 100ms loss 2%`.
+- The **Emulation Engine** was planned to shell into Docker and run
+  `tc qdisc add dev eth0 root netem delay 100ms loss 2%`. As built, it instead uses
+  `internal/netsim`, an in-process Go `http.RoundTripper` wrapper injecting latency/jitter/loss —
+  `tc netem` was evaluated and not used (Linux-only, unavailable on this project's Windows host;
+  see `docs/StageArtifacts/Stage4.md`).
 
 ---
 
@@ -286,3 +290,36 @@ internal/statistics/
 6. **Statistics & Attribution**.
 7. **Optimization (Tuner)**.
 8. **Real Validation**: Testing optimized weights in Docker.
+
+---
+
+## 19. Implementation Status (added Stage 9 — post-audit)
+
+An adversarial audit after Stage 8 (`docs/audit/`) found this document's repository map, some type
+sketches, and several described-but-unbuilt subsystems no longer match the actual codebase. Stage 9
+fixed every correctness/security/reproducibility finding and corrects the record here; it did not
+build the unbuilt items — see `docs/audit/RESOLUTION.md` for the full per-finding disposition and
+the Stage 10 plan that will build them.
+
+- **§1 Repository structure**: the actual package layout is `internal/{cache,challenge,clock,
+  dashboard,health,httpx,netsim,proxy,replay,statistics,tcp,topology,transport,tuning,vtime}` plus
+  ~50 `cmd/experiment-*` binaries — not the `internal/{engine,router,traffic,chaos,tuner,
+  provenance,analysis,telemetry}` layout sketched above. Responsibilities that *were* built
+  relocated sensibly (routing lives in `internal/proxy`, the discrete-event loop in
+  `internal/vtime`); `traffic`, `chaos`, `provenance`, `analysis`, and `telemetry` have no
+  implementation anywhere yet, not merely a renamed home.
+- **§2 `Clock` interface**: the actual interface is `Clock interface { Now() VirtualTime }` — no
+  `SleepUntil`. Time advancement is push-based (`Engine.Schedule`), not the blocking-sleep model
+  sketched above; a deliberate, documented improvement (`docs/StageArtifacts/Stage5.md`), not an
+  oversight, but this document was never updated to match.
+- **§3 `ExperimentEngine` interface**, **§9 `manifest.json`/hierarchical seeds**, **§11 Tuner
+  v2/v3**, **§12 YAML chaos**, **§13 HdrHistogram/Prometheus**, **§14 automated attribution
+  engine**: none built yet. See `prd.md` §13 for the as-built status of each (routing/health/cache/
+  virtual-time/replay/statistics/tuner-v1 all shipped and were independently re-verified correct in
+  Stage 9; these six specific items remain Stage 10 scope).
+- **§4 Adaptive router**: implements four scored signals (Load, Latency, Cache, Cost) — Health is a
+  pre-filter, Capacity folds into Load — across six tunable parameters, not six independently
+  scored signals.
+- **§16 Metamorphic testing**: the two named invariants (2x delay → latency must not decrease;
+  halved load → utilization must not increase) are not implemented as tests anywhere. Deferred to
+  Stage 10 alongside the attribution engine they depend on.

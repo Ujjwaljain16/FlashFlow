@@ -154,7 +154,7 @@ This experiment answers the queueing-attribution question the project's own Stag
 | p99 median | 22.77ms | 137.36ms |
 | p99−p50 spread median | 1.33ms | 4.47ms |
 
-p50 shift: Cliff's Delta = −1.00 (complete separation), median difference 111.1ms, 95% CI [109.8, 112.9]. p99 shift: Cliff's Delta = −1.00, median difference 114.6ms, 95% CI [112.9, 116.3]. Spread (p99−p50) shift: median difference 3.13ms, 95% CI [1.76, 4.65] — clearly excludes zero.
+p50 shift: Cliff's Delta = −1.00 (complete separation), median difference 111.1ms, 95% CI [109.8, 112.9]. p99 shift: Cliff's Delta = −1.00, median difference 114.6ms, 95% CI [112.9, 116.3]. Spread (p99−p50) shift: median difference 3.13ms, 95% CI [1.76, 4.65] — clearly excludes zero. (A Mann-Whitney U p-value is also recorded in the raw results at n=10/side, right at `internal/statistics`'s own documented ~8-observation floor for the normal approximation to be reliable — not relied on above precisely for that reason; the complete separation (Cliff's Delta = −1.00) and the CI on the spread are what this finding actually rests on.)
 
 **Decomposition**: service+overhead (baseline p99) = 22.77ms; elevated p99 = 137.36ms; attributed waiting component = 114.59ms — **83% of the elevated p99**. Raw data: `experiments/006-statistics-queueing/results/006E-tail-latency-attribution.json`.
 

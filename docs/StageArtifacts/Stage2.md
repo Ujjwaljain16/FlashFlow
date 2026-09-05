@@ -11,7 +11,7 @@
 | 4-State Health Machine | `internal/health/state.go`, `checker.go` | `HEALTHY`, `DEGRADED`, `UNHEALTHY`, `RECOVERING` state transitions & prober |
 | Custom Reverse Proxy | `internal/proxy/proxy.go`, `selector.go` | Pluggable `TargetSelector`, timing capture, request record telemetry |
 | Origin & Thin Edge Services | `internal/topology/origin.go`, `edge.go` | Origin with delay/override hooks, Edge with identity & forwarding |
-| Service CLI Entrypoints | `cmd/http-origin/`, `cmd/edge/`, `cmd/proxy/` | Production-grade binaries with graceful shutdown and health checks |
+| Service CLI Entrypoints | `cmd/http-origin/`, `cmd/edge/`, `cmd/proxy/` | Binaries with graceful shutdown and health checks — solid code hygiene, not a production-readiness claim (see this project's own non-goals) |
 | Automated Experiment Suites | `cmd/experiment-002a1/`, `002a2/`, `002b/`, `002c/`, `002d/` | 5 reproducible benchmark experiment runners |
 | Docker Compose Topology | `deployments/Dockerfile`, `docker-compose/stage2.yml` | 3 Edge containers (`edge-a`, `edge-b`, `edge-c`) + Origin + Proxy bridge network |
 | Research Documentation | `experiments/002-http-reverse-proxy/`, `docs/learning/002-http-reverse-proxy.md` | Hypotheses, results, and first-principles learning notes |

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlashFlow Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>FlashFlow <span class="muted">Laboratory Dashboard</span></h1>
+  <nav>
+    <button class="tab-btn active" data-tab="playground">Playground</button>
+    <button class="tab-btn" data-tab="experiments">Experiments</button>
+    <button class="tab-btn" data-tab="tuning">Tuning</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ===================== PLAYGROUND ===================== -->
+<section id="tab-playground" class="tab-panel active">
+  <p class="hint">
+    One canonical scenario: 3 edges (A fast/stable, B fastest-until-it-fails-and-recovers, C medium),
+    mixed hot/cold keys, a real mid-run health failure and recovery. Every run below executes a fresh,
+    real FlashFlow experiment via <code>internal/replay.RunWorld</code> -- nothing here is canned.
+  </p>
+
+  <div class="card">
+    <h2>Run</h2>
+    <div class="controls">
+      <label>Policy
+        <select id="run-policy"></select>
+      </label>
+      <button id="run-btn">&#9654; Run</button>
+      <span id="run-status" class="status"></span>
+    </div>
+    <div id="run-result" class="result-area" hidden>
+      <div class="grid-2">
+        <div>
+          <h3>Topology</h3>
+          <svg id="topology-svg" viewBox="0 0 360 200" class="topology"></svg>
+        </div>
+        <div>
+          <h3>Metrics</h3>
+          <table class="metrics-table" id="run-metrics"></table>
+        </div>
+      </div>
+      <h3>Event Timeline <input id="timeline-filter" placeholder="filter (e.g. request_completed, edge-b)"></h3>
+      <div class="timeline" id="run-timeline"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Counterfactual Comparison</h2>
+    <p class="hint">Same scenario, two policies, independently-evolving state -- first point of divergence highlighted.</p>
+    <div class="controls">
+      <label>Baseline
+        <select id="cf-baseline"></select>
+      </label>
+      <label>Counterfactual
+        <select id="cf-counterfactual"></select>
+      </label>
+      <button id="cf-btn">&#9654; Compare</button>
+      <span id="cf-status" class="status"></span>
+    </div>
+    <div id="cf-result" class="result-area" hidden>
+      <div id="cf-divergence" class="divergence-banner"></div>
+      <div class="grid-2">
+        <div>
+          <h3 id="cf-baseline-title">Baseline</h3>
+          <table class="metrics-table" id="cf-baseline-metrics"></table>
+        </div>
+        <div>
+          <h3 id="cf-cf-title">Counterfactual</h3>
+          <table class="metrics-table" id="cf-cf-metrics"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EXPERIMENTS ===================== -->
+<section id="tab-experiments" class="tab-panel">
+  <p class="hint">Reads experiment artifacts directly from <code>experiments/*/results/*.json</code> -- a read-only projection, never a second source of truth.</p>
+  <div class="grid-3col">
+    <div class="card">
+      <h2>Stages</h2>
+      <ul id="exp-groups" class="list"></ul>
+    </div>
+    <div class="card">
+      <h2>Result Files</h2>
+      <ul id="exp-files" class="list"></ul>
+    </div>
+    <div class="card">
+      <h2>Content</h2>
+      <div id="exp-content" class="json-view"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TUNING ===================== -->
+<section id="tab-tuning" class="tab-panel">
+  <div id="tuning-unavailable" class="hint" hidden>No tuning search ledger found -- run <code>go run ./cmd/experiment-008b</code> then <code>008c</code> first.</div>
+  <div id="tuning-content" hidden>
+    <div class="card">
+      <h2>Search Progress <span class="muted" id="tuning-meta"></span></h2>
+      <svg id="tuning-svg" viewBox="0 0 600 220" class="tuning-chart"></svg>
+    </div>
+    <div class="card">
+      <h2>Development vs Holdout <span class="muted">(holdout is visually distinct -- never blended into one number)</span></h2>
+      <div id="holdout-bars" class="holdout-bars"></div>
+      <table class="metrics-table" id="holdout-table"></table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

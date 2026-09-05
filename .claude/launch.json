@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "flashflow-dashboard",
+      "runtimeExecutable": "go",
+      "runtimeArgs": ["run", "./cmd/dashboard"],
+      "port": 7070
+    }
+  ]
+}

@@ -24,6 +24,19 @@ var ErrProtocolMismatch = errors.New("replay: scenarios differ in protocol field
 // exactly there -- not earlier (which would mean a later change is
 // somehow visible in the past, a causality bug) and not "eventually,
 // somewhere" (which would be too weak a claim to trust).
+//
+// Precondition this comparison silently relies on: it is purely
+// positional (index i of a against index i of b), which only identifies
+// "the first point where a policy decision differed" because every
+// PolicySpec today produces the identical trace-event *count* and
+// *cadence* for a given Scenario, regardless of which policy runs --
+// Instrumentation exposes no way for policy code to call Engine.Record
+// itself. That is an emergent property of the current code shape, not
+// something this function checks. A future PolicySpec that could emit
+// its own trace events (e.g. an explain-log) would silently invalidate a
+// positional comparison without any test here catching it -- if that
+// ever becomes possible, this function (or its caller) needs an
+// event-identity-aware alignment step first, not just a longer test.
 func FirstDivergence(a, b []vtime.TraceEvent) (int, bool) {
 	n := len(a)
 	if len(b) < n {

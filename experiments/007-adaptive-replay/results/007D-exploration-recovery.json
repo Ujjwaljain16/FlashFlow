@@ -1,0 +1,12 @@
+{
+  "experiment": "007-D-exploration-recovery",
+  "timestamp": "2026-09-05T08:00:16Z",
+  "stale_after_ms": 150,
+  "improve_at_ms": 1500,
+  "a_selections_before_improve": 8,
+  "a_selections_after_improve": 110,
+  "max_gap_before_improve_ms": 205,
+  "rediscovered_while_still_bad": true,
+  "post_improve_share_200ms_window": 0.1,
+  "findings": "Before A's true performance improved at t=1500ms, it was selected 8 times despite being 10x worse than B (200ms vs 20ms) -- the largest gap between consecutive A-selections was 205ms, exceeding the 150ms StaleAfter threshold (true), meaning at least one of those selections happened specifically because A's stale latency data reset to neutral, not because A was ever competitive on its actual (terrible) latency. This is direct evidence the staleness mechanism performs the exploration role item 10/11 require, without any explicit forced-exploration algorithm: a target that stops being selected doesn't stay locked out forever, because its own data eventually stops being trusted. After A's true performance improved, its share of traffic in the following 200ms window was only 10.0% (4/40 requests) -- lower than a naive 'instant rediscovery' story would predict, and the reason is itself informative: staleness resets a target's score to neutral, but does not erase its LatencyTracker's EWMA-smoothed estimate, which still reflects ~200ms from A's pre-improvement observations and only pulls toward the new ~10ms truth gradually, one fresh observation at a time (the same smoothing-lag mechanism 007-C identified for a 'losing' target that stays in rotation). So two distinct mechanisms are visible here in sequence: staleness-driven neutral reset gets A re-observed at all despite being locked out, and ordinary EWMA smoothing then gates how fast that re-observation turns into sustained preference -- rediscovery is real but not instantaneous, which is the honest, mechanistic result, not a sign the mechanism is broken."
+}

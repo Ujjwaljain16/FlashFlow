@@ -102,3 +102,34 @@ Raw data: `experiments/007-adaptive-replay/results/007C-dynamic-adaptation.json`
 ### Interpretation
 
 This result usefully separates two mechanisms this design provides and shows which one is doing the work here: staleness-driven neutral reset (for a target that stops being selected almost entirely) versus ordinary EWMA tracking (for a target that keeps receiving occasional traffic even while "losing"). Because Adaptive's utilization signal is self-correcting and its cold start is neutral rather than winner-take-all, the losing target in this scenario never gets pushed all the way to zero selections the way EWMA locked a target to near-zero in 007-B's homogeneous case — and that residual minority traffic is precisely what lets the latency estimate stay current without needing the staleness mechanism at all. Experiment 007-D is deliberately designed to isolate the *other* mechanism — genuine staleness-driven rediscovery of a target that receives no traffic for an extended stretch — which this experiment's phase lengths were too short to exercise.
+
+---
+
+## 5. Results: Experiment 007-D — Exploration / Recovery
+
+**Hypothesis (H4)**: see `hypotheses.md`. Target A: moderately bad (200ms) until t=1500ms, then excellent (10ms); target B: consistently good (20ms) throughout. `StaleAfter`=150ms, deliberately shorter than A's own 200ms service time. 500 requests at 5ms spacing.
+
+### A first attempt failed instructively
+
+An earlier version made A extremely bad (2000ms) rather than moderately bad, and the experiment's own correctness check (`log.Fatal` on no evidence of rediscovery) correctly caught a failure: A was selected exactly once (the initial deterministic tie-break) and never again. Reading the raw selection trace showed this wasn't a staleness failure — it was a load-counter artifact. A's single 2000ms in-flight request pinned its `Load` counter at 1 for virtually the whole run (its completion event doesn't fire until t=2000ms), which, combined with the default capacity of 1, maxed out its utilization penalty to the worst possible value independent of any staleness effect — while its latency simultaneously stayed "cold" (0.5, unobserved) since no completion ever landed. A's combined score was permanently below B's for a reason that had nothing to do with the mechanism under test. Redesigning A's bad phase to a moderate, self-clearing 200ms (instead of a pathological 2000ms) removed the confound.
+
+### Results with the redesigned scenario
+
+| Metric | Value |
+|---|---|
+| A selected before t=1500ms (while terrible) | 8 |
+| A selected after t=1500ms (while excellent) | 110 |
+| Largest gap between consecutive A-selections before improvement | 205ms (StaleAfter=150ms) |
+| Evidence of staleness-driven rediscovery | **true** |
+| A's share of traffic in the 200ms window right after improvement | 10.0% (4/40) |
+
+Raw data: `experiments/007-adaptive-replay/results/007D-exploration-recovery.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed.** A — despite being 10x worse than B and therefore losing every direct comparison while trusted — was still selected 8 times before its true improvement, with the largest gap between consecutive A-selections (205ms) exceeding the 150ms `StaleAfter` threshold. That gap size is the direct signature of the mechanism: A wasn't picked because it was competitive, it was picked because its stale data had reset to neutral, giving it a fair chance against B's own (occasionally weak) utilization moments.
+2. **Prediction 2 confirmed, with an honest and informative wrinkle.** A's share of traffic did rise after its true improvement, but only to 10.0% in the first 200ms — far short of what a naive "instant rediscovery" story would predict. The reason, found by inspecting the mechanism rather than assuming the number was wrong: a staleness reset clears a target's *score* to neutral, but does not erase its `LatencyTracker`'s EWMA-smoothed *estimate*. A's tracked latency still reflected ~200ms from its pre-improvement observations immediately after t=1500ms, and only pulled toward the new ~10ms truth gradually, one fresh observation at a time — the same smoothing-lag mechanism 007-C identified for a "losing" target that stays in rotation.
+
+### Interpretation
+
+Two distinct mechanisms are visible here in sequence, and this experiment is the first to cleanly separate them: staleness-driven neutral reset is what gets a locked-out target re-observed at all, and ordinary EWMA smoothing is what gates how fast that re-observation turns into sustained preference. Rediscovery is real — the router did not need any explicit forced-exploration algorithm to find A again — but it is not instantaneous, and treating "not instantaneous" as a defect would have been the wrong conclusion. As with every experiment in this stage, the failed first attempt was worth keeping in the record: it is a genuine finding about how utilization and cold-start latency interact under an extreme, unrealistic parameter choice, not a mistake to quietly erase once the second attempt worked.

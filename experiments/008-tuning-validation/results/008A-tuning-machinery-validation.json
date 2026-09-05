@@ -1,0 +1,6 @@
+{
+  "experiment": "008-A-tuning-machinery-validation",
+  "timestamp": "2026-09-05T17:30:03Z",
+  "all_passed": true,
+  "findings": "Every load-bearing piece of internal/tuning was checked against a known answer before being trusted on any real search: config sampling never leaves its own bounds (1000/1000 samples valid), the four AdaptiveWeights really are scale-invariant for routing purposes (a 7x-scaled, technically out-of-bounds weight vector produced byte-identical scores to the unscaled default, {LatencyScore:0.46038781780685767 RejectScore:1 FairnessScore:0.404} both), scenario generation is seed-deterministic and every generated scenario executes, the Development/Holdout seed ranges never overlap (40 + 20 scenarios, zero shared seeds), the objective function orders a synthetic perfect case above a synthetic worst case, Pareto frontier extraction matches a hand-computed non-dominated pair, and the full Evaluate pipeline (config -\u003e AdaptivePolicyWithConfig -\u003e RunWorld -\u003e ComputeMetrics -\u003e ComputeScores) is deterministic end to end. All 7 checks passed."
+}

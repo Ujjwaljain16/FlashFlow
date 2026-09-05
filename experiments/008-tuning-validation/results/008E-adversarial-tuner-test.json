@@ -1,0 +1,12 @@
+{
+  "experiment": "008-E-adversarial-tuner-test",
+  "timestamp": "2026-09-05T17:30:05Z",
+  "config_a_dev_utility": 0.8454545454545455,
+  "config_b_dev_utility": 0.8454545454545455,
+  "config_a_holdout_utility": 0.6,
+  "config_b_holdout_utility": 0.8420279531109106,
+  "tied_on_training": true,
+  "b_generalizes": true,
+  "holdout_swing": 0.24202795311091063,
+  "findings": "A synthetic Development/Holdout pair was constructed so Config A (weighing ONLY the Cache signal -- pure memorization of whichever target answered first) and Config B (proxy.DefaultAdaptiveConfig's balanced, genuinely signal-driven weights) achieve IDENTICAL Development utility (A=0.8455, B=0.8455) -- not the strict domination the master context's own rule-40 example describes, and investigated rather than forced into that shape: AdaptiveSelector's neutral (not optimistic) cold-start means a real signal-based policy that has already found a genuinely good target has no reason to explore away from it, so it pays zero cost for being 'real' rather than memorized, as long as nothing in Development ever contradicts the memorized answer. This is arguably a SHARPER demonstration of why holdout evidence is necessary than strict domination would have been: Development performance alone provides literally zero signal to distinguish these two configurations. On Holdout, where which target is fast is swapped, the tie breaks catastrophically: Config A, blind to load and latency, keeps routing 100% of traffic to the now-terrible target it locked onto by chance (utility 0.6000), while Config B's real load signal detects the now-overloaded target within the first couple of requests and corrects away (utility 0.8420) -- a 0.2420-point swing that Development gave no warning of whatsoever. This project's actual pipeline (008-B finds a Development winner, 008-C evaluates it against Holdout before anything is trusted) would surface this reversal immediately and unambiguously the moment Holdout is checked. The methodology is validated on the harder case: it does not require Development results to already look suspicious, or even different between candidates, to catch a configuration that cannot generalize."
+}

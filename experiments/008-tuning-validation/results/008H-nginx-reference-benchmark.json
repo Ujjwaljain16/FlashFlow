@@ -1,0 +1,32 @@
+{
+  "experiment": "008-H-nginx-reference-benchmark",
+  "a": {
+    "label": "flashflow-proxy",
+    "url": "http://127.0.0.1:8081/",
+    "requests": 200,
+    "concurrency": 10,
+    "warmup": 20,
+    "completed": 200,
+    "errors": 0,
+    "throughput_req_per_sec": 473.3749098516656,
+    "mean_ms": 21.083114999999985,
+    "p50_ms": 21.12,
+    "p95_ms": 21.783,
+    "p99_ms": 22.169
+  },
+  "b": {
+    "label": "nginx",
+    "url": "http://127.0.0.1:8080/",
+    "requests": 200,
+    "concurrency": 10,
+    "warmup": 20,
+    "completed": 200,
+    "errors": 0,
+    "throughput_req_per_sec": 378.56511329412785,
+    "mean_ms": 25.418790000000012,
+    "p50_ms": 24.157,
+    "p95_ms": 31.741049999999998,
+    "p99_ms": 33.06
+  },
+  "caveat": "Reference point only, at light load (a fixed request count, modest concurrency) through a single backend. Not a claim that FlashFlow replaces NGINX or matches its production maturity -- FlashFlow's research capabilities (deterministic virtual execution, counterfactual replay, adaptive routing, statistical analysis, automatic tuning) are outside the scope of this proxy-performance comparison."
+}

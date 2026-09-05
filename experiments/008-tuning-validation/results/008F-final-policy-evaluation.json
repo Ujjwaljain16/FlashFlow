@@ -1,0 +1,207 @@
+{
+  "experiment": "008-F-final-policy-evaluation",
+  "timestamp": "2026-09-05T12:34:18Z",
+  "winner_config_hash": "3215da2cc0dd6ad3",
+  "winner_config": {
+    "Weights": {
+      "Load": 0.16093257359019994,
+      "Latency": 0.5678504991153457,
+      "Cache": 0.05087082884339706,
+      "Cost": 0.22034609845105735
+    },
+    "ReferenceLatency": 192267378,
+    "StaleAfter": 3742261892
+  },
+  "development_size": 40,
+  "holdout_size": 20,
+  "rows": [
+    {
+      "name": "round-robin",
+      "dev_utility": 0.6412243564937027,
+      "dev_scores": {
+        "LatencyScore": 0.467457260822838,
+        "RejectScore": 1,
+        "FairnessScore": 0.6074999999999999
+      },
+      "dev_robustness": {
+        "mean": 0.6513575838066145,
+        "median": 0.6448602296396999,
+        "worst": 0.544453213549776,
+        "std_dev": 0.06131640144266645
+      },
+      "dev_win_rate": 0.35,
+      "dev_non_inferiority_rate": 0.425,
+      "holdout_utility": 0.645867041228668,
+      "holdout_robustness": {
+        "mean": 0.6518162318986669,
+        "median": 0.6565529091996298,
+        "worst": 0.543252835473927,
+        "std_dev": 0.05110390467866045
+      },
+      "holdout_win_rate": 0.1,
+      "holdout_non_inferiority_rate": 0.3,
+      "challenge_utility": {
+        "extreme-capacity-ratio": 0.7128205128205127,
+        "failure-recovery": 0.7445977011494253,
+        "identical-targets": 0.8666666666666667
+      }
+    },
+    {
+      "name": "weighted-round-robin",
+      "dev_utility": 0.6531657240535726,
+      "dev_scores": {
+        "LatencyScore": 0.5122623178670656,
+        "RejectScore": 1,
+        "FairnessScore": 0.45808333333333306
+      },
+      "dev_robustness": {
+        "mean": 0.6698190148645569,
+        "median": 0.6683075068789364,
+        "worst": 0.544453213549776,
+        "std_dev": 0.07120058766000928
+      },
+      "dev_win_rate": 0.025,
+      "dev_non_inferiority_rate": 0.575,
+      "holdout_utility": 0.6656389620351738,
+      "holdout_robustness": {
+        "mean": 0.68278765910772,
+        "median": 0.6908090387042394,
+        "worst": 0.5462304893778236,
+        "std_dev": 0.07231765303591416
+      },
+      "holdout_win_rate": 0.05,
+      "holdout_non_inferiority_rate": 0.35,
+      "challenge_utility": {
+        "extreme-capacity-ratio": 0.8753227497815322,
+        "failure-recovery": 0.7902484725050917,
+        "identical-targets": 0.8666666666666667
+      }
+    },
+    {
+      "name": "least-connections",
+      "dev_utility": 0.6525839891322307,
+      "dev_scores": {
+        "LatencyScore": 0.5086677596648289,
+        "RejectScore": 1,
+        "FairnessScore": 0.4738333333333332
+      },
+      "dev_robustness": {
+        "mean": 0.6684006274679405,
+        "median": 0.6668628668039109,
+        "worst": 0.5489330189524708,
+        "std_dev": 0.06941974381324366
+      },
+      "dev_win_rate": 0,
+      "dev_non_inferiority_rate": 0.525,
+      "holdout_utility": 0.663064561668617,
+      "holdout_robustness": {
+        "mean": 0.6768045445685642,
+        "median": 0.6869851147249362,
+        "worst": 0.5439971653148652,
+        "std_dev": 0.06582003487870058
+      },
+      "holdout_win_rate": 0.05,
+      "holdout_non_inferiority_rate": 0.4,
+      "challenge_utility": {
+        "extreme-capacity-ratio": 0.8574368482039396,
+        "failure-recovery": 0.784382964453387,
+        "identical-targets": 0.8600000000000001
+      }
+    },
+    {
+      "name": "ewma",
+      "dev_utility": 0.6426754929447646,
+      "dev_scores": {
+        "LatencyScore": 0.5310285993523854,
+        "RejectScore": 1,
+        "FairnessScore": 0.24058333333333315
+      },
+      "dev_robustness": {
+        "mean": 0.6574738314918244,
+        "median": 0.6588930075433233,
+        "worst": 0.5447279260870523,
+        "std_dev": 0.06992523426880552
+      },
+      "dev_win_rate": 0,
+      "dev_non_inferiority_rate": 0.2,
+      "holdout_utility": 0.6606831516654093,
+      "holdout_robustness": {
+        "mean": 0.6744287261043997,
+        "median": 0.6849162356893548,
+        "worst": 0.5596410555323911,
+        "std_dev": 0.06412753218671155
+      },
+      "holdout_win_rate": 0.05,
+      "holdout_non_inferiority_rate": 0.25,
+      "challenge_utility": {
+        "extreme-capacity-ratio": 0.7559512952521041,
+        "failure-recovery": 0.7863736730360934,
+        "identical-targets": 0.8033333333333333
+      }
+    },
+    {
+      "name": "p2c-load",
+      "dev_utility": 0.6497009471208843,
+      "dev_scores": {
+        "LatencyScore": 0.4976265785348073,
+        "RejectScore": 1,
+        "FairnessScore": 0.51125
+      },
+      "dev_robustness": {
+        "mean": 0.6625064371335541,
+        "median": 0.6639535393605585,
+        "worst": 0.5482438046818495,
+        "std_dev": 0.06471783917764448
+      },
+      "dev_win_rate": 0,
+      "dev_non_inferiority_rate": 0.55,
+      "holdout_utility": 0.6586541408971474,
+      "holdout_robustness": {
+        "mean": 0.668792630484491,
+        "median": 0.6708437676298769,
+        "worst": 0.5443693511253463,
+        "std_dev": 0.05933343839615722
+      },
+      "holdout_win_rate": 0.05,
+      "holdout_non_inferiority_rate": 0.35,
+      "challenge_utility": {
+        "extreme-capacity-ratio": 0.8459006040637013,
+        "failure-recovery": 0.7813161033797217,
+        "identical-targets": 0.865
+      }
+    },
+    {
+      "name": "adaptive",
+      "dev_utility": 0.6593823566325195,
+      "dev_scores": {
+        "LatencyScore": 0.5607067054986439,
+        "RejectScore": 1,
+        "FairnessScore": 0.22958333333333325
+      },
+      "dev_robustness": {
+        "mean": 0.6807157114699846,
+        "median": 0.6746311508385201,
+        "worst": 0.5501828561494873,
+        "std_dev": 0.08337735388284895
+      },
+      "dev_win_rate": 0.625,
+      "dev_non_inferiority_rate": 0.8,
+      "holdout_utility": 0.6782193541375922,
+      "holdout_robustness": {
+        "mean": 0.7022584861315624,
+        "median": 0.6957207591676899,
+        "worst": 0.5235481910101092,
+        "std_dev": 0.08992571329110666
+      },
+      "holdout_win_rate": 0.7,
+      "holdout_non_inferiority_rate": 0.85,
+      "challenge_utility": {
+        "extreme-capacity-ratio": 0.8923320277191926,
+        "failure-recovery": 0.8236887417218542,
+        "identical-targets": 0.8663333333333334
+      }
+    }
+  ],
+  "health_eligibility_held_for_all": true,
+  "findings": "The tuned Adaptive configuration from 008-B/008-C was compared against Round Robin, Weighted Round Robin (weights derived from each scenario's own ServiceTime -- the most favorable case WRR can be given, per-scenario perfect profiling), Least Connections, EWMA, and P2C-load across the 40-scenario Development set, the 20-scenario Holdout set, and 3 hand-crafted challenge scenarios (identical targets, an extreme 20x capacity ratio, and a health failure/recovery). Adaptive's Development win rate was 62.5% (non-inferior in 80.0% of scenarios), and its Holdout win rate was 70.0% (non-inferior in 85.0%) -- not universal dominance, exactly the honest outcome master context rule 43 says must be allowed: a simpler policy winning some scenarios is a legitimate result, not a failure of Adaptive. Health eligibility held with zero exceptions across all six policies on the failure-recovery challenge (true) -- 007-E and 007-G's finding generalizes once more, now as part of this project's final comparison rather than a standalone experiment. Per-scenario robustness (not just the mean) is reported for every policy on both Development and Holdout, so a policy that wins on average but has a terrible worst case is visible as such rather than hidden behind an aggregate."
+}

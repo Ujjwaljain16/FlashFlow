@@ -1,0 +1,45 @@
+name: CI
+
+# Minimal safeguard against regression (F-32): the same gates
+# scripts/final-validation.sh already runs locally in quick mode
+# (gofmt, go vet, go build, go test ./...), now enforced automatically
+# on every push/PR rather than relying on a contributor to run them by
+# hand. go test -race is intentionally NOT included here -- this
+# project has never had a CGO-capable environment available (see every
+# Stage's exit artifact), and ubuntu-latest's default GitHub-hosted
+# runner does have a C toolchain, so this is the first environment
+# where it could actually be tried; left out of this initial workflow
+# to keep it a deliberate, separately-reviewed follow-up rather than an
+# untested assumption.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.3"
+
+      - name: gofmt
+        run: |
+          fmt_out="$(gofmt -l .)"
+          if [ -n "$fmt_out" ]; then
+            echo "The following files are not gofmt-formatted:"
+            echo "$fmt_out"
+            exit 1
+          fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go build
+        run: go build ./...
+
+      - name: go test
+        run: go test ./...

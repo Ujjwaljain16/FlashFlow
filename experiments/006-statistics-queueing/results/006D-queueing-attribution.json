@@ -1,0 +1,176 @@
+{
+  "experiment": "006-D-queueing-concurrency-attribution",
+  "timestamp": "2026-09-05T07:17:31Z",
+  "service_delay_ms": 20,
+  "max_conns_per_host": 5,
+  "duration_ms": 1000,
+  "replicates_per_level": 3,
+  "results": [
+    {
+      "concurrency": 2,
+      "replicate": 0,
+      "lambda_req_per_sec": 93.94016950604161,
+      "l_avg_in_system": 1.9861932938856015,
+      "w_avg_latency_ms": 21.567436170212762,
+      "lambda_w_predicted_l": 2.0260486096405197,
+      "rel_error": 0.020066181815038255
+    },
+    {
+      "concurrency": 2,
+      "replicate": 1,
+      "lambda_req_per_sec": 91.95235029207865,
+      "l_avg_in_system": 1.9940944881889764,
+      "w_avg_latency_ms": 22.03260869565218,
+      "lambda_w_predicted_l": 2.0259501526309074,
+      "rel_error": 0.015975002503949603
+    },
+    {
+      "concurrency": 2,
+      "replicate": 2,
+      "lambda_req_per_sec": 89.93912020953017,
+      "l_avg_in_system": 1.9880952380952381,
+      "w_avg_latency_ms": 22.408066666666667,
+      "lambda_w_predicted_l": 2.0153618015964994,
+      "rel_error": 0.013714918168299057
+    },
+    {
+      "concurrency": 4,
+      "replicate": 0,
+      "lambda_req_per_sec": 173.9575717482506,
+      "l_avg_in_system": 3.9291338582677167,
+      "w_avg_latency_ms": 23.101925287356313,
+      "lambda_w_predicted_l": 4.01875482569801,
+      "rel_error": 0.022809344416126736
+    },
+    {
+      "concurrency": 4,
+      "replicate": 1,
+      "lambda_req_per_sec": 159.8947412918076,
+      "l_avg_in_system": 3.963144963144963,
+      "w_avg_latency_ms": 25.200956249999997,
+      "lambda_w_predicted_l": 4.029500379899911,
+      "rel_error": 0.01674312127666699
+    },
+    {
+      "concurrency": 4,
+      "replicate": 2,
+      "lambda_req_per_sec": 179.9406195955335,
+      "l_avg_in_system": 3.970178926441352,
+      "w_avg_latency_ms": 22.374849999999995,
+      "lambda_w_predicted_l": 4.0261443723571215,
+      "rel_error": 0.01409645432931004
+    },
+    {
+      "concurrency": 5,
+      "replicate": 0,
+      "lambda_req_per_sec": 215.92468546970815,
+      "l_avg_in_system": 4.967078189300412,
+      "w_avg_latency_ms": 23.147462962962962,
+      "lambda_w_predicted_l": 4.998108659699497,
+      "rel_error": 0.006247228091945104
+    },
+    {
+      "concurrency": 5,
+      "replicate": 1,
+      "lambda_req_per_sec": 222.83984500339608,
+      "l_avg_in_system": 4.930830039525691,
+      "w_avg_latency_ms": 22.594955156950682,
+      "lambda_w_predicted_l": 5.035056305033574,
+      "rel_error": 0.021137671481759025
+    },
+    {
+      "concurrency": 5,
+      "replicate": 2,
+      "lambda_req_per_sec": 195.8659297710717,
+      "l_avg_in_system": 4.864485981308412,
+      "w_avg_latency_ms": 25.532438775510172,
+      "lambda_w_predicted_l": 5.000934860088263,
+      "rel_error": 0.028050009662716775
+    },
+    {
+      "concurrency": 8,
+      "replicate": 0,
+      "lambda_req_per_sec": 222.8725837438736,
+      "l_avg_in_system": 7.868884540117417,
+      "w_avg_latency_ms": 36.58796412556055,
+      "lambda_w_predicted_l": 8.154454098591838,
+      "rel_error": 0.03629098343208883
+    },
+    {
+      "concurrency": 8,
+      "replicate": 1,
+      "lambda_req_per_sec": 222.87211597985078,
+      "l_avg_in_system": 7.8216432865731464,
+      "w_avg_latency_ms": 36.38657847533631,
+      "lambda_w_predicted_l": 8.109553738065095,
+      "rel_error": 0.0368094581845971
+    },
+    {
+      "concurrency": 8,
+      "replicate": 2,
+      "lambda_req_per_sec": 222.84599113552622,
+      "l_avg_in_system": 7.867850098619329,
+      "w_avg_latency_ms": 36.488479820627816,
+      "lambda_w_predicted_l": 8.131311450656453,
+      "rel_error": 0.03348581235468076
+    },
+    {
+      "concurrency": 15,
+      "replicate": 0,
+      "lambda_req_per_sec": 202.88309875849535,
+      "l_avg_in_system": 14.475409836065573,
+      "w_avg_latency_ms": 76.18882266009847,
+      "lambda_w_predicted_l": 15.457424432042245,
+      "rel_error": 0.06784019292704076
+    },
+    {
+      "concurrency": 15,
+      "replicate": 1,
+      "lambda_req_per_sec": 234.75128101776167,
+      "l_avg_in_system": 14.631679389312977,
+      "w_avg_latency_ms": 66.36138723404257,
+      "lambda_w_predicted_l": 15.578420663307229,
+      "rel_error": 0.06470489468801204
+    },
+    {
+      "concurrency": 15,
+      "replicate": 2,
+      "lambda_req_per_sec": 234.9739413898999,
+      "l_avg_in_system": 14.658959537572255,
+      "w_avg_latency_ms": 65.97085957446808,
+      "lambda_w_predicted_l": 15.501432891092378,
+      "rel_error": 0.05747156552010305
+    },
+    {
+      "concurrency": 30,
+      "replicate": 0,
+      "lambda_req_per_sec": 245.81598215575818,
+      "l_avg_in_system": 28.268115942028984,
+      "w_avg_latency_ms": 128.96141869918694,
+      "lambda_w_predicted_l": 31.700777797740592,
+      "rel_error": 0.12143228302696793
+    },
+    {
+      "concurrency": 30,
+      "replicate": 1,
+      "lambda_req_per_sec": 204.6432045728273,
+      "l_avg_in_system": 28.49095607235142,
+      "w_avg_latency_ms": 168.08645853658538,
+      "lambda_w_predicted_l": 34.397751520224496,
+      "rel_error": 0.2073217702092219
+    },
+    {
+      "concurrency": 30,
+      "replicate": 2,
+      "lambda_req_per_sec": 245.88893196942942,
+      "l_avg_in_system": 28.412296564195298,
+      "w_avg_latency_ms": 129.55760569105703,
+      "lambda_w_predicted_l": 31.856781291890485,
+      "rel_error": 0.12123218268937362
+    }
+  ],
+  "mean_abs_rel_error": 0.05030161526543876,
+  "throughput_multiplier_2_to_30": 2.5245403996390734,
+  "predicted_ceiling_req_per_sec": 250,
+  "findings": "Across 18 (concurrency, replicate) measurements spanning offered concurrency from 2 (below the 5-connection capacity) to 30 (6x capacity), L (independently sampled, time-averaged outstanding-request count) and lambda*W (computed from independently measured throughput and mean latency) agreed within a mean absolute relative error of 5.0% -- consistent with Little's Law holding over these stable, closed-loop measurement windows, using one self-consistent system boundary (client-observed dispatch-to-response) for all three quantities. Offered concurrency grew 15x (2 to 30) while measured throughput grew only 2.5x (91.9 to 232.1 req/s) -- essentially flat, and close to the 250 req/s ceiling predicted directly from capacity/service-time (5 connections / 20ms), a genuine finite-capacity effect from transport.MaxConnsPerHost, not a simulated one. This is a measured association between increased in-flight work and constrained throughput/rising latency under a real, finite-capacity system boundary -- not a claim that FlashFlow's edge or origin behave like a textbook M/M/c queue in general; the finding is scoped specifically to the transport-layer connection limit exercised here."
+}

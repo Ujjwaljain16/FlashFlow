@@ -83,6 +83,13 @@ func runVirtualStampede(concurrency int, ttl, serviceTime time.Duration) (upstre
 func msF(d time.Duration) float64 { return float64(d.Microseconds()) / 1000.0 }
 
 // percentile assumes latencies is already sorted ascending; p in [0,100].
+// This is a third, independent percentile implementation (nearest-rank),
+// distinct from both internal/statistics.Percentile (linear interpolation)
+// and internal/httpx's separate nearest-rank convention -- predates the
+// shared internal/statistics package (this is Stage 5 output, statistics
+// arrived in Stage 6) and is frozen historical-experiment code, not a
+// live call site worth consolidating. Do not expect exact agreement with
+// either of the other two on the same input.
 func percentile(sorted []time.Duration, p float64) time.Duration {
 	if len(sorted) == 0 {
 		return 0

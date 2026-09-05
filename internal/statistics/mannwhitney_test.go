@@ -87,6 +87,49 @@ func TestMannWhitneyU_IdenticalDistributionsGivesLargePValue(t *testing.T) {
 	}
 }
 
+// TestMannWhitneyU_LocationShiftOnly_DoesNotFlagAPureShapeDifference
+// regression-tests the lesson behind 006-C's statistical-method
+// correction (cmd/experiment-006c): a first attempt compared per-burst
+// failure patterns via Mann-Whitney and got an unstable p-value (0.003 to
+// 0.41 across identical reruns) because the actual phenomenon being
+// compared -- coalescing concentrating failure all-or-nothing on whole
+// bursts versus spreading it across partial failures -- is a *shape*
+// difference (bimodal vs. spread), not a location/central-tendency one,
+// and Mann-Whitney only ever tests the latter. This test encodes that
+// boundary directly: two samples with essentially the same median but
+// very different shapes (bimodal-at-the-extremes vs. uniformly spread)
+// must NOT produce a small p-value from MannWhitneyU alone -- proving the
+// test correctly has nothing useful to say about a pure shape difference,
+// so a future experiment facing the same kind of question is warned by
+// this test's own existence to reach for a shape-sensitive statistic
+// (e.g. comparing the all-or-nothing proportion directly, as 006-C's
+// corrected approach did) instead of reintroducing 006-C's original
+// mistake.
+func TestMannWhitneyU_LocationShiftOnly_DoesNotFlagAPureShapeDifference(t *testing.T) {
+	// Bimodal/"all-or-nothing": half at 0, half at 1 -- median 0.5.
+	bimodal := make([]float64, 20)
+	for i := range bimodal {
+		if i%2 == 0 {
+			bimodal[i] = 0
+		} else {
+			bimodal[i] = 1
+		}
+	}
+	// Uniformly spread across the identical [0,1] range -- median also 0.5.
+	spread := make([]float64, 20)
+	for i := range spread {
+		spread[i] = float64(i) / float64(len(spread)-1)
+	}
+
+	res, err := MannWhitneyU(bimodal, spread)
+	if err != nil {
+		t.Fatalf("MannWhitneyU failed: %v", err)
+	}
+	if res.PValue < 0.3 {
+		t.Fatalf("expected a large, non-significant p-value for two same-median but different-shape samples (got %v) -- if this now fails, Mann-Whitney is (correctly or not) detecting a shape difference it isn't designed to test, and any experiment relying on this test's documented boundary should be revisited", res.PValue)
+	}
+}
+
 // TestMannWhitneyU_HandVerifiedTieCase checks the tie-correction path
 // against ranks computed by hand:
 //

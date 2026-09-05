@@ -47,7 +47,11 @@ func containsNonFinite(samples []float64) bool {
 // benchmark reporting. The two are intentionally different tools: this
 // one is for statistical analysis, that one for fast operational
 // summaries: do not expect them to produce byte-identical numbers on the
-// same data.
+// same data. A third, independent nearest-rank implementation also exists
+// in cmd/experiment-005h/main.go, predating this package (Stage 5 vs.
+// this package's Stage 6) — frozen historical-experiment code, not a live
+// call site, but a third source of "the percentile" a reader comparing
+// numbers across experiments should be aware of.
 //
 // Percentile estimation from a small sample is inherently imprecise,
 // especially in the tail (p99 from 30 observations has very few — often

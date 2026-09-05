@@ -141,3 +141,28 @@ Mean absolute relative error between `L` and `λW` across all 18 (concurrency, r
 ### Interpretation
 
 This experiment answers the queueing-attribution question the project's own Stage 5 exit artifact identified as unresolved: FlashFlow's real engine *can* produce genuine, measurable queueing behavior, but only where a real finite-capacity resource actually exists — here, the transport's connection pool, not Origin itself (which remains, as documented since Stage 4, an unbounded infinite-server model). The finding is deliberately scoped: this demonstrates that increased latency can be attributed to increased in-flight work *at this specific, real bottleneck*, not a general claim that every latency increase anywhere in FlashFlow is queueing-driven. That precision — measuring where a real capacity limit exists rather than assuming queueing theory applies everywhere — is exactly what item 22, item 42, and item 68 ask for.
+
+---
+
+## 6. Results: Experiment 006-E — Tail Latency Attribution
+
+**Hypothesis (H5)**: see `hypotheses.md`. 10 replicates each at baseline (concurrency=2, below capacity) and elevated (concurrency=30, 6× capacity) load, Origin's 20ms service delay identical in both conditions.
+
+| | Baseline (c=2) | Elevated (c=30) |
+|---|---:|---:|
+| p50 median | 21.60ms | 132.72ms |
+| p99 median | 22.77ms | 137.36ms |
+| p99−p50 spread median | 1.33ms | 4.47ms |
+
+p50 shift: Cliff's Delta = −1.00 (complete separation), median difference 111.1ms, 95% CI [109.8, 112.9]. p99 shift: Cliff's Delta = −1.00, median difference 114.6ms, 95% CI [112.9, 116.3]. Spread (p99−p50) shift: median difference 3.13ms, 95% CI [1.76, 4.65] — clearly excludes zero.
+
+**Decomposition**: service+overhead (baseline p99) = 22.77ms; elevated p99 = 137.36ms; attributed waiting component = 114.59ms — **83% of the elevated p99**. Raw data: `experiments/006-statistics-queueing/results/006E-tail-latency-attribution.json`.
+
+### Findings
+
+1. **Prediction 1 confirmed, with the spread's confidence interval doing the real work.** Both p50 and p99 shifted completely (Cliff's Delta −1.00 both ways — every single elevated-condition replicate exceeded every single baseline replicate). Critically, the p99−p50 spread also grew, and its 95% CI [1.76, 4.65] excludes zero cleanly — the tail measurably stretched further from the median under load, not just riding along with a uniform shift. A shift-only view (comparing p50 alone) would have missed this distinction entirely.
+2. **Prediction 2 confirmed with a specific, attributable number**: 83% of the elevated p99 is waiting time, not service time — grounded in the fact that Origin's 20ms delay was configured identically in both conditions and never changed, so the entire measured difference in the "service+overhead" reference point would have to come from somewhere else if the attribution were wrong. It isn't inferred from curve-fitting the latency data; it's arithmetic against an independently controlled constant.
+
+### Interpretation
+
+This is the decomposition item 20 and item 24 describe, done with the discipline item 68 demands: the claim is "83% of this specific elevated p99, in this specific controlled scenario, is waiting time" — not "queueing generally accounts for 83% of FlashFlow's tail latency." The distinction matters because the attribution's entire credibility rests on Origin's service time being a known, fixed, independently-verified constant rather than another unknown being solved for simultaneously. Where that constant isn't available — a real production system where "true service time" isn't directly configurable — this exact method wouldn't transfer without first establishing an equivalent independent baseline, which is itself a limitation worth stating rather than eliding.

@@ -40,3 +40,11 @@ Stage 4 established coalescing's core benefits (004-D: upstream requests collaps
 - *Prediction 1*: `L ≈ λW` holds within a small mean relative error across the sweep, since these are stable, closed-loop measurement windows over one consistent boundary.
 - *Prediction 2*: below capacity, throughput scales roughly linearly with offered concurrency and latency stays near the pure 20ms service time; above capacity, throughput plateaus near the analytically-predicted ceiling (connections / service time = 5 / 0.02s = 250 req/s) while latency grows substantially — the classic finite-server saturation signature.
 - *Explicit non-claim*: this is evidence about the transport-layer connection limit specifically exercised here, not a claim that FlashFlow's edge or origin behave like a textbook M/M/c queue in general, and not a claim about queueing anywhere else in the system that wasn't measured.
+
+## H5 — Tail Latency Attribution: Decomposing p99 Into Service and Waiting
+
+Building directly on 006-D's real finite-capacity bottleneck: when p99 rises under load, is that rise attributable to waiting time specifically, distinguishable from service time — and does the tail simply shift with the rest of the distribution, or stretch disproportionately?
+
+- *Setup*: 10 replicates at baseline concurrency (2, below the 5-connection capacity) and 10 replicates at elevated concurrency (30, 6× capacity), Origin's service delay fixed and identical (20ms) in both conditions, full per-request latency percentiles (not just the mean 006-D recorded) captured per replicate.
+- *Prediction 1*: both p50 and p99 shift substantially between conditions, but the p99-minus-p50 spread also grows — the tail stretches further from the median under load, not just moving in lockstep with it.
+- *Prediction 2*: using the baseline p99 (measured under no queueing) as an estimate of the fixed service+overhead component, the majority of the elevated p99 should be attributable to waiting time rather than service time, since Origin's configured delay never changes between conditions — this attribution is only trustworthy because the service component is independently known and held constant by construction, not inferred from the latency data itself.

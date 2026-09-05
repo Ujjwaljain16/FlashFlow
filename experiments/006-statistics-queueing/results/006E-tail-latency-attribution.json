@@ -1,0 +1,230 @@
+{
+  "experiment": "006-E-tail-latency-attribution",
+  "timestamp": "2026-09-05T07:21:42Z",
+  "service_delay_ms": 20,
+  "max_conns_per_host": 5,
+  "baseline_concurrency": 2,
+  "elevated_concurrency": 30,
+  "baseline": [
+    {
+      "concurrency": 2,
+      "replicate": 0,
+      "p50_ms": 21.3545,
+      "p95_ms": 22.34235,
+      "p99_ms": 22.764999999999997,
+      "spread_p99_minus_p50_ms": 1.4104999999999954
+    },
+    {
+      "concurrency": 2,
+      "replicate": 1,
+      "p50_ms": 21.447,
+      "p95_ms": 22.35705,
+      "p99_ms": 22.48648,
+      "spread_p99_minus_p50_ms": 1.039480000000001
+    },
+    {
+      "concurrency": 2,
+      "replicate": 2,
+      "p50_ms": 21.6005,
+      "p95_ms": 22.178,
+      "p99_ms": 22.23194,
+      "spread_p99_minus_p50_ms": 0.6314400000000013
+    },
+    {
+      "concurrency": 2,
+      "replicate": 3,
+      "p50_ms": 21.078,
+      "p95_ms": 22.085,
+      "p99_ms": 22.781,
+      "spread_p99_minus_p50_ms": 1.7029999999999994
+    },
+    {
+      "concurrency": 2,
+      "replicate": 4,
+      "p50_ms": 21.6025,
+      "p95_ms": 22.662,
+      "p99_ms": 23.289029999999997,
+      "spread_p99_minus_p50_ms": 1.6865299999999976
+    },
+    {
+      "concurrency": 2,
+      "replicate": 5,
+      "p50_ms": 21.612,
+      "p95_ms": 22.581,
+      "p99_ms": 23.15209999999999,
+      "spread_p99_minus_p50_ms": 1.5400999999999918
+    },
+    {
+      "concurrency": 2,
+      "replicate": 6,
+      "p50_ms": 21.591,
+      "p95_ms": 22.469,
+      "p99_ms": 22.698,
+      "spread_p99_minus_p50_ms": 1.1069999999999993
+    },
+    {
+      "concurrency": 2,
+      "replicate": 7,
+      "p50_ms": 21.625,
+      "p95_ms": 22.6466,
+      "p99_ms": 22.93109,
+      "spread_p99_minus_p50_ms": 1.306090000000001
+    },
+    {
+      "concurrency": 2,
+      "replicate": 8,
+      "p50_ms": 21.5925,
+      "p95_ms": 22.17185,
+      "p99_ms": 22.55653,
+      "spread_p99_minus_p50_ms": 0.9640299999999975
+    },
+    {
+      "concurrency": 2,
+      "replicate": 9,
+      "p50_ms": 21.6565,
+      "p95_ms": 22.76845,
+      "p99_ms": 23.017,
+      "spread_p99_minus_p50_ms": 1.3604999999999983
+    }
+  ],
+  "elevated": [
+    {
+      "concurrency": 30,
+      "replicate": 0,
+      "p50_ms": 132.4135,
+      "p95_ms": 134.92785,
+      "p99_ms": 135.56837,
+      "spread_p99_minus_p50_ms": 3.1548699999999883
+    },
+    {
+      "concurrency": 30,
+      "replicate": 1,
+      "p50_ms": 134.17000000000002,
+      "p95_ms": 136.565,
+      "p99_ms": 137.97856,
+      "spread_p99_minus_p50_ms": 3.8085599999999715
+    },
+    {
+      "concurrency": 30,
+      "replicate": 2,
+      "p50_ms": 132.452,
+      "p95_ms": 136.22979999999998,
+      "p99_ms": 137.2397,
+      "spread_p99_minus_p50_ms": 4.787700000000001
+    },
+    {
+      "concurrency": 30,
+      "replicate": 3,
+      "p50_ms": 130.936,
+      "p95_ms": 134.9402,
+      "p99_ms": 135.681,
+      "spread_p99_minus_p50_ms": 4.7450000000000045
+    },
+    {
+      "concurrency": 30,
+      "replicate": 4,
+      "p50_ms": 134.45850000000002,
+      "p95_ms": 137.961,
+      "p99_ms": 138.648,
+      "spread_p99_minus_p50_ms": 4.189499999999981
+    },
+    {
+      "concurrency": 30,
+      "replicate": 5,
+      "p50_ms": 136.148,
+      "p95_ms": 138.4796,
+      "p99_ms": 156.30136000000002,
+      "spread_p99_minus_p50_ms": 20.15336000000002
+    },
+    {
+      "concurrency": 30,
+      "replicate": 6,
+      "p50_ms": 134.87099999999998,
+      "p95_ms": 136.857,
+      "p99_ms": 137.47686,
+      "spread_p99_minus_p50_ms": 2.605860000000007
+    },
+    {
+      "concurrency": 30,
+      "replicate": 7,
+      "p50_ms": 131.411,
+      "p95_ms": 135.3683,
+      "p99_ms": 136.25292000000002,
+      "spread_p99_minus_p50_ms": 4.841920000000016
+    },
+    {
+      "concurrency": 30,
+      "replicate": 8,
+      "p50_ms": 131.05,
+      "p95_ms": 132.7994,
+      "p99_ms": 133.36584,
+      "spread_p99_minus_p50_ms": 2.31583999999998
+    },
+    {
+      "concurrency": 30,
+      "replicate": 9,
+      "p50_ms": 132.997,
+      "p95_ms": 139.9169,
+      "p99_ms": 140.27322,
+      "spread_p99_minus_p50_ms": 7.276219999999995
+    }
+  ],
+  "p50_mann_whitney": {
+    "n_a": 10,
+    "n_b": 10,
+    "u_a": 0,
+    "u_b": 100,
+    "z": -3.7418482827913495,
+    "p_value": 0.00018267179110953435,
+    "tie_groups": 0
+  },
+  "p50_cliffs_delta": {
+    "delta": -1,
+    "magnitude": "large",
+    "n_a": 10,
+    "n_b": 10
+  },
+  "p50_diff_ci": {
+    "estimate": 111.12800000000001,
+    "lower": 109.80840625,
+    "upper": 112.93950000000001,
+    "confidence": 0.95,
+    "n_resamples": 5000,
+    "sample_size": 20
+  },
+  "p99_mann_whitney": {
+    "n_a": 10,
+    "n_b": 10,
+    "u_a": 0,
+    "u_b": 100,
+    "z": -3.7418482827913495,
+    "p_value": 0.00018267179110953435,
+    "tie_groups": 0
+  },
+  "p99_cliffs_delta": {
+    "delta": -1,
+    "magnitude": "large",
+    "n_a": 10,
+    "n_b": 10
+  },
+  "p99_diff_ci": {
+    "estimate": 114.58527999999998,
+    "lower": 112.9,
+    "upper": 116.24777500000002,
+    "confidence": 0.95,
+    "n_resamples": 5000,
+    "sample_size": 20
+  },
+  "p99_minus_p50_spread_diff_ci": {
+    "estimate": 3.133954999999993,
+    "lower": 1.7569099999999942,
+    "upper": 4.64857000000001,
+    "confidence": 0.95,
+    "n_resamples": 5000,
+    "sample_size": 20
+  },
+  "service_overhead_estimate_ms": 22.772999999999996,
+  "waiting_component_ms": 114.58527999999998,
+  "waiting_share_of_elevated_p99": 0.8342073007903128,
+  "findings": "Comparing 10 replicates at baseline concurrency=2 (below the 5-connection capacity) against 10 replicates at elevated concurrency=30 (6x capacity): both p50 and p99 shifted (Cliff's Delta -1.00 and -1.00, both large), but the p99-minus-p50 spread also grew (median difference 3.13ms, 95% CI [1.76,4.65]) -- the tail didn't just move with the rest of the distribution, it stretched further from the median than at baseline, the signature of queueing-induced variance rather than a uniform shift. Decomposing the elevated p99 (137.36ms) against the baseline p99 (22.77ms) as an estimate of the fixed service+overhead component: 83% of the elevated p99 is attributable to waiting time, not service time, which did not change (Origin's configured delay was identical, 20ms, in both conditions) -- this decomposition is only trustworthy because the service component was independently known and held constant by construction, not inferred from the latency data itself."
+}

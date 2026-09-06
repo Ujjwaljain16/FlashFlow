@@ -51,7 +51,7 @@ func scenario() replay.Scenario {
 			{Target: fastFails, DownAt: clock.VirtualTime(500 * time.Millisecond), UpAt: clock.VirtualTime(1600 * time.Millisecond)},
 		},
 		Horizon: clock.VirtualTime(3 * time.Second),
-		Seed:    1,
+		Seeds:   replay.DeriveSeeds(1),
 	}
 }
 

@@ -86,8 +86,8 @@ func main() {
 	// scenario_test.go; re-verified here as recorded evidence). ---
 	genDeterministic := true
 	for _, seed := range []int64{5, 500, 99999} {
-		a := tuning.DefaultScenarioSpace().Generate(seed)
-		b := tuning.DefaultScenarioSpace().Generate(seed)
+		a := tuning.DefaultScenarioSpace().GenerateFromRoot(seed)
+		b := tuning.DefaultScenarioSpace().GenerateFromRoot(seed)
 		if len(a.Targets) != len(b.Targets) || len(a.Arrivals) != len(b.Arrivals) {
 			genDeterministic = false
 		}
@@ -98,11 +98,11 @@ func main() {
 	split := tuning.NewSplit(tuning.DefaultScenarioSpace())
 	seen := make(map[int64]bool, len(split.Development))
 	for _, s := range split.Development {
-		seen[s.Seed] = true
+		seen[s.Seeds.Global] = true
 	}
 	overlap := false
 	for _, s := range split.Holdout {
-		if seen[s.Seed] {
+		if seen[s.Seeds.Global] {
 			overlap = true
 		}
 	}

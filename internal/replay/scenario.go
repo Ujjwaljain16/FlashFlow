@@ -16,6 +16,9 @@
 package replay
 
 import (
+	"crypto/sha256"
+	"encoding/binary"
+	"fmt"
 	"time"
 
 	"flashflow/internal/clock"
@@ -70,7 +73,60 @@ type Scenario struct {
 	UseHealthRegistry bool
 	ProbeInterval     time.Duration // 0 means "not set"; RunWorld defaults it when a registry is built
 	Horizon           clock.VirtualTime
-	Seed              int64
+	// Seeds replaces a single flat Seed int64 field (Stage 10, §10.3):
+	// this project's own generators (internal/tuning/scenario.go) drew
+	// target count/service-times, arrival jitter, and failure timing all
+	// from ONE shared *rand.Rand, meaning any change to how many draws
+	// one axis consumed silently shifted every axis generated after it
+	// -- an accidental coupling between conceptually independent
+	// exogenous dimensions, not a deliberate design. SeedTree gives each
+	// axis its own seed so a caller can hold Traffic fixed while sweeping
+	// Failure, for instance, and get exactly that: identical arrivals,
+	// varying failure windows, not an entangled mix of both changing at
+	// once.
+	Seeds SeedTree
+}
+
+// SeedTree is a Scenario's full seed identity, split into independent
+// axes rather than one flat root -- the "widen the type, don't just
+// derive-and-forget" design decision Stage 10 locked in (see
+// docs/StageArtifacts/Stage10-Plan.md's confirmed design decisions):
+// genuine independent-axis control was judged more valuable than
+// keeping Scenario down to a single int64, since a derive-only helper
+// that immediately discarded the sub-seeds would make "hold Traffic
+// fixed, vary Failure" impossible to express at all.
+type SeedTree struct {
+	Global   int64 // the root a SeedTree was derived from, if it was derived (DeriveSeeds) -- kept for provenance/logging, not consumed by any policy or generator directly
+	Traffic  int64 // arrival timing/jitter
+	Topology int64 // target count, names, service-time draws
+	Failure  int64 // failure-window presence, timing, and target selection
+	Policy   int64 // a policy's own randomness (e.g. P2C's pair sampling) -- was PolicySpec.New's flat seed parameter
+}
+
+// DeriveSeeds is the compatibility path for every call site that only
+// has (or only needs) one root seed: it produces a SeedTree whose four
+// sub-seeds are independent-LOOKING derivations of global (via
+// SHA-256("<label>:<global>"), truncated to a non-negative int64), so a
+// single literal `Seeds: replay.DeriveSeeds(42)` is a purely mechanical,
+// behavior-preserving replacement for the old `Seed: 42` at every
+// existing call site that never needed independent-axis control in the
+// first place.
+func DeriveSeeds(global int64) SeedTree {
+	derive := func(label string) int64 {
+		sum := sha256.Sum256([]byte(fmt.Sprintf("%s:%d", label, global)))
+		v := int64(binary.BigEndian.Uint64(sum[:8]))
+		if v < 0 {
+			v = -v // keep non-negative: callers doing e.g. rng.Int63n(n) on a sub-seed as a source for further derivation should never see a surprising negative root
+		}
+		return v
+	}
+	return SeedTree{
+		Global:   global,
+		Traffic:  derive("traffic"),
+		Topology: derive("topology"),
+		Failure:  derive("failure"),
+		Policy:   derive("policy"),
+	}
 }
 
 // TargetNames returns the scenario's target names in Targets order.

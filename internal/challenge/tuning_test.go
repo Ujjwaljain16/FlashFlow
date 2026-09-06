@@ -28,7 +28,7 @@ func singleTargetScenarios(n int) []replay.Scenario {
 		scenarios[s] = replay.Scenario{
 			Targets:  []replay.TargetProfile{{Name: "only", ServiceTime: 20 * time.Millisecond}},
 			Arrivals: arrivals,
-			Seed:     int64(s),
+			Seeds:    replay.DeriveSeeds(int64(s)),
 		}
 	}
 	return scenarios

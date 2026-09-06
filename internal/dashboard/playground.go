@@ -52,7 +52,7 @@ func PlaygroundScenario() replay.Scenario {
 			{Target: "edge-b", DownAt: clock.VirtualTime(1000 * time.Millisecond), UpAt: clock.VirtualTime(2000 * time.Millisecond)},
 		},
 		Horizon: clock.VirtualTime(3500 * time.Millisecond),
-		Seed:    1,
+		Seeds:   replay.DeriveSeeds(1),
 	}
 }
 

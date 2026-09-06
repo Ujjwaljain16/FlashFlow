@@ -60,7 +60,7 @@ func jitteredScenario(seed int64) replay.Scenario {
 			{Name: fastB, ServiceTime: 20 * time.Millisecond},
 		},
 		Arrivals: arrivals,
-		Seed:     seed,
+		Seeds:    replay.DeriveSeeds(seed),
 	}
 }
 

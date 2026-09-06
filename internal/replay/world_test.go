@@ -50,7 +50,7 @@ func heterogeneousScenario(seed int64) Scenario {
 			{Name: "fast-b", ServiceTime: 20 * time.Millisecond},
 		},
 		Arrivals: arrivals,
-		Seed:     seed,
+		Seeds:    DeriveSeeds(seed),
 	}
 }
 
@@ -229,11 +229,11 @@ func TestRunWorld_MultipleSchedulingFailures_AllReportedAndPartialResultsKept(t 
 			{At: clock.VirtualTime((30 * time.Millisecond).Nanoseconds()), Key: "/fail-b"},
 			{At: clock.VirtualTime((40 * time.Millisecond).Nanoseconds()), Key: "/ok-3"},
 		},
-		Seed: 1,
+		Seeds: DeriveSeeds(1),
 	}
 	spec := PolicySpec{
 		Name: "erroring-test-selector",
-		New: func(clk clock.Clock, seed int64, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
 			return &erroringSelector{failKeys: map[string]bool{"/fail-a": true, "/fail-b": true}}, NoInstrumentation{}
 		},
 	}
@@ -274,7 +274,7 @@ func TestRunWorld_HorizonTruncation_InFlightRequestsAreCounted(t *testing.T) {
 		// the request is dispatched (a real SelectionRecord exists) but
 		// never completes within this run.
 		Horizon: clock.VirtualTime((50 * time.Millisecond).Nanoseconds()),
-		Seed:    1,
+		Seeds:   DeriveSeeds(1),
 	}
 	result, err := RunWorld(scenario, RoundRobinPolicy())
 	if err != nil {

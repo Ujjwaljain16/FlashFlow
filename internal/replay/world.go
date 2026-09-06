@@ -45,17 +45,20 @@ func (NoInstrumentation) OnComplete(string, time.Duration) {}
 // PolicySpec describes one routing policy under test. New is called
 // exactly once per RunWorld call, and must construct a completely fresh
 // selector and fresh trackers every time -- never reuse or share one
-// across calls. seed is threaded through from the Scenario so that any
-// policy needing randomness (P2C) is reproducible from the Scenario
-// alone, the same as every other exogenous input. targets is the
+// across calls. seeds is threaded through from the Scenario (Stage 10,
+// §10.3: widened from a single flat seed to a SeedTree) so that any
+// policy needing randomness (P2C, via seeds.Policy) is reproducible from
+// the Scenario alone, the same as every other exogenous input, while
+// still letting a caller vary a policy's own randomness independently of
+// traffic/topology/failure seeds if it ever needs to. targets is the
 // Scenario's own target list, threaded through for the one policy that
 // needs to know it ahead of time (WeightedRoundRobinPolicy's static
 // capacity weights) -- every other policy ignores the parameter
-// entirely, the same as they already ignore clk or seed when they don't
+// entirely, the same as they already ignore clk or seeds when they don't
 // need them.
 type PolicySpec struct {
 	Name string
-	New  func(clk clock.Clock, seed int64, targets []TargetProfile) (proxy.TargetSelector, Instrumentation)
+	New  func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation)
 }
 
 // SelectionRecord is one endogenous decision a World made in response to
@@ -115,7 +118,7 @@ type WorldResult struct {
 // leaving it as an unchecked design intent.
 func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 	e := vtime.NewEngine(0)
-	selector, instr := spec.New(e.Clock(), scenario.Seed, scenario.Targets)
+	selector, instr := spec.New(e.Clock(), scenario.Seeds, scenario.Targets)
 
 	allTargets := scenario.TargetNames()
 	var registry *health.Registry

@@ -22,7 +22,7 @@ func TestWeightedRoundRobinPolicy_FavorsFasterTarget(t *testing.T) {
 		},
 	}
 	spec := WeightedRoundRobinPolicy()
-	sel, _ := spec.New(clock.NewWallClock(), 0, scenario.Targets)
+	sel, _ := spec.New(clock.NewWallClock(), SeedTree{}, scenario.Targets)
 
 	counts := map[string]int{}
 	r := httptest.NewRequest(http.MethodGet, "/x", nil)
@@ -53,7 +53,7 @@ func TestWeightedRoundRobinPolicy_IgnoresUnusedParametersSafely(t *testing.T) {
 	// for anything not in the map), since `available` at call time can
 	// still list targets never seen in Targets (a defensive case, not
 	// one RunWorld would normally produce).
-	sel, instr := spec.New(clock.NewWallClock(), 0, nil)
+	sel, instr := spec.New(clock.NewWallClock(), SeedTree{}, nil)
 	if sel == nil || instr == nil {
 		t.Fatal("expected a non-nil selector and instrumentation even with no target profiles")
 	}

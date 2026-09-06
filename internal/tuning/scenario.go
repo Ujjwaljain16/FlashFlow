@@ -65,27 +65,36 @@ func keyForIndex(i int) string {
 	return fmt.Sprintf("/cold-%d", i%3)
 }
 
-// Generate builds one valid, reproducible Scenario from seed: every
-// random draw comes from a *rand.Rand constructed fresh from seed, so
-// the same seed always produces the byte-for-byte identical Scenario --
-// the seed IS the scenario's identity, recorded alongside every
-// evaluation in the search ledger.
-func (ss ScenarioSpace) Generate(seed int64) replay.Scenario {
-	rng := rand.New(rand.NewSource(seed))
-
-	n := ss.MinTargets + rng.Intn(ss.MaxTargets-ss.MinTargets+1)
+// Generate builds one valid, reproducible Scenario from seeds. Stage 10
+// (§10.3) split what used to be one shared *rand.Rand (consuming draws
+// for topology, then traffic, then failure, in a fixed sequence) into
+// three fully independent RNGs, each seeded from its own SeedTree axis
+// -- topoRNG only ever affects target count/names/service-times,
+// trafficRNG only ever affects arrival jitter, failureRNG only ever
+// affects whether/when/which target fails. This is what makes
+// independent-axis control real rather than aspirational: holding
+// seeds.Traffic fixed while varying seeds.Failure is now guaranteed to
+// reproduce identical arrivals with only the failure window changing
+// (see scenario_test.go's TestGenerate_IndependentAxisControl), which
+// was impossible under the old single-shared-RNG design (any change to
+// how many draws an earlier axis consumed silently shifted every axis
+// generated after it).
+func (ss ScenarioSpace) Generate(seeds replay.SeedTree) replay.Scenario {
+	topoRNG := rand.New(rand.NewSource(seeds.Topology))
+	n := ss.MinTargets + topoRNG.Intn(ss.MaxTargets-ss.MinTargets+1)
 	targets := make([]replay.TargetProfile, n)
 	svcRange := int64(ss.MaxServiceTime - ss.MinServiceTime)
 	for i := 0; i < n; i++ {
-		svc := ss.MinServiceTime + time.Duration(rng.Int63n(svcRange+1))
+		svc := ss.MinServiceTime + time.Duration(topoRNG.Int63n(svcRange+1))
 		targets[i] = replay.TargetProfile{Name: targetNames[i], ServiceTime: svc}
 	}
 
+	trafficRNG := rand.New(rand.NewSource(seeds.Traffic))
 	arrivals := make([]replay.Arrival, ss.Requests)
 	jitterRange := float64(ss.ArrivalSpacing) * ss.JitterFraction
 	for i := 0; i < ss.Requests; i++ {
 		nominal := ss.ArrivalSpacing.Nanoseconds() * int64(i)
-		jitter := (rng.Float64()*2 - 1) * jitterRange
+		jitter := (trafficRNG.Float64()*2 - 1) * jitterRange
 		at := nominal + int64(jitter)
 		if at < 0 {
 			at = 0
@@ -97,21 +106,22 @@ func (ss ScenarioSpace) Generate(seed int64) replay.Scenario {
 	scenario := replay.Scenario{
 		Targets:  targets,
 		Arrivals: arrivals,
-		Seed:     seed,
+		Seeds:    seeds,
 	}
 
+	failureRNG := rand.New(rand.NewSource(seeds.Failure))
 	var failEnd clock.VirtualTime
-	if rng.Float64() < ss.FailureProbability {
-		failTarget := targets[rng.Intn(n)].Name
+	if failureRNG.Float64() < ss.FailureProbability {
+		failTarget := targets[failureRNG.Intn(n)].Name
 		durRange := int64(ss.MaxFailureDuration - ss.MinFailureDuration)
-		duration := ss.MinFailureDuration + time.Duration(rng.Int63n(durRange+1))
+		duration := ss.MinFailureDuration + time.Duration(failureRNG.Int63n(durRange+1))
 		// DownAt sampled within the first 60% of the arrival span, so
 		// there's always meaningful traffic both before and after the
 		// failure -- a failure starting in the last request or two would
 		// never actually get exercised by any routing decision.
 		var downAt clock.VirtualTime
 		if window := int64(float64(lastArrival) * 0.6); window > 0 {
-			downAt = clock.VirtualTime(rng.Int63n(window))
+			downAt = clock.VirtualTime(failureRNG.Int63n(window))
 		}
 		upAt := downAt.Add(duration)
 		scenario.Failures = []replay.FailureWindow{{Target: failTarget, DownAt: downAt, UpAt: upAt}}
@@ -136,16 +146,28 @@ func (ss ScenarioSpace) Generate(seed int64) replay.Scenario {
 	return scenario
 }
 
-// GenerateSet builds count Scenarios from consecutive seeds starting at
-// startSeed. Development and Holdout sets must use disjoint seed ranges
-// (see space.go's Hash for the analogous provenance discipline on the
-// config side) -- enforced by convention here (see NewSplit) rather than
-// by any runtime check, since a seed range is a property of how a set
-// was generated, not of any individual Scenario.
+// GenerateFromRoot is the compatibility path for every call site that
+// only has one root seed: Generate(replay.DeriveSeeds(global)). Kept as
+// its own named function (rather than requiring every such call site to
+// spell out replay.DeriveSeeds itself) since it is by far the common
+// case -- GenerateSet and every hand-written experiment scenario in this
+// project use it exclusively; only a caller specifically wanting
+// independent-axis control constructs a replay.SeedTree by hand and
+// calls Generate directly.
+func (ss ScenarioSpace) GenerateFromRoot(global int64) replay.Scenario {
+	return ss.Generate(replay.DeriveSeeds(global))
+}
+
+// GenerateSet builds count Scenarios from consecutive root seeds
+// starting at startSeed. Development and Holdout sets must use disjoint
+// seed ranges (see space.go's Hash for the analogous provenance
+// discipline on the config side) -- enforced by convention here (see
+// NewSplit) rather than by any runtime check, since a seed range is a
+// property of how a set was generated, not of any individual Scenario.
 func (ss ScenarioSpace) GenerateSet(startSeed int64, count int) []replay.Scenario {
 	scenarios := make([]replay.Scenario, count)
 	for i := 0; i < count; i++ {
-		scenarios[i] = ss.Generate(startSeed + int64(i))
+		scenarios[i] = ss.GenerateFromRoot(startSeed + int64(i))
 	}
 	return scenarios
 }
@@ -194,14 +216,17 @@ func NewSplit(ss ScenarioSpace) Split {
 // of Scenarios, for search-ledger provenance and evaluation-result
 // cache keys (see cache.go) -- the scenario-set half of the "config +
 // scenario + seed -> cached result" key the master context describes.
-// Since every Scenario here is fully determined by its own Seed (via
-// ScenarioSpace.Generate), hashing the ordered sequence of Seeds is
-// sufficient to identify "this exact set" without re-serializing every
-// arrival and target profile.
+// Since every Scenario here is fully determined by its own Seeds (via
+// ScenarioSpace.Generate), hashing the ordered sequence of full
+// SeedTrees is sufficient to identify "this exact set" without
+// re-serializing every arrival and target profile -- hashing only
+// Seeds.Global (as the old single-Seed hash effectively did) would
+// silently treat two Scenarios with the same root but hand-constructed,
+// independently-varied sub-seeds as identical, which they are not.
 func ScenarioSetHash(scenarios []replay.Scenario) string {
 	var sb strings.Builder
 	for _, s := range scenarios {
-		fmt.Fprintf(&sb, "%d,", s.Seed)
+		fmt.Fprintf(&sb, "%d,%d,%d,%d,%d;", s.Seeds.Global, s.Seeds.Traffic, s.Seeds.Topology, s.Seeds.Failure, s.Seeds.Policy)
 	}
 	sum := sha256.Sum256([]byte(sb.String()))
 	return hex.EncodeToString(sum[:])[:16]

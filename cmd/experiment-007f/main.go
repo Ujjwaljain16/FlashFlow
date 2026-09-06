@@ -42,7 +42,7 @@ func heterogeneousScenario(seed int64) replay.Scenario {
 			{Name: "edge-c-fast", ServiceTime: 20 * time.Millisecond},
 		},
 		Arrivals: arrivals,
-		Seed:     seed,
+		Seeds:    replay.DeriveSeeds(seed),
 	}
 }
 

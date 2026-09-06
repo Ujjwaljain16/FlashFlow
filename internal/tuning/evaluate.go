@@ -28,7 +28,7 @@ func EvaluatePolicy(spec replay.PolicySpec, scenarios []replay.Scenario) (Metric
 	for i, sc := range scenarios {
 		result, err := replay.RunWorld(sc, spec)
 		if err != nil {
-			return Metrics{}, Scores{}, fmt.Errorf("tuning: evaluating scenario seed %d: %w", sc.Seed, err)
+			return Metrics{}, Scores{}, fmt.Errorf("tuning: evaluating scenario (root seed %d): %w", sc.Seeds.Global, err)
 		}
 		results[i] = result
 	}

@@ -13,7 +13,7 @@ func baseCompareScenario() Scenario {
 		Targets:  []TargetProfile{{Name: "a", ServiceTime: 10 * time.Millisecond}},
 		Arrivals: []Arrival{{At: 0, Key: "/x"}},
 		Horizon:  clock.VirtualTime((100 * time.Millisecond).Nanoseconds()),
-		Seed:     1,
+		Seeds:    DeriveSeeds(1),
 	}
 }
 

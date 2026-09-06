@@ -59,7 +59,7 @@ func GoldenScenario() replay.Scenario {
 			{Target: "edge-b", DownAt: clock.VirtualTime(500 * time.Millisecond), UpAt: clock.VirtualTime(1200 * time.Millisecond)},
 		},
 		Horizon: clock.VirtualTime(2 * time.Second),
-		Seed:    42,
+		Seeds:   replay.DeriveSeeds(42),
 	}
 }
 

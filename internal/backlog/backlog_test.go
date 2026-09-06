@@ -197,6 +197,53 @@ func TestFindPeakEpisodeCongestionOnset_MultipleEpisodes(t *testing.T) {
 	}
 }
 
+// TestAnalyzeDiversion_CongestionButNeverDiverts guards a real bug found
+// while building Stage 16's flagship demonstration: a policy whose own
+// share of dispatches to a congested target NEVER drops below the
+// diversion threshold (e.g. weighted-round-robin, whose static weights
+// keep its share constant for the whole run) must report
+// DiversionFound=false -- NOT the misleading combination of
+// CommittedBacklog=0 and QueueDrainFound=false, which reads as "zero
+// backlog, but the queue never recovers" when the true meaning is "this
+// metric never applies to this policy's failure mode at all." The
+// flagship experiment's own first version made exactly this mistake
+// before DiversionFound was threaded through to its output.
+//
+// Target "a" repeatedly gets 2-of-every-3 dispatches (a,a,b pattern),
+// share=0.667, which never drops below a 0.5 diversion threshold in any
+// trailing 3-record window, while "a" itself never completes within the
+// observed window (so it stays congested the whole time).
+func TestAnalyzeDiversion_CongestionButNeverDiverts(t *testing.T) {
+	var records []replay.SelectionRecord
+	for i := 0; i < 12; i++ {
+		target := "a"
+		if i%3 == 2 {
+			target = "b"
+		}
+		records = append(records, replay.SelectionRecord{VirtualTimeMs: float64(i), Target: target})
+	}
+	var completions []replay.CompletionRecord
+	for i := 0; i < 8; i++ {
+		completions = append(completions, replay.CompletionRecord{VirtualTimeMs: 50, Target: "a"})
+	}
+	tl := BuildTimeline(records, completions, "a")
+	cfg := CongestionConfig{RatioThreshold: 1.0, DiversionWindow: 3, DiversionShareThreshold: 0.5}
+	onset, found := FindFirstCongestionOnset(tl, 1, 1.0, 0)
+	if !found || onset != 1 {
+		t.Fatalf("FindFirstCongestionOnset = %v (found=%v), want 1 (found=true) -- test setup assumption violated", onset, found)
+	}
+	result := AnalyzeDiversion(records, tl, "a", 1, onset, found, cfg, 20)
+	if !result.CongestionFound {
+		t.Errorf("expected CongestionFound=true, got false")
+	}
+	if result.DiversionFound {
+		t.Errorf("expected DiversionFound=false (share never drops below threshold), got true with DiversionAtMs=%v", result.DiversionAtMs)
+	}
+	if result.CommittedBacklog != 0 || result.QueueDrainFound {
+		t.Errorf("when DiversionFound=false, CommittedBacklog and QueueDrainFound must stay at their zero-value defaults (meaning N/A, not 'zero backlog' or 'never drains') -- got %+v", result)
+	}
+}
+
 // TestAnalyzeDiversion_NoCongestion confirms a target that never crosses
 // the ratio threshold reports CongestionFound=false and nothing further
 // is computed (no false-positive diversion/backlog numbers).

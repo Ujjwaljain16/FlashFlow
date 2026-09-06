@@ -1,0 +1,106 @@
+{
+  "experiment": "014-G-alpha-on-main-boundary",
+  "timestamp": "2026-09-06T19:37:30Z",
+  "results": [
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "alpha": 0.05,
+      "mean_ms": 300.41261587301574,
+      "p99_ms": 1320.7365200000004,
+      "top1_share": 0.5301587301587302,
+      "offered_rho_max": 1.2,
+      "beats_round_robin": false
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "alpha": 0.1,
+      "mean_ms": 288.5955861027189,
+      "p99_ms": 1340.2779999999998,
+      "top1_share": 0.5438066465256798,
+      "offered_rho_max": 0.78,
+      "beats_round_robin": false
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "alpha": 0.2,
+      "mean_ms": 307.3198294117646,
+      "p99_ms": 1313.9910200000004,
+      "top1_share": 0.49117647058823527,
+      "offered_rho_max": 0.7162499999999999,
+      "beats_round_robin": false
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "alpha": 0.4,
+      "mean_ms": 285.52368484848483,
+      "p99_ms": 1184.174419999999,
+      "top1_share": 0.5151515151515151,
+      "offered_rho_max": 0.705,
+      "beats_round_robin": false
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "alpha": 0.8,
+      "mean_ms": 289.03205993690835,
+      "p99_ms": 1178.0226799999991,
+      "top1_share": 0.5362776025236593,
+      "offered_rho_max": 0.705,
+      "beats_round_robin": false
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "alpha": 0.05,
+      "mean_ms": 644.0630778097984,
+      "p99_ms": 2327.366360000001,
+      "top1_share": 0.30547550432276654,
+      "offered_rho_max": 3.1875,
+      "beats_round_robin": false
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "alpha": 0.1,
+      "mean_ms": 632.7239263456096,
+      "p99_ms": 2210.066320000001,
+      "top1_share": 0.3314447592067989,
+      "offered_rho_max": 3.3562499999999997,
+      "beats_round_robin": false
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "alpha": 0.2,
+      "mean_ms": 589.3876242937855,
+      "p99_ms": 1832.5330199999992,
+      "top1_share": 0.3728813559322034,
+      "offered_rho_max": 3.13125,
+      "beats_round_robin": false
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "alpha": 0.4,
+      "mean_ms": 628.2939479166672,
+      "p99_ms": 2039.7496100000003,
+      "top1_share": 0.4114583333333333,
+      "offered_rho_max": 2.4375,
+      "beats_round_robin": false
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "alpha": 0.8,
+      "mean_ms": 645.0121144278613,
+      "p99_ms": 2037.9496700000004,
+      "top1_share": 0.44029850746268656,
+      "offered_rho_max": 2.3249999999999997,
+      "beats_round_robin": false
+    }
+  ]
+}

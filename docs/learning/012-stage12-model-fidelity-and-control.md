@@ -23,7 +23,12 @@ stability boundary — without anyone at the time treating that number as a pred
 happen if queueing were ever added. It was. The reversal appeared exactly where the earlier, unrelated
 number said it would, which is a stronger kind of confirmation than the experiment alone would have
 been: two independently-computed pieces of evidence, from two different stages, agreeing on a specific
-numeric threshold neither was built to predict.
+numeric threshold neither was built to predict. That agreement is real and worth taking seriously, but
+it comes from exactly one scenario — one service-time ratio, one arrival pattern, one topology size. It
+is evidence that ρ=1 mattered here, not evidence that ρ=1 is FlashFlow's general answer to "when does
+concentration collapse." Treating a single confirmed instance as a validated law is exactly the kind of
+overclaim this project's own discipline exists to catch, so the honest scope of this result stays
+"observed in this scenario," not "established."
 
 The corollary matters as much as the reversal: at Capacity=2 and 3, EWMA's dominance is back, nearly
 identical to the flat model's own numbers. Adaptive's advantage isn't "real load-awareness beats a

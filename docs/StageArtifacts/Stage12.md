@@ -263,9 +263,14 @@ wait-time-decomposed attribution).
 
 ## 14. Claims Supported by Evidence
 
-- Stage 11's flat-model EWMA-wins finding was model-dependent, precisely as hypothesized, and precisely
-  where predicted (the ρ=1 stability boundary) — not a vague "maybe it's different under a richer
-  model" but a specific, checked, confirmed mechanism.
+- Stage 11's flat-model EWMA-wins finding was model-dependent — not a vague "maybe it's different under
+  a richer model" but a specific, checked mechanism: in the one tested severe-heterogeneity scenario,
+  the reversal appeared exactly at the capacity level where EWMA's own concentration pushed a target's
+  utilization past ρ=1 (the textbook queueing-stability boundary), and vanished exactly one level below
+  it. This confirms the mechanism IN THIS SCENARIO precisely; it does not establish ρ=1 as a general
+  predictor of when EWMA-style concentration collapses across other service-time ratios, arrival
+  patterns, capacities, or topology shapes — that generalization question is explicitly unresolved
+  (§13) and untested.
 - H2 is real for EWMA (severe, total lock-in) and real-but-bounded for Adaptive.
 - RealEngine's load defect is fully fixed and validated end-to-end (Adaptive real max_share now matches
   virtual within 0.6%).
@@ -285,6 +290,13 @@ wait-time-decomposed attribution).
 - That virtual-under-contention and real-engine results are directly comparable — they are not (Section
   12, Limitation 1); only the flat-model virtual-vs-real comparison (Section 7.6) is apples-to-apples.
 - That Program C's uniform transition penalty generalizes beyond the one scenario/capacity level tested.
+- **That ρ=1 is a validated, general predictor of when EWMA-style concentration collapses in
+  FlashFlow.** ρ=1 is textbook queueing theory's stability boundary, and it correctly located the
+  reversal in the ONE scenario tested — that is a real, mechanistically-sound result, not a coincidence.
+  But one scenario, one service-time ratio, one arrival pattern, and one topology shape is not a
+  generalization test. Whether ρ≈1 reliably predicts this reversal under a different heterogeneity
+  ratio, a bursty rather than constant arrival process, or a different topology size remains explicitly
+  open (§13) and must not be read as settled.
 
 ---
 
@@ -295,11 +307,14 @@ wait-time-decomposed attribution).
 Every one of the four tracks was completed, tested, and validated against real evidence, not assumed.
 The central Stage 12 question — does making FlashFlow more faithful to the dynamics Stage 11 proved
 important change what we believe about its routing policies — has a clear, evidence-backed answer:
-**yes, sharply and specifically.** Stage 11's flagship finding (EWMA beats Adaptive on raw mean latency
-under heterogeneity) reverses completely once genuine capacity constraints exist at the threshold where
-concentration becomes unstable, and recovers completely once capacity is even modestly more forgiving —
-a precise, mechanistically-explained, statistically-robust regime boundary, not a vague "it's more
-complicated now." Two real bugs (RealEngine's load signal, the Topology/Failure seed leak) were fixed
+**yes, sharply and specifically, in the scenario tested.** Stage 11's flagship finding (EWMA beats
+Adaptive on raw mean latency under heterogeneity) reverses completely once genuine capacity constraints
+push EWMA's own concentration past the ρ=1 stability boundary, and recovers completely one capacity
+level more forgiving — a precise, mechanistically-explained, statistically-robust result for this
+scenario, not a vague "it's more complicated now." It is deliberately NOT generalized further than
+that: whether ρ≈1 is a reliable predictor across other service-time ratios, arrival patterns, or
+topology shapes is untested and stays an open question (§13), not a claimed law. Two real bugs
+(RealEngine's load signal, the Topology/Failure seed leak) were fixed
 and validated end-to-end, with a mandatory historical-impact check confirming Stage 8's own conclusions
 survive materially unchanged. H2, explicitly declined in Stage 11 as untestable, was built and tested
 for the first time, with an honest negative result (the hypothesized `StaleAfter` mechanism) alongside

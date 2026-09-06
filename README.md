@@ -75,17 +75,19 @@ different things (a composite utility score over a broad random scenario distrib
 latency over a systematically constructed regime sweep). See `docs/StageArtifacts/Stage11.md` §19
 before citing either number against the other.
 
-**A note on Stage 12's own numbers — Stage 11's "EWMA wins" finding was model-dependent, and now we
-know exactly where**: `internal/replay.RunWorld` has two modes now. The **flat model** (every
-`TargetProfile`'s `Capacity` left at its zero value, `ServiceTimeSchedule` empty) is byte-for-byte the
-same model every stage through Stage 11 used — EWMA beats Adaptive on raw mean latency under
-heterogeneous load in this mode, exactly as Stage 11 reported. The **contention-enabled model**
-(`Capacity > 0` on any target) adds deterministic FIFO queueing; under it, that same finding **reverses
-sharply** at the specific capacity level where EWMA's own concentration strategy pushes a target's
-utilization past the queueing-stability boundary (ρ=1), and **fully recovers** one capacity level more
-forgiving. Neither number is wrong — they describe different models, and Stage 12 exists specifically to
-say precisely where they diverge and why. See `docs/StageArtifacts/Stage12.md` §7.1 before citing
-either "EWMA wins" or "Adaptive wins" without stating which model produced it.
+**A note on Stage 12's own numbers — Stage 11's "EWMA wins" finding was model-dependent, and here's
+where it broke in the one scenario tested**: `internal/replay.RunWorld` has two modes now. The **flat
+model** (every `TargetProfile`'s `Capacity` left at its zero value, `ServiceTimeSchedule` empty) is
+byte-for-byte the same model every stage through Stage 11 used — EWMA beats Adaptive on raw mean
+latency under heterogeneous load in this mode, exactly as Stage 11 reported. The **contention-enabled
+model** (`Capacity > 0` on any target) adds deterministic FIFO queueing; under it, that same finding
+**reverses sharply** at the specific capacity level where EWMA's own concentration strategy pushes a
+target's utilization past ρ=1 (queueing theory's textbook stability boundary), and **fully recovers**
+one capacity level more forgiving. Neither number is wrong — they describe different models. This is a
+mechanistically-sound result for the one scenario it was tested on, **not a validated general rule**:
+whether ρ≈1 predicts this reversal under other service-time ratios, arrival patterns, or topology
+shapes is untested and explicitly unresolved. See `docs/StageArtifacts/Stage12.md` §7.1 and §13 before
+citing "EWMA wins," "Adaptive wins," or "ρ=1 is the threshold" without that scope attached.
 
 ---
 
@@ -231,13 +233,15 @@ Stage 11 answered FlashFlow's research question but flagged four platform gaps a
 to revisit. Stage 12 built the minimum mechanism to close each one, then re-ran Stage 11's own findings
 under the corrected model:
 
-- **Stage 11's flagship "EWMA beats Adaptive" finding was model-dependent, and now we know exactly
-  where it breaks**: `internal/replay.TargetProfile` gained an opt-in `Capacity` field (deterministic
-  FIFO queueing when set, byte-identical to the old flat model when left at zero). Under a finite
-  capacity that pushes EWMA's own concentration past the queueing-stability boundary (ρ=1), its mean
-  latency explodes 8x and **Adaptive wins decisively** — a reversal confirmed robust across 12
-  independent seeds (Cliff's Delta 1.000). One capacity level more forgiving, EWMA's dominance is fully
-  restored. Not "Adaptive is better now" — a precise, mechanistically-explained regime boundary.
+- **Stage 11's flagship "EWMA beats Adaptive" finding was model-dependent, and here's where it broke in
+  the one scenario tested**: `internal/replay.TargetProfile` gained an opt-in `Capacity` field
+  (deterministic FIFO queueing when set, byte-identical to the old flat model when left at zero). Under
+  a finite capacity that pushes EWMA's own concentration past ρ=1 (queueing theory's stability
+  boundary), its mean latency explodes 8x and **Adaptive wins decisively** — a reversal confirmed robust
+  across 12 independent seeds (Cliff's Delta 1.000). One capacity level more forgiving, EWMA's dominance
+  is fully restored. Not "Adaptive is better now," and not "ρ=1 is a proven general threshold" either —
+  a precise, mechanistically-explained regime boundary in this scenario; whether it generalizes to other
+  service-time ratios, arrival patterns, or topologies is untested and stays an open question.
 - **H2 (a staleness/oscillation attack) was tested for the first time**, via a new
   `TargetProfile.ServiceTimeSchedule` (discrete, scheduled service-time changes). EWMA gets completely
   and permanently stuck routing to a target after it degrades (100% of decisions during the swap

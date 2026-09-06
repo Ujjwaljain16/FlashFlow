@@ -15,7 +15,21 @@
     <button class="tab-btn" data-tab="experiments">Experiments</button>
     <button class="tab-btn" data-tab="tuning">Tuning</button>
   </nav>
+  <button id="shortcuts-btn" class="btn-ghost" title="Keyboard shortcuts">&#9096; Shortcuts</button>
 </header>
+
+<div id="shortcuts-overlay" class="shortcuts-overlay" hidden>
+  <div class="shortcuts-panel">
+    <div class="shortcuts-title">Keyboard Shortcuts <button id="shortcuts-close" class="btn-ghost">&times;</button></div>
+    <table class="metrics-table">
+      <tr><td><span class="kbd">1</span>-<span class="kbd">4</span></td><td>Switch tabs (Control Room / Playground / Experiments / Tuning)</td></tr>
+      <tr><td><span class="kbd">r</span></td><td>Re-run the Control Room report with fresh seeds</td></tr>
+      <tr><td><span class="kbd">?</span></td><td>Toggle this panel</td></tr>
+      <tr><td><span class="kbd">Esc</span></td><td>Close this panel</td></tr>
+    </table>
+    <p class="hint" style="margin:10px 0 0">Shortcuts are ignored while typing in a field.</p>
+  </div>
+</div>
 
 <main>
 
@@ -32,6 +46,7 @@
     <div class="scenario-label mono" id="control-scenario-label">Loading scenario&hellip;</div>
     <div>
       <button id="control-refresh-btn">&#8635; Re-run (fresh seeds)</button>
+      <button id="report-export-btn" class="btn-ghost">&#8595; Export JSON</button>
       <span id="control-status" class="status"></span>
     </div>
   </div>
@@ -57,9 +72,11 @@
         <select id="regime-policy"></select>
       </label>
       <button id="regime-btn">&#9654; Run Grid</button>
+      <button id="regime-export-btn" class="btn-ghost">&#8595; Export JSON</button>
       <span id="regime-status" class="status"></span>
     </div>
-    <div id="regime-grid" class="regime-grid"></div>
+    <div id="regime-empty" class="empty-state">Pick a policy and click <strong>Run Grid</strong> to classify it across 9 heterogeneity &times; workload conditions.</div>
+    <div id="regime-grid" class="regime-grid" hidden></div>
     <div id="regime-detail" class="regime-detail" hidden></div>
     <div id="stress-reproduce" class="reproduce-box"></div>
   </div>
@@ -87,9 +104,11 @@
         <select id="timeline-policy"></select>
       </label>
       <button id="timeline-btn">&#9654; Load</button>
+      <button id="timeline-export-btn" class="btn-ghost">&#8595; Export JSON</button>
       <span id="timeline-status" class="status"></span>
     </div>
-    <svg id="control-timeline-svg" viewBox="0 0 700 440" class="event-timeline"></svg>
+    <div id="timeline-empty" class="empty-state">Pick a policy and click <strong>Load</strong> to see its traffic and per-target queue depth over time.</div>
+    <svg id="control-timeline-svg" viewBox="0 0 700 440" class="event-timeline" hidden></svg>
     <div id="timeline-reproduce" class="reproduce-box"></div>
   </div>
 
@@ -119,12 +138,22 @@
         <select id="div-counterfactual"></select>
       </label>
       <button id="div-btn">&#9654; Compare</button>
+      <button id="div-export-btn" class="btn-ghost">&#8595; Export JSON</button>
       <span id="div-status" class="status"></span>
     </div>
-    <div id="div-badges" class="same-world-badges"></div>
-    <svg id="div-svg" viewBox="0 0 700 150" class="divergence-timeline"></svg>
-    <div id="div-caption" class="hint"></div>
-    <div id="div-reproduce" class="reproduce-box"></div>
+    <div id="div-empty" class="empty-state">Pick two policies and click <strong>Compare</strong> to find where their decisions first diverge.</div>
+    <div id="div-result" hidden>
+      <div id="div-badges" class="same-world-badges"></div>
+      <svg id="div-svg" viewBox="0 0 700 150" class="divergence-timeline"></svg>
+      <div id="div-caption" class="hint"></div>
+      <div id="div-reproduce" class="reproduce-box"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>CLI Reference</h2>
+    <p class="hint">Every view above has a dashboard-only convenience layer, but the underlying diagnostic tooling is a real CLI you can script against -- see <code>docs/StageArtifacts/Stage17-DiagnosticTooling.md</code>.</p>
+    <div id="cli-reference" class="cli-reference"></div>
   </div>
 </section>
 

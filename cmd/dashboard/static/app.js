@@ -14,6 +14,21 @@ async function getJSON(url) {
   return data;
 }
 
+// exportJSON downloads already-fetched data as a local .json file --
+// client-side only (Blob + a throwaway <a download>), no new endpoint,
+// since every view here already holds the exact JSON it rendered from.
+function exportJSON(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 // ---------- Tabs ----------
 $$('.tab-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -308,6 +323,9 @@ async function loadControlRoom() {
 
 $('#control-refresh-btn').addEventListener('click', loadControlRoom);
 $('#explain-policy').addEventListener('change', (e) => renderExplain(e.target.value));
+$('#report-export-btn').addEventListener('click', () => {
+  if (controlReport) exportJSON('flashflow-scenario-report.json', controlReport);
+});
 
 // ---------- Control Room: Event Timeline ----------
 const DEPTH_COLORS = ['#4f8cff', '#ff9d4f', '#3ddc84', '#c792ea', '#ff5c5c'];
@@ -362,11 +380,16 @@ function renderEventTimeline(svg, view) {
   return { xScale, W, H, padTop };
 }
 
+let lastTimelineView = null;
+
 $('#timeline-btn').addEventListener('click', async () => {
   const policy = $('#timeline-policy').value;
   $('#timeline-status').textContent = 'running...';
   try {
     const view = await getJSON(`/api/canonical/timeline?policy=${encodeURIComponent(policy)}&buckets=80`);
+    lastTimelineView = view;
+    $('#timeline-empty').hidden = true;
+    $('#control-timeline-svg').hidden = false;
     renderEventTimeline($('#control-timeline-svg'), view);
     renderReproduce($('#timeline-reproduce'), {
       seedLine: `Seed: ${view.seed}`,
@@ -377,6 +400,10 @@ $('#timeline-btn').addEventListener('click', async () => {
   } catch (e) {
     $('#timeline-status').textContent = 'error: ' + e.message;
   }
+});
+
+$('#timeline-export-btn').addEventListener('click', () => {
+  if (lastTimelineView) exportJSON(`flashflow-timeline-${lastTimelineView.policy}.json`, lastTimelineView);
 });
 
 // ---------- Control Room: First Divergence ----------
@@ -410,12 +437,17 @@ function renderDivergence(svg, summary) {
   svg.innerHTML = content;
 }
 
+let lastDivergenceSummary = null;
+
 $('#div-btn').addEventListener('click', async () => {
   const baseline = $('#div-baseline').value;
   const counterfactual = $('#div-counterfactual').value;
   $('#div-status').textContent = 'running both...';
   try {
     const summary = await getJSON(`/api/canonical/compare?baseline=${encodeURIComponent(baseline)}&counterfactual=${encodeURIComponent(counterfactual)}&seed=17000`);
+    lastDivergenceSummary = summary;
+    $('#div-empty').hidden = true;
+    $('#div-result').hidden = false;
     const badges = ['SAME SCENARIO', 'SAME SEED', 'SAME TRAFFIC', 'ISOLATED POLICY STATE']
       .map((b) => `<span class="same-world-badge">&check; ${b}</span>`).join('');
     $('#div-badges').innerHTML = badges;
@@ -440,6 +472,10 @@ $('#div-btn').addEventListener('click', async () => {
   } catch (e) {
     $('#div-status').textContent = 'error: ' + e.message;
   }
+});
+
+$('#div-export-btn').addEventListener('click', () => {
+  if (lastDivergenceSummary) exportJSON('flashflow-divergence.json', lastDivergenceSummary);
 });
 
 // ---------- Control Room: Regime Explorer ----------
@@ -495,12 +531,17 @@ function showRegimeDetail(cell) {
     </table>`;
 }
 
+let lastStressMapResult = null;
+
 $('#regime-btn').addEventListener('click', async () => {
   const policy = $('#regime-policy').value;
   $('#regime-status').textContent = 'running 9 cells...';
   $('#regime-detail').hidden = true;
   try {
     const result = await getJSON(`/api/canonical/stressmap?policy=${encodeURIComponent(policy)}`);
+    lastStressMapResult = result;
+    $('#regime-empty').hidden = true;
+    $('#regime-grid').hidden = false;
     renderRegimeGrid($('#regime-grid'), result);
     renderReproduce($('#stress-reproduce'), {
       seedLine: `Seed: ${result.seed}`,
@@ -510,6 +551,10 @@ $('#regime-btn').addEventListener('click', async () => {
   } catch (e) {
     $('#regime-status').textContent = 'error: ' + e.message;
   }
+});
+
+$('#regime-export-btn').addEventListener('click', () => {
+  if (lastStressMapResult) exportJSON(`flashflow-stressmap-${lastStressMapResult.policy}.json`, lastStressMapResult);
 });
 
 // ---------- Control Room: Watch Failure (story mode) ----------
@@ -602,6 +647,68 @@ $('#story-reset-btn').addEventListener('click', () => {
   $('#story-svg').innerHTML = '';
   $('#story-narration').textContent = 'Press Play to watch this run unfold.';
   $('#story-status').textContent = '';
+});
+
+// ---------- Control Room: CLI Reference (static) ----------
+const CLI_ENTRIES = [
+  { desc: 'Full failure report for the worst-classified policy (or one you name), all 6 policies included in the written artifact.', cmd: 'go run ./cmd/flashflow report --policy ewma --seeds 3' },
+  { desc: "Read a report back and print one policy's causal narrative plus a counterfactual table.", cmd: 'go run ./cmd/flashflow explain <scenario-report.json> --policy ewma' },
+  { desc: 'Classify one policy across the 3x3 heterogeneity x workload grid the Regime Explorer visualizes.', cmd: 'go run ./cmd/flashflow stress-map --policy ewma --seed 17900' },
+];
+
+function renderCLIReference(container) {
+  container.innerHTML = CLI_ENTRIES.map((e, i) => `
+    <div class="cli-entry">
+      <div class="cli-desc">${e.desc}</div>
+      <div class="reproduce-cmd"><code id="cli-cmd-${i}">${e.cmd}</code><button class="repro-copy-btn" type="button" data-idx="${i}">Copy</button></div>
+    </div>`).join('');
+  container.querySelectorAll('.repro-copy-btn').forEach((btn) => {
+    btn.addEventListener('click', (ev) => {
+      const text = $('#cli-cmd-' + btn.dataset.idx).textContent;
+      (navigator.clipboard?.writeText(text) || Promise.reject()).then(() => {
+        ev.target.textContent = 'Copied';
+        setTimeout(() => { ev.target.textContent = 'Copy'; }, 1200);
+      }).catch(() => {});
+    });
+  });
+}
+
+// ---------- Keyboard shortcuts ----------
+function isTypingTarget(el) {
+  if (!el) return false;
+  const tag = el.tagName;
+  return tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA' || el.isContentEditable;
+}
+
+function toggleShortcuts(show) {
+  const overlay = $('#shortcuts-overlay');
+  overlay.hidden = show === undefined ? !overlay.hidden : !show;
+}
+
+$('#shortcuts-btn').addEventListener('click', () => toggleShortcuts(true));
+$('#shortcuts-close').addEventListener('click', () => toggleShortcuts(false));
+$('#shortcuts-overlay').addEventListener('click', (e) => { if (e.target.id === 'shortcuts-overlay') toggleShortcuts(false); });
+
+const TAB_KEYS = { '1': 'control', '2': 'playground', '3': 'experiments', '4': 'tuning' };
+
+document.addEventListener('keydown', (e) => {
+  if (isTypingTarget(e.target)) return;
+
+  if (e.key === 'Escape') {
+    if (!$('#shortcuts-overlay').hidden) toggleShortcuts(false);
+    return;
+  }
+  if (e.key === '?') {
+    toggleShortcuts();
+    return;
+  }
+  if (TAB_KEYS[e.key]) {
+    $(`.tab-btn[data-tab="${TAB_KEYS[e.key]}"]`)?.click();
+    return;
+  }
+  if (e.key === 'r' && $('#tab-control').classList.contains('active')) {
+    $('#control-refresh-btn').click();
+  }
 });
 
 // ---------- Playground: policies ----------
@@ -819,6 +926,7 @@ async function loadTuning() {
 }
 
 // ---------- Init ----------
+renderCLIReference($('#cli-reference'));
 loadControlRoom();
 loadPolicies();
 loadExperimentGroups();

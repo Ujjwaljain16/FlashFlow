@@ -1,0 +1,102 @@
+{
+  "experiment": "012-D-attribution-with-waiting",
+  "timestamp": "2026-09-06T17:32:50Z",
+  "results": [
+    {
+      "policy": "ewma",
+      "target": "edge-a",
+      "service_time_ms": 15,
+      "mean_observed_ms": 91.8615315315315,
+      "mean_wait_ms": 76.8615315315315,
+      "wait_share_pct": 83.67107563969664,
+      "lambda_req_per_sec": 55.5,
+      "l_measured_direct_integration": 5.098333351250004,
+      "littles_law_check": {
+        "Predicted": 5.098314999999998,
+        "Observed": 5.098333351250004,
+        "AbsError": -0.000018351250006709563,
+        "RelError": -0.0000035994605967085738
+      }
+    },
+    {
+      "policy": "ewma",
+      "target": "edge-b",
+      "service_time_ms": 30,
+      "mean_observed_ms": 182.63126315789475,
+      "mean_wait_ms": 152.63126315789475,
+      "wait_share_pct": 83.57345862845872,
+      "lambda_req_per_sec": 9.5,
+      "l_measured_direct_integration": 1.7349999992499998,
+      "littles_law_check": {
+        "Predicted": 1.7349970000000001,
+        "Observed": 1.7349999992499998,
+        "AbsError": -0.000002999249999691145,
+        "RelError": -0.0000017286743521542657
+      }
+    },
+    {
+      "policy": "ewma",
+      "target": "edge-c",
+      "service_time_ms": 60,
+      "mean_observed_ms": 411.944125,
+      "mean_wait_ms": 351.944125,
+      "wait_share_pct": 85.43491790300445,
+      "lambda_req_per_sec": 6,
+      "l_measured_direct_integration": 2.4716666652500003,
+      "littles_law_check": {
+        "Predicted": 2.47166475,
+        "Observed": 2.4716666652500003,
+        "AbsError": -0.000001915250000372737,
+        "RelError": -7.74881996549084e-7
+      }
+    },
+    {
+      "policy": "adaptive",
+      "target": "edge-a",
+      "service_time_ms": 15,
+      "mean_observed_ms": 15,
+      "mean_wait_ms": 0,
+      "wait_share_pct": 0,
+      "lambda_req_per_sec": 37.5,
+      "l_measured_direct_integration": 0.5625,
+      "littles_law_check": {
+        "Predicted": 0.5625,
+        "Observed": 0.5625,
+        "AbsError": 0,
+        "RelError": 0
+      }
+    },
+    {
+      "policy": "adaptive",
+      "target": "edge-b",
+      "service_time_ms": 30,
+      "mean_observed_ms": 31.64966666666669,
+      "mean_wait_ms": 1.6496666666666897,
+      "wait_share_pct": 5.2122718512044,
+      "lambda_req_per_sec": 24.75,
+      "l_measured_direct_integration": 0.7833333292500004,
+      "littles_law_check": {
+        "Predicted": 0.7833292500000005,
+        "Observed": 0.7833333292500004,
+        "AbsError": -0.000004079249999899837,
+        "RelError": -0.000005207553218507247
+      }
+    },
+    {
+      "policy": "adaptive",
+      "target": "edge-c",
+      "service_time_ms": 60,
+      "mean_observed_ms": 60,
+      "mean_wait_ms": 0,
+      "wait_share_pct": 0,
+      "lambda_req_per_sec": 12.25,
+      "l_measured_direct_integration": 0.735,
+      "littles_law_check": {
+        "Predicted": 0.735,
+        "Observed": 0.735,
+        "AbsError": 0,
+        "RelError": 0
+      }
+    }
+  ]
+}

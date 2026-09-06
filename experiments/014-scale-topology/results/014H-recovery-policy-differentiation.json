@@ -1,0 +1,33 @@
+{
+  "experiment": "014-H-recovery-policy-differentiation",
+  "timestamp": "2026-09-06T19:40:26Z",
+  "results": [
+    {
+      "policy": "ewma",
+      "pre_failure_p99_ms": 1147.1217599999995,
+      "transition_p99_ms": 1057.6133499999999,
+      "steady_state_p99_ms": 1517.3184399999998,
+      "adaptation_time_ms": 102.36220400000002,
+      "queue_drain_time_ms": -1,
+      "wrong_target_fraction_during_failure": 0.10416666666666667
+    },
+    {
+      "policy": "least-connections",
+      "pre_failure_p99_ms": 60,
+      "transition_p99_ms": 120,
+      "steady_state_p99_ms": 60,
+      "adaptation_time_ms": 102.36220400000002,
+      "queue_drain_time_ms": 117.36220400000002,
+      "wrong_target_fraction_during_failure": 0.052083333333333336
+    },
+    {
+      "policy": "adaptive",
+      "pre_failure_p99_ms": 60,
+      "transition_p99_ms": 120,
+      "steady_state_p99_ms": 60,
+      "adaptation_time_ms": 196.85039300000017,
+      "queue_drain_time_ms": 211.85039300000017,
+      "wrong_target_fraction_during_failure": 0.052083333333333336
+    }
+  ]
+}

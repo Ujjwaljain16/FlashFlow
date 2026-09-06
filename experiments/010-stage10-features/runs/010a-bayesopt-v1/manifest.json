@@ -1,0 +1,16 @@
+{
+  "experiment_id": "010a-bayesopt-v1",
+  "name": "010-A Tuner Comparison",
+  "seeds": {
+    "Global": 20260908,
+    "Traffic": 485002878772872852,
+    "Topology": 8693638447414811657,
+    "Failure": 3003259801377962549,
+    "Policy": 1801993998353242159
+  },
+  "configuration_hash": "e505d0cdb9691cb7",
+  "git_commit": "c42c28d877954d9241593228c6e799debd3bf71e",
+  "git_dirty": true,
+  "tuner_version": "bayesopt-v1",
+  "created_at": "2026-09-05T23:23:41.7639243Z"
+}

@@ -149,6 +149,46 @@ func evaluateCandidate(cs ConfigSpace, cache map[string]cachedEval, hash string,
 // the identical Development set, never Holdout, per the sacred split),
 // and returns the complete search ledger.
 //
+// Stage 10 (§10.9) refactored this into a thin wrapper over the more
+// general RunSearch, so every existing caller (all of Stage 8's
+// 008-series experiments) keeps working unchanged -- the algorithm
+// itself, its RNG behavior, and its output are byte-for-byte identical
+// to before this refactor; only the internal loop moved into RunSearch,
+// generalized to accept ANY Tuner, not just this one.
+func RunRandomSearch(rsc RandomSearchConfig, scenarios []replay.Scenario) SearchResult {
+	tuner := NewRandomSearchTuner(rsc.OptimizerSeed, rsc.ConfigSpace)
+	return RunSearch(tuner, rsc.Evaluations, scenarios, rsc.ObjectiveWeights)
+}
+
+// RandomSearchTuner is Random Search reframed as a Tuner: Suggest
+// ignores `previous` entirely (every draw is independent of every
+// other, the defining property of pure random search) and simply
+// samples ConfigSpace with its own dedicated RNG.
+type RandomSearchTuner struct {
+	rng   *rand.Rand
+	space ConfigSpace
+	seed  int64
+}
+
+// NewRandomSearchTuner constructs a RandomSearchTuner seeded from seed.
+func NewRandomSearchTuner(seed int64, space ConfigSpace) *RandomSearchTuner {
+	return &RandomSearchTuner{rng: rand.New(rand.NewSource(seed)), space: space, seed: seed}
+}
+
+func (t *RandomSearchTuner) Suggest(previous []TrialResult) proxy.AdaptiveConfig {
+	return t.space.Sample(t.rng)
+}
+func (t *RandomSearchTuner) Space() ConfigSpace { return t.space }
+func (t *RandomSearchTuner) Seed() int64        { return t.seed }
+func (t *RandomSearchTuner) Name() string       { return TunerVersion }
+
+// RunSearch is the algorithm-agnostic search loop every Tuner
+// (RandomSearchTuner, LHSTuner, BayesOptTuner) runs through identically
+// -- the loop itself has no idea which algorithm is suggesting
+// candidates, matching the master context's own instruction that a
+// second/third optimizer should share the identical evaluation
+// pipeline, never a parallel, tuner-specific one.
+//
 // An in-memory cache keyed by config hash avoids re-running Evaluate
 // for a configuration this run has already scored -- safe specifically
 // because Evaluate is deterministic for a fixed (config, scenario set)
@@ -157,29 +197,30 @@ func evaluateCandidate(cs ConfigSpace, cache map[string]cachedEval, hash string,
 // serve a cached result computed against a different scenario set
 // (master context rule 27/28's "never confuse cached analysis with a
 // new experiment").
-func RunRandomSearch(rsc RandomSearchConfig, scenarios []replay.Scenario) SearchResult {
-	optimizerRNG := rand.New(rand.NewSource(rsc.OptimizerSeed))
+func RunSearch(tuner Tuner, evaluations int, scenarios []replay.Scenario, weights ObjectiveWeights) SearchResult {
+	space := tuner.Space()
 	setHash := ScenarioSetHash(scenarios)
 	cache := make(map[string]cachedEval)
 
-	evaluations := make([]Evaluation, 0, rsc.Evaluations)
+	results := make([]Evaluation, 0, evaluations)
+	var previous []TrialResult
 	bestIndex := -1
 	bestUtility := math.Inf(-1)
 
-	for i := 0; i < rsc.Evaluations; i++ {
-		cfg := rsc.ConfigSpace.Sample(optimizerRNG)
+	for i := 0; i < evaluations; i++ {
+		cfg := tuner.Suggest(previous)
 		hash := Hash(cfg)
 		start := time.Now()
 
-		// A sampler is expected to always produce an in-space candidate
-		// (ConfigSpace.Sample does today, per space_test.go), but nothing
-		// enforced that boundary at the evaluation site itself -- a future
-		// sampling strategy (a mutation/crossover step, a hand-edited
-		// re-scored config) could silently produce an out-of-simplex or
-		// negative-duration candidate and have it scored and potentially
-		// ranked as a winner anyway. evaluateCandidate rejects before ever
-		// calling Evaluate.
-		m, s, cacheHit, valid, invalidReason := evaluateCandidate(rsc.ConfigSpace, cache, hash, cfg, scenarios)
+		// A Tuner is expected to always suggest an in-space candidate,
+		// but nothing enforces that boundary at the evaluation site
+		// itself unless it's checked here -- a Bayesian Optimization
+		// acquisition step drawing from a candidate pool built some other
+		// way, or a future Tuner implementation with a bug in its own
+		// bounds handling, could otherwise silently produce an
+		// out-of-simplex or negative-duration candidate and have it
+		// scored and potentially ranked as a winner anyway (F-24).
+		m, s, cacheHit, valid, invalidReason := evaluateCandidate(space, cache, hash, cfg, scenarios)
 
 		eval := Evaluation{
 			Index: i, ConfigHash: hash, Config: cfg, ScenarioSetHash: setHash,
@@ -188,20 +229,21 @@ func RunRandomSearch(rsc RandomSearchConfig, scenarios []replay.Scenario) Search
 			CacheHit: cacheHit,
 		}
 		if valid {
-			eval.Utility = Utility(s, rsc.ObjectiveWeights)
+			eval.Utility = Utility(s, weights)
 		}
-		evaluations = append(evaluations, eval)
+		results = append(results, eval)
+		previous = append(previous, TrialResult{Config: cfg, Utility: eval.Utility, Valid: valid})
 
 		if valid && eval.Utility > bestUtility {
 			bestUtility = eval.Utility
-			bestIndex = len(evaluations) - 1
+			bestIndex = len(results) - 1
 		}
 	}
 
 	return SearchResult{
-		TunerVersion: TunerVersion, OptimizerSeed: rsc.OptimizerSeed, ScenarioSetHash: setHash,
-		Evaluations: evaluations, BestIndex: bestIndex,
-		Convergence: computeConvergence(evaluations),
+		TunerVersion: tuner.Name(), OptimizerSeed: tuner.Seed(), ScenarioSetHash: setHash,
+		Evaluations: results, BestIndex: bestIndex,
+		Convergence: computeConvergence(results),
 	}
 }
 

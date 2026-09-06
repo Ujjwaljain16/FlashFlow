@@ -1,0 +1,30 @@
+{
+  "experiment": "010-A-tuner-comparison",
+  "timestamp": "2026-09-05T23:23:41Z",
+  "evaluations": 200,
+  "optimizer_seed": 20260908,
+  "summaries": [
+    {
+      "tuner_name": "random-search-v1",
+      "best_utility": 0.7191333670927468,
+      "last_improved_at_index": 10,
+      "plateaued": true,
+      "valid_count": 200
+    },
+    {
+      "tuner_name": "lhs-v1",
+      "best_utility": 0.7192439782587607,
+      "last_improved_at_index": 136,
+      "plateaued": true,
+      "valid_count": 200
+    },
+    {
+      "tuner_name": "bayesopt-v1",
+      "best_utility": 0.719426058678973,
+      "last_improved_at_index": 36,
+      "plateaued": true,
+      "valid_count": 200
+    }
+  ],
+  "findings": "All three tuners searched the identical 40-scenario Development set with the identical 200-evaluation budget, objective weights, and starting seed. Random Search reached best utility 0.7191, last improving at evaluation 10 (plateaued). lhs-v1 matched Random Search's best utility (0.7192 vs 0.7191, a +0.02% relative difference), last improving at evaluation 136 of 200 (plateaued). bayesopt-v1 matched Random Search's best utility (0.7194 vs 0.7191, a +0.04% relative difference), last improving at evaluation 36 of 200 (plateaued).  Framing per Stage 10's own plan: Stage 8 already found Random Search converges early and plateaus on this search space, so the absence of a large improvement from LHS/Bayesian Optimization here is the EXPECTED outcome given that finding, not a defect in either implementation -- both were built to honor the PRD's tuner-progression promise, not because prior evidence demanded a better optimizer."
+}

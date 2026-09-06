@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlashFlow</title>
+<meta name="description" content="A research laboratory, in Go, for controlled experiments on distributed edge-routing behavior under heterogeneous conditions and finite serving capacity.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --paper: #edf1ef;
+    --paper-raised: #f7f9f8;
+    --rule: #cdd6d2;
+    --rule-strong: #b7c3be;
+    --ink: #16211f;
+    --ink-soft: #4d5c59;
+    --ink-faint: #7c8a86;
+    --signal: #2a5c86;
+    --signal-soft: #dce8f0;
+    --acute: #a8402a;
+    --acute-soft: #f2e2dd;
+    --chronic: #93611c;
+    --chronic-soft: #f0e6d3;
+    --confirmed: #21735e;
+    --confirmed-soft: #dfeee9;
+    --serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    --measure: 660px;
+    --wide: 980px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #10161a;
+      --paper-raised: #161e23;
+      --rule: #2a3a3f;
+      --rule-strong: #3a4d52;
+      --ink: #e7ece9;
+      --ink-soft: #9fb0ac;
+      --ink-faint: #6c7d79;
+      --signal: #74b3e3;
+      --signal-soft: #1c313d;
+      --acute: #e2725a;
+      --acute-soft: #35211c;
+      --chronic: #d9a441;
+      --chronic-soft: #332711;
+      --confirmed: #4bbd9c;
+      --confirmed-soft: #12332a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #10161a;
+    --paper-raised: #161e23;
+    --rule: #2a3a3f;
+    --rule-strong: #3a4d52;
+    --ink: #e7ece9;
+    --ink-soft: #9fb0ac;
+    --ink-faint: #6c7d79;
+    --signal: #74b3e3;
+    --signal-soft: #1c313d;
+    --acute: #e2725a;
+    --acute-soft: #35211c;
+    --chronic: #d9a441;
+    --chronic-soft: #332711;
+    --confirmed: #4bbd9c;
+    --confirmed-soft: #12332a;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 16.5px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--mono); text-wrap: balance; letter-spacing: -0.01em; }
+  a { color: var(--signal); }
+  code, .mono { font-family: var(--mono); }
+  ::selection { background: var(--signal-soft); }
+
+  .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 28px; }
+  .measure { max-width: var(--measure); }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 5;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .topbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; max-width: var(--wide); margin: 0 auto; }
+  .brand { font-family: var(--mono); font-weight: 700; letter-spacing: 0.06em; font-size: 13px; color: var(--ink); text-decoration: none; }
+  .brand::before { content: "⌁ "; color: var(--signal); }
+  .toplinks { display: flex; gap: 22px; font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.02em; }
+  .toplinks a { color: var(--ink-soft); text-decoration: none; }
+  .toplinks a:hover { color: var(--signal); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 56px 0 8px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint); margin: 0 0 16px;
+  }
+  .hero h1 { font-size: clamp(40px, 7vw, 64px); font-weight: 700; margin: 0 0 14px; line-height: 1.02; }
+  .hero .thesis { font-family: var(--serif); font-size: 20px; color: var(--ink-soft); max-width: 640px; margin: 0 0 6px; }
+  .hero .tagline { font-family: var(--mono); font-size: 13px; color: var(--signal); margin: 0 0 40px; letter-spacing: 0.02em; }
+
+  .fade-in { animation: fadeUp 0.6s ease-out both; }
+  .fade-in-1 { animation-delay: 0.05s; }
+  .fade-in-2 { animation-delay: 0.16s; }
+  .fade-in-3 { animation-delay: 0.27s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }
+
+  /* ---------- Chart ---------- */
+  .chart-panel {
+    background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 3px;
+    padding: 22px 24px 16px; margin-bottom: 14px;
+  }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+  .chart-head h2 { font-size: 13px; margin: 0; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+  .chart-head .chart-sub { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+  svg.chart { width: 100%; height: auto; display: block; }
+  .chart-legend { display: flex; gap: 24px; flex-wrap: wrap; margin: 10px 0 4px; font-family: var(--mono); font-size: 12px; }
+  .chart-legend .sw { display: inline-flex; align-items: center; gap: 7px; }
+  .chart-legend .dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .chart-caption { font-size: 14px; color: var(--ink-soft); max-width: var(--measure); margin: 10px 0 0; }
+  .chart-caption strong { color: var(--ink); }
+
+  /* ---------- Stat tiles ---------- */
+  .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 28px 0 64px; }
+  .stat-tile { background: var(--paper); padding: 18px 14px; }
+  .stat-num { font-family: var(--mono); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat-label { font-family: var(--mono); font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; }
+  @media (max-width: 760px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 460px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ---------- Sections ---------- */
+  section { padding: 10px 0 64px; }
+  .section-eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--signal); margin: 0 0 10px; }
+  section h2.section-title { font-size: 28px; margin: 0 0 22px; max-width: var(--measure); }
+  section > p.lede { max-width: var(--measure); color: var(--ink-soft); font-size: 17px; margin: 0 0 30px; }
+
+  /* ---------- Revision log ---------- */
+  .revlog { border-top: 1px solid var(--rule); }
+  .revlog-entry { display: grid; grid-template-columns: 64px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--rule); }
+  .revlog-stage { font-family: var(--mono); font-size: 13px; color: var(--ink-faint); padding-top: 3px; }
+  .revlog-stage b { display: block; font-size: 22px; color: var(--ink); }
+  .revlog-old { color: var(--ink-faint); font-size: 15px; margin: 0 0 6px; }
+  .revlog-old .strike { text-decoration: line-through solid var(--acute) 2px; text-decoration-skip-ink: none; }
+  .revlog-new { font-size: 16.5px; margin: 0; }
+  .revlog-new .stamp { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; padding: 1px 7px; border-radius: 3px; margin-right: 8px; position: relative; top: -1px; }
+  .stamp-reversed { background: var(--acute-soft); color: var(--acute); }
+  .stamp-falsified { background: var(--acute-soft); color: var(--acute); }
+  .stamp-located { background: var(--chronic-soft); color: var(--chronic); }
+  .stamp-measured { background: var(--confirmed-soft); color: var(--confirmed); }
+  .revlog-evidence { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: 8px; }
+  @media (max-width: 560px) { .revlog-entry { grid-template-columns: 1fr; gap: 4px; } .revlog-stage b { display: inline; font-size: 15px; } }
+
+  /* ---------- Flagship callouts ---------- */
+  .callout-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 28px 0; }
+  .callout { background: var(--paper-raised); border: 1px solid var(--rule); border-left: 3px solid var(--rule-strong); padding: 16px 20px; }
+  .callout.acute { border-left-color: var(--acute); }
+  .callout.confirmed { border-left-color: var(--confirmed); }
+  .callout .callout-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-bottom: 8px; }
+  .callout p { margin: 0; font-size: 15px; }
+  @media (max-width: 640px) { .callout-row { grid-template-columns: 1fr; } }
+
+  /* ---------- Plain evidence list ---------- */
+  .evidence-list { list-style: none; margin: 0; padding: 0; max-width: var(--measure); }
+  .evidence-list li { padding: 14px 0; border-bottom: 1px solid var(--rule); font-size: 15.5px; }
+  .evidence-list li:first-child { padding-top: 0; }
+  .evidence-list li::marker { content: none; }
+  .evidence-list .tag { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); display: block; margin-bottom: 4px; }
+
+  /* ---------- Architecture definition grid ---------- */
+  .arch-grid { display: grid; grid-template-columns: 220px 1fr; gap: 4px 28px; max-width: var(--wide); }
+  .arch-grid dt { font-family: var(--mono); font-size: 13.5px; font-weight: 600; color: var(--ink); padding: 14px 0 4px; border-top: 1px solid var(--rule); }
+  .arch-grid dd { margin: 0; padding: 14px 0 4px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--ink-soft); }
+  @media (max-width: 680px) {
+    .arch-grid { grid-template-columns: 1fr; }
+    .arch-grid dt { border-top: 1px solid var(--rule); padding-bottom: 0; }
+    .arch-grid dd { padding-top: 4px; border-top: none; }
+  }
+
+  /* ---------- Try it ---------- */
+  .cmd-block { background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 3px; margin: 0 0 14px; overflow: hidden; }
+  .cmd-desc { padding: 12px 16px 0; font-size: 13.5px; color: var(--ink-soft); }
+  .cmd-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px 14px; }
+  .cmd-row code { font-size: 13px; overflow-x: auto; white-space: pre; }
+  .copy-btn {
+    flex-shrink: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.03em; text-transform: uppercase;
+    background: transparent; border: 1px solid var(--rule-strong); color: var(--ink-soft); border-radius: 3px;
+    padding: 6px 12px; cursor: pointer;
+  }
+  .copy-btn:hover { border-color: var(--signal); color: var(--signal); }
+  .try-links { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 24px; font-family: var(--mono); font-size: 13px; }
+  .try-links a { text-decoration: none; border-bottom: 1px solid var(--signal); padding-bottom: 1px; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--rule); padding: 40px 0 56px; }
+  .footer-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .stamp-box {
+    display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--confirmed);
+    border: 1.5px solid var(--confirmed); border-radius: 3px; padding: 7px 14px;
+    transform: rotate(-1.2deg);
+  }
+  .byline { font-size: 14px; color: var(--ink-soft); }
+  .byline a { color: var(--ink); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--rule-strong); }
+  .byline a:hover { border-color: var(--signal); color: var(--signal); }
+  footer .fineprint { font-size: 12.5px; color: var(--ink-faint); margin-top: 18px; max-width: var(--measure); }
+
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">FLASHFLOW</a>
+    <nav class="toplinks">
+      <a href="#findings">Findings</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#try">Try it</a>
+      <a href="https://github.com/Ujjwaljain16/FlashFlow" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap" id="top">
+  <div class="hero">
+    <p class="eyebrow fade-in fade-in-1">Research log · 16 stages · Go</p>
+    <h1 class="fade-in fade-in-1">Why do routing<br>policies fail under load?</h1>
+    <p class="thesis fade-in fade-in-2">
+      FlashFlow is a research laboratory, written in Go, for controlled experiments on distributed
+      edge-routing behavior under heterogeneous conditions and finite serving capacity — six routing
+      policies, two independent execution engines, sixteen development stages, each one's conclusion
+      tested against its predecessor's.
+    </p>
+    <p class="tagline fade-in fade-in-2">Five stages narrowed or falsified the one before it. This is what survived.</p>
+
+    <div class="chart-panel fade-in fade-in-3">
+      <div class="chart-head">
+        <h2>Same scenario, two policies, one seed</h2>
+        <span class="chart-sub">5 targets · 15–75ms · capacity=1 · FlashCrowd @ t=2.5s</span>
+      </div>
+      <svg class="chart" viewBox="0 0 640 250" role="img" aria-label="Queue depth over time for EWMA and round-robin, showing EWMA spike to 95 in-flight requests and full drain, versus round-robin's lower plateau that never drains">
+        <!-- gridlines + axis -->
+        <g font-family="IBM Plex Mono" font-size="9.5">
+          <line x1="46" y1="18" x2="46" y2="196" stroke="var(--rule)" stroke-width="1"/>
+          <line x1="46" y1="196" x2="612" y2="196" stroke="var(--rule-strong)" stroke-width="1"/>
+          <g stroke="var(--rule)" stroke-width="1">
+            <line x1="116" y1="18" x2="116" y2="196"/>
+            <line x1="187" y1="18" x2="187" y2="196"/>
+            <line x1="257" y1="18" x2="257" y2="196"/>
+            <line x1="328" y1="18" x2="328" y2="196"/>
+            <line x1="399" y1="18" x2="399" y2="196"/>
+            <line x1="470" y1="18" x2="470" y2="196"/>
+            <line x1="541" y1="18" x2="541" y2="196"/>
+            <line x1="612" y1="18" x2="612" y2="196"/>
+          </g>
+          <g fill="var(--ink-faint)">
+            <text x="46" y="210">0s</text>
+            <text x="187" y="210" text-anchor="middle">2s</text>
+            <text x="328" y="210" text-anchor="middle">4s</text>
+            <text x="470" y="210" text-anchor="middle">6s</text>
+            <text x="605" y="210" text-anchor="end">8s</text>
+            <text x="40" y="22" text-anchor="end">100</text>
+            <text x="40" y="107" text-anchor="end">50</text>
+            <text x="40" y="199" text-anchor="end">0</text>
+          </g>
+          <text x="4" y="12" fill="var(--ink-faint)" font-size="9">queue depth (in-flight requests)</text>
+        </g>
+
+        <!-- round-robin (chronic) -->
+        <polyline fill="none" stroke="var(--chronic)" stroke-width="2"
+          points="46,196 60,195 74,195 88,196 102,195 116,196 130,194 144,193 158,194 172,193 187,194 201,182 215,157 229,134 243,124 257,124 271,124 285,129 299,131 313,133 328,135 342,138 356,138 370,140 385,143 399,143 413,145 427,148 441,148 455,151 470,153 484,153 498,157 512,158 526,159 541,161 555,162 569,163 583,164 598,166 612,167" />
+
+        <!-- ewma (acute) -->
+        <polyline fill="none" stroke="var(--acute)" stroke-width="2.25"
+          points="46,195 60,196 74,196 88,196 102,196 116,196 130,196 144,196 158,196 172,196 187,196 201,196 215,181 229,20 243,26 257,32 271,38 285,44 299,50 313,58 328,65 342,72 356,79 370,85 385,92 399,99 413,106 427,113 441,120 455,127 470,135 484,142 498,150 512,157 526,167 541,177 555,187 569,196 583,196 598,196 612,196" />
+
+        <!-- annotations: congestion, diversion, drain -->
+        <g font-family="IBM Plex Mono" font-size="9.5">
+          <line x1="219" y1="18" x2="219" y2="196" stroke="var(--acute)" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+          <text x="223" y="30" fill="var(--acute)">congestion 2.49s</text>
+
+          <line x1="238" y1="18" x2="238" y2="196" stroke="var(--acute)" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+          <text x="242" y="44" fill="var(--acute)">diverts — 97 already committed</text>
+
+          <line x1="571" y1="18" x2="571" y2="196" stroke="var(--acute)" stroke-width="1" stroke-dasharray="2,3" opacity="0.7"/>
+          <text x="567" y="60" fill="var(--acute)" text-anchor="end">fully drains 6.85s</text>
+
+          <text x="608" y="163" fill="var(--chronic)" text-anchor="end">never drains</text>
+        </g>
+      </svg>
+      <div class="chart-legend">
+        <span class="sw"><span class="dot" style="background:var(--acute)"></span>EWMA — acute collapse (p99 4.40s)</span>
+        <span class="sw"><span class="dot" style="background:var(--chronic)"></span>Round-robin — chronic collapse (p99 3.76s, 71% of run over capacity)</span>
+      </div>
+      <p class="chart-caption">
+        Real bucketed queue-depth data from a single seed of FlashFlow's canonical scenario — not
+        illustrative. <strong>EWMA</strong> concentrates traffic 4.4× fair share, commits 97 requests to
+        its target before reacting, spikes to a 95-deep queue, then fully recovers.
+        <strong>Round-robin</strong> never concentrates enough to trigger any reaction at all — and, for
+        exactly that reason, never drains either. Two different failure shapes, from two different causes.
+      </p>
+    </div>
+
+    <div class="stat-grid fade-in fade-in-3">
+      <div class="stat-tile"><div class="stat-num">16</div><div class="stat-label">Dev. stages</div></div>
+      <div class="stat-tile"><div class="stat-num">6</div><div class="stat-label">Routing policies</div></div>
+      <div class="stat-tile"><div class="stat-num">2</div><div class="stat-label">Execution engines</div></div>
+      <div class="stat-tile"><div class="stat-num">~46k</div><div class="stat-label">Lines of Go</div></div>
+      <div class="stat-tile"><div class="stat-num">78</div><div class="stat-label">Test files</div></div>
+      <div class="stat-tile"><div class="stat-num">32</div><div class="stat-label">Audited claims</div></div>
+    </div>
+  </div>
+
+  <!-- ================= FINDINGS ================= -->
+  <section id="findings">
+    <p class="section-eyebrow">Revision history</p>
+    <h2 class="section-title">Five corrections produced the answer</h2>
+    <p class="lede">
+      Not a straight line to an answer — a sequence of controlled experiments, each one built to try to
+      break the conclusion before it. Two of the five were reversed outright by later evidence.
+    </p>
+
+    <div class="revlog">
+      <div class="revlog-entry">
+        <div class="revlog-stage"><b>11</b>research<br>validation</div>
+        <div>
+          <p class="revlog-new">EWMA sometimes beats Adaptive under heterogeneity — in a flat, no-queueing model.</p>
+          <p class="revlog-evidence">8-program regime sweep · docs/StageArtifacts/Stage11.md</p>
+        </div>
+      </div>
+      <div class="revlog-entry">
+        <div class="revlog-stage"><b>12</b>model<br>fidelity</div>
+        <div>
+          <p class="revlog-old"><span class="strike">EWMA sometimes wins under heterogeneity.</span></p>
+          <p class="revlog-new"><span class="stamp stamp-reversed">reversed</span>Adding a minimal finite-capacity model flips it sharply: at capacity=1, EWMA's mean latency explodes 8×, Adaptive barely moves.</p>
+          <p class="revlog-evidence">12-seed confirmation · Cliff's Δ = 1.000</p>
+        </div>
+      </div>
+      <div class="revlog-entry">
+        <div class="revlog-stage"><b>13</b>regime<br>discovery</div>
+        <div>
+          <p class="revlog-new"><span class="stamp stamp-located">located</span>Two independent sweeps locate the reversal at offered ρ≈0.89–0.97, and reframe the boundary as "load-blind vs. load-aware" routing.</p>
+          <p class="revlog-evidence">Round-robin and EWMA (no live signal) collapse; any policy with some load signal stays stable</p>
+        </div>
+      </div>
+      <div class="revlog-entry">
+        <div class="revlog-stage"><b>14</b>scale &amp;<br>topology</div>
+        <div>
+          <p class="revlog-old"><span class="strike">"Load-blind vs. load-aware" is the deep boundary.</span></p>
+          <p class="revlog-new"><span class="stamp stamp-falsified">falsified</span>Scaling to more targets breaks it directly: at N=8, EWMA (load-aware by signal) loses outright to round-robin.</p>
+          <p class="revlog-evidence">10/10 independent seeds · ρ's own predictive power falls as severity worsens</p>
+        </div>
+      </div>
+      <div class="revlog-entry">
+        <div class="revlog-stage"><b>15</b>mechanism<br>identification</div>
+        <div>
+          <p class="revlog-new"><span class="stamp stamp-measured">measured</span>Direct backlog instrumentation replaces both prior explanations: committed backlog predicts acute collapse; time-over-capacity predicts chronic collapse.</p>
+          <p class="revlog-evidence">Perfect rank agreement across a topology-size generalization test where peak ρ is badly misordered</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FLAGSHIP ================= -->
+  <section id="flagship">
+    <p class="section-eyebrow">The flagship scenario</p>
+    <h2 class="section-title">Two failure shapes, not one spectrum</h2>
+    <p class="lede">
+      Five heterogeneous targets, capacity=1 each, a FlashCrowd workload peaking at t=2.5s, three
+      independent seeds. Every policy in this scenario fails — just not the same way.
+    </p>
+    <div class="callout-row">
+      <div class="callout acute">
+        <div class="callout-label">Acute over-commitment</div>
+        <p>EWMA and Adaptive build the deepest queues and show severe, often-non-draining collapse —
+        committed backlog 93–127 for Adaptive, in every one of the three seeds, not just one.</p>
+      </div>
+      <div class="callout confirmed">
+        <div class="callout-label">Chronic under-provisioning</div>
+        <p>Round-robin shows a completely different failure: tiny committed backlog (4), but the highest
+        fraction-of-time-over-capacity of all six policies (71%) — and it never drains either.</p>
+      </div>
+    </div>
+    <p class="lede" style="margin-bottom:0">
+      <strong style="color:var(--ink)">This is deliberately not framed as "Adaptive wins."</strong>
+      Adaptive's own P99 was the worst of all six policies tested in this exact scenario, in every seed —
+      a controlled ablation traced its resistance to collapse specifically to its Load signal, not general
+      "smartness."
+    </p>
+  </section>
+
+  <!-- ================= EVIDENCE ================= -->
+  <section id="evidence">
+    <p class="section-eyebrow">Where the boundary actually is</p>
+    <h2 class="section-title">What this does not mean</h2>
+    <p class="lede">
+      The discipline this project holds itself to: every claim above is bounded, on purpose, in the same
+      place the underlying research bounds it.
+    </p>
+    <ul class="evidence-list">
+      <li><span class="tag">Scope — workload shape</span>Committed backlog generalizes with perfect rank agreement across topology <em>size</em> (N=3/5/8); its cross-<em>workload</em>-shape generalization is real but imperfect.</li>
+      <li><span class="tag">Scope — real engine</span>A validated real concurrency ceiling reproduces the mechanism's direction at most, not all, tested overload levels — it reverses at the most extreme level tested.</li>
+      <li><span class="tag">Unresolved</span>The cache-affinity interim-latency effect (higher cache weight worsens interim latency, improves eventual recovery) was tested directly against this mechanism in two candidate locations and remains unexplained.</li>
+      <li><span class="tag">Reproducibility</span>Virtual-engine results are byte-for-byte reproducible given a seed, same machine and Go toolchain. The real engine is not byte-identical across reruns — genuine OS/timing variance, disclosed and measured, not hidden.</li>
+      <li><span class="tag">Not implemented</span>LRU cache eviction, Doubly Robust off-policy evaluation, contextual bandits/RL, real <code>tc netem</code>, and OpenTelemetry are evaluated in planning and explicitly not built — see the scope freeze.</li>
+    </ul>
+  </section>
+
+  <!-- ================= ARCHITECTURE ================= -->
+  <section id="architecture">
+    <p class="section-eyebrow">Under the hood</p>
+    <h2 class="section-title">Two engines, one interface</h2>
+    <p class="lede">
+      A deterministic virtual-time simulator and a real <code>net/http</code> emulation engine both
+      implement one shared, compile-time-verified <code>ExperimentEngine</code> interface — every
+      experiment specification runs unmodified against either.
+    </p>
+    <dl class="arch-grid">
+      <dt>Virtual-time engine</dt>
+      <dd>A deterministic discrete-event simulator (<code>internal/vtime</code>, <code>internal/replay</code>). Byte-for-byte reproducible given the same seed, on the same machine and Go toolchain — confirmed directly, not assumed.</dd>
+
+      <dt>Real emulation engine</dt>
+      <dd>Real Go <code>net/http</code> servers and reverse proxy, with an in-process network-degradation simulator built in place of <code>tc netem</code> (Linux-only, unavailable on this project's Windows host). Subject to genuine OS scheduling noise — disclosed, not hidden.</dd>
+
+      <dt>Routing policies</dt>
+      <dd>Round-robin (no signal), weighted-round-robin (static weights), least-connections (in-flight count), EWMA (smoothed latency), P2C (sampled comparison), and Adaptive (a weighted combination of Load, Latency, Cache, and Cost).</dd>
+
+      <dt>Counterfactual replay</dt>
+      <dd>Two policies run against the byte-for-byte identical exogenous trace while each evolves its own isolated endogenous state — confirmed via full-trace identity/divergence tests, not summary statistics.</dd>
+
+      <dt>Cache &amp; failure modeling</dt>
+      <dd>TTL caching with request coalescing and stale-while-revalidate. Failure injection via declarative YAML chaos schedules, backed by a 4-state health machine.</dd>
+
+      <dt>Statistics &amp; tuning</dt>
+      <dd>Percentile, Mann-Whitney U, Cliff's Delta, and bootstrap confidence intervals, each checked against hand-computed references. Three tuners compared directly — Random Search wins on this project's own search space; the negative result was kept, not "fixed."</dd>
+
+      <dt>Diagnostic tooling</dt>
+      <dd>A CLI (<code>flashflow report / explain / stress-map</code>) and a live Control Room dashboard, both built on the completed research rather than extending it — reading, never recomputing, a stated finding.</dd>
+    </dl>
+  </section>
+
+  <!-- ================= TRY IT ================= -->
+  <section id="try">
+    <p class="section-eyebrow">Run it yourself</p>
+    <h2 class="section-title">Every number above is reproducible</h2>
+    <p class="lede">No account, no cloud dependency — clone the repo and Go 1.23 is the only requirement.</p>
+
+    <div class="cmd-block">
+      <div class="cmd-desc">Full failure report for one policy against the canonical scenario</div>
+      <div class="cmd-row"><code>go run ./cmd/flashflow report --policy ewma</code><button class="copy-btn" type="button">Copy</button></div>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-desc">Read a report back as a causal narrative with counterfactual comparisons</div>
+      <div class="cmd-row"><code>go run ./cmd/flashflow explain &lt;report.json&gt; --policy ewma</code><button class="copy-btn" type="button">Copy</button></div>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-desc">Classify one policy across a 3×3 heterogeneity × workload grid</div>
+      <div class="cmd-row"><code>go run ./cmd/flashflow stress-map --policy least-connections</code><button class="copy-btn" type="button">Copy</button></div>
+    </div>
+    <div class="cmd-block">
+      <div class="cmd-desc">Launch the live Control Room dashboard (the chart above, interactive)</div>
+      <div class="cmd-row"><code>go run ./cmd/dashboard</code><button class="copy-btn" type="button">Copy</button></div>
+    </div>
+
+    <div class="try-links">
+      <a href="https://github.com/Ujjwaljain16/FlashFlow" target="_blank" rel="noopener">Full source →</a>
+      <a href="https://github.com/Ujjwaljain16/FlashFlow/blob/main/docs/StageArtifacts/Stage16-ClaimLedger.md" target="_blank" rel="noopener">32-claim evidence ledger →</a>
+      <a href="https://github.com/Ujjwaljain16/FlashFlow/blob/main/README.md" target="_blank" rel="noopener">Full README →</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-row">
+      <div class="byline">
+        Researched and built by <a href="https://github.com/Ujjwaljain16" target="_blank" rel="noopener">Ujjwaljain16</a>
+      </div>
+      <div class="stamp-box">✓ Ready — documented limitations</div>
+    </div>
+    <p class="fineprint">
+      FlashFlow is a research laboratory for controlled experiments on distributed edge-routing behavior.
+      It is not a production CDN, a replacement for Envoy/NGINX/HAProxy, a packet-level network simulator,
+      or a universal routing optimizer — see the repository's own non-goals for the full list.
+    </p>
+  </footer>
+</div>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var code = btn.parentElement.querySelector('code').textContent;
+      var done = function () {
+        var prev = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = prev; }, 1200);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(done).catch(function () {});
+      }
+    });
+  });
+</script>
+</body>
+</html>

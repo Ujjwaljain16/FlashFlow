@@ -1,0 +1,118 @@
+{
+  "experiment": "013-C-arrival-rate-sweep",
+  "timestamp": "2026-09-06T18:22:51Z",
+  "cells": [
+    {
+      "request_count": 150,
+      "rate_per_sec": 37.5,
+      "policy": "ewma",
+      "mean_ms": 16.15212080536913,
+      "max_share": 0.9664429530201343,
+      "offered_rho_max": 0.271875
+    },
+    {
+      "request_count": 150,
+      "rate_per_sec": 37.5,
+      "policy": "adaptive",
+      "mean_ms": 15,
+      "max_share": 1,
+      "offered_rho_max": 0.28125
+    },
+    {
+      "request_count": 300,
+      "rate_per_sec": 75,
+      "policy": "ewma",
+      "mean_ms": 16.360083612040135,
+      "max_share": 0.9732441471571907,
+      "offered_rho_max": 0.5475
+    },
+    {
+      "request_count": 300,
+      "rate_per_sec": 75,
+      "policy": "adaptive",
+      "mean_ms": 27.38255033557047,
+      "max_share": 0.5033557046979866,
+      "offered_rho_max": 0.375
+    },
+    {
+      "request_count": 450,
+      "rate_per_sec": 112.5,
+      "policy": "ewma",
+      "mean_ms": 16.739825892857144,
+      "max_share": 0.9754464285714286,
+      "offered_rho_max": 0.823125
+    },
+    {
+      "request_count": 450,
+      "rate_per_sec": 112.5,
+      "policy": "adaptive",
+      "mean_ms": 27.34304932735426,
+      "max_share": 0.5044843049327354,
+      "offered_rho_max": 0.5625
+    },
+    {
+      "request_count": 600,
+      "rate_per_sec": 150,
+      "policy": "ewma",
+      "mean_ms": 101.18208199643453,
+      "max_share": 0.8306595365418895,
+      "offered_rho_max": 0.8887499999999999
+    },
+    {
+      "request_count": 600,
+      "rate_per_sec": 150,
+      "policy": "adaptive",
+      "mean_ms": 27.347845896147405,
+      "max_share": 0.5058626465661642,
+      "offered_rho_max": 0.74625
+    },
+    {
+      "request_count": 750,
+      "rate_per_sec": 187.5,
+      "policy": "ewma",
+      "mean_ms": 360.55488496932554,
+      "max_share": 0.6426380368098159,
+      "offered_rho_max": 0.969375
+    },
+    {
+      "request_count": 750,
+      "rate_per_sec": 187.5,
+      "policy": "adaptive",
+      "mean_ms": 27.94574899328858,
+      "max_share": 0.6724832214765101,
+      "offered_rho_max": 0.943125
+    },
+    {
+      "request_count": 900,
+      "rate_per_sec": 225,
+      "policy": "ewma",
+      "mean_ms": 487.28748905109506,
+      "max_share": 0.5576642335766423,
+      "offered_rho_max": 1.23
+    },
+    {
+      "request_count": 900,
+      "rate_per_sec": 225,
+      "policy": "adaptive",
+      "mean_ms": 144.26665384615384,
+      "max_share": 0.5967365967365967,
+      "offered_rho_max": 1.00875
+    },
+    {
+      "request_count": 1200,
+      "rate_per_sec": 300,
+      "policy": "ewma",
+      "mean_ms": 528.2517044476341,
+      "max_share": 0.6814921090387375,
+      "offered_rho_max": 2.8575
+    },
+    {
+      "request_count": 1200,
+      "rate_per_sec": 300,
+      "policy": "adaptive",
+      "mean_ms": 503.8339147541001,
+      "max_share": 0.5781420765027322,
+      "offered_rho_max": 1.4625
+    }
+  ]
+}

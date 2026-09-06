@@ -176,3 +176,26 @@ func handleCanonicalTimeline(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, result)
 }
+
+// handleCanonicalStressMap serves GET /api/canonical/stressmap?policy=&
+// seed= -- the Regime Explorer: one policy classified across a compact
+// 3x3 heterogeneity x workload grid (report.RunStressMap).
+func handleCanonicalStressMap(w http.ResponseWriter, r *http.Request) {
+	policy := r.URL.Query().Get("policy")
+	if policy == "" {
+		writeError(w, http.StatusBadRequest, fmt.Errorf("missing policy parameter"))
+		return
+	}
+	seed := int64(17900) // matches cmd/flashflow stress-map's own default
+	if raw := r.URL.Query().Get("seed"); raw != "" {
+		if n, err := strconv.ParseInt(raw, 10, 64); err == nil {
+			seed = n
+		}
+	}
+	result, err := dashboard.RunCanonicalStressMap(policy, seed)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err)
+		return
+	}
+	writeJSON(w, result)
+}

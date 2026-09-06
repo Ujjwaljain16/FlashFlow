@@ -29,6 +29,7 @@ type ScenarioReport struct {
 	Targets       []replay.TargetProfile `json:"targets"`
 	Capacity      int                    `json:"capacity"`
 	HorizonMs     float64                `json:"horizon_ms"`
+	Seeds         []int64                `json:"seeds"`
 	Policies      []PolicyReport         `json:"policies"`
 }
 
@@ -37,8 +38,8 @@ type ScenarioReport struct {
 // policy, and records a representative Metrics/reason (the first seed
 // whose own classification matches the majority) plus a confidence
 // string.
-func BuildScenarioReport(label string, targets []replay.TargetProfile, capacity int, horizonMs float64, cfg backlog.CongestionConfig, perPolicySeedResults map[string][]*replay.WorldResult, policyOrder []string) ScenarioReport {
-	sr := ScenarioReport{ScenarioLabel: label, Targets: targets, Capacity: capacity, HorizonMs: horizonMs}
+func BuildScenarioReport(label string, targets []replay.TargetProfile, capacity int, horizonMs float64, cfg backlog.CongestionConfig, perPolicySeedResults map[string][]*replay.WorldResult, policyOrder []string, seeds []int64) ScenarioReport {
+	sr := ScenarioReport{ScenarioLabel: label, Targets: targets, Capacity: capacity, HorizonMs: horizonMs, Seeds: seeds}
 	for _, policy := range policyOrder {
 		results := perPolicySeedResults[policy]
 		if len(results) == 0 {

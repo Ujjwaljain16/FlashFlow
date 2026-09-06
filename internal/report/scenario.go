@@ -21,6 +21,10 @@ const (
 	CanonicalTargetCount = 5
 	CanonicalCapacity    = 1
 	CanonicalHorizon     = 8 * time.Second
+	// CanonicalBaseSeed is the first seed RunCanonicalScenario uses --
+	// exported so a Reproduce view can state the exact seed(s) a report
+	// used without guessing at this package's own internal convention.
+	CanonicalBaseSeed int64 = 17000
 )
 
 // CanonicalTargets returns the same 5 heterogeneous, Capacity=1 targets
@@ -86,8 +90,10 @@ func RunCanonicalScenario(seedCount int) (ScenarioReport, error) {
 	cfg := CanonicalCongestionConfig()
 
 	perPolicy := map[string][]*replay.WorldResult{}
+	usedSeeds := make([]int64, 0, seedCount)
 	for i := 0; i < seedCount; i++ {
-		seed := int64(17000 + i)
+		seed := CanonicalBaseSeed + int64(i)
+		usedSeeds = append(usedSeeds, seed)
 		arrivals, seeds := CanonicalArrivals(seed, 0.3)
 		scenario := replay.Scenario{Targets: targets, Arrivals: arrivals, Horizon: clock.VirtualTime(CanonicalHorizon.Nanoseconds()), Seeds: seeds}
 		v := engine.NewVirtualEngine()
@@ -110,5 +116,5 @@ func RunCanonicalScenario(seedCount int) (ScenarioReport, error) {
 			perPolicy[name] = append(perPolicy[name], result.WorldResult)
 		}
 	}
-	return BuildScenarioReport(CanonicalScenarioLabel, targets, capacity, horizonMs, cfg, perPolicy, PolicyNames()), nil
+	return BuildScenarioReport(CanonicalScenarioLabel, targets, capacity, horizonMs, cfg, perPolicy, PolicyNames(), usedSeeds), nil
 }

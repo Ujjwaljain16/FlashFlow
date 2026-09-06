@@ -30,6 +30,7 @@ func RunCanonicalReport(seedCount int) (report.ScenarioReport, error) {
 // report.PolicyReport for the mechanism explanation the divergence view
 // also shows.
 type DivergenceSummary struct {
+	Seed                  int64                    `json:"seed"`
 	Baseline              report.PolicyReport      `json:"baseline"`
 	Counterfactual        report.PolicyReport      `json:"counterfactual"`
 	BaselineRecords       []replay.SelectionRecord `json:"baseline_records"`
@@ -78,6 +79,7 @@ func CompareCanonical(baselinePolicy, counterfactualPolicy string, seed int64) (
 
 	idx, diverged := replay.FirstDivergence(baselineResult.Trace, cfResult.Trace)
 	summary := DivergenceSummary{
+		Seed:                  seed,
 		Baseline:              classifyRun(baselinePolicy, &baselineResult, targets),
 		Counterfactual:        classifyRun(counterfactualPolicy, &cfResult, targets),
 		BaselineRecords:       baselineResult.Records,
@@ -97,6 +99,7 @@ func CompareCanonical(baselinePolicy, counterfactualPolicy string, seed int64) (
 // DrainAtMs become the timeline's marker positions).
 type TimelineView struct {
 	Policy       string                          `json:"policy"`
+	Seed         int64                           `json:"seed"`
 	Traffic      []report.SeriesPoint            `json:"traffic"`
 	TargetDepths map[string][]report.SeriesPoint `json:"target_depths"`
 	Metrics      report.Metrics                  `json:"metrics"`
@@ -121,6 +124,7 @@ func RunCanonicalTimeline(policyName string, seed int64, buckets int) (TimelineV
 	horizonMs := float64(report.CanonicalHorizon.Milliseconds())
 	view := TimelineView{
 		Policy:       policyName,
+		Seed:         seed,
 		Traffic:      report.TrafficSeries(&result, buckets, horizonMs),
 		TargetDepths: make(map[string][]report.SeriesPoint, len(targets)),
 	}
@@ -129,4 +133,23 @@ func RunCanonicalTimeline(policyName string, seed int64, buckets int) (TimelineV
 	}
 	view.Metrics = report.AnalyzeTarget(&result, targets, report.CanonicalCapacity, horizonMs, report.CanonicalCongestionConfig())
 	return view, nil
+}
+
+// StressMapResult is one policy's Regime Explorer grid, with the seed
+// that produced it attached so the view's own Reproduce panel doesn't
+// need a second round trip to state what it just ran.
+type StressMapResult struct {
+	Policy string                 `json:"policy"`
+	Seed   int64                  `json:"seed"`
+	Cells  []report.StressMapCell `json:"cells"`
+}
+
+// RunCanonicalStressMap is a thin wrapper over report.RunStressMap,
+// matching this package's existing Run*/Compare* naming.
+func RunCanonicalStressMap(policyName string, seed int64) (StressMapResult, error) {
+	cells, err := report.RunStressMap(policyName, seed)
+	if err != nil {
+		return StressMapResult{}, err
+	}
+	return StressMapResult{Policy: policyName, Seed: seed, Cells: cells}, nil
 }

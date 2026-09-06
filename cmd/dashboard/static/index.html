@@ -35,6 +35,7 @@
       <span id="control-status" class="status"></span>
     </div>
   </div>
+  <div id="report-reproduce" class="reproduce-box"></div>
 
   <div class="card">
     <h2>Policy Comparison</h2>
@@ -49,6 +50,21 @@
   </div>
 
   <div class="card">
+    <h2>Regime Explorer</h2>
+    <p class="hint">One policy across a compact grid of conditions -- 3 topology heterogeneities &times; 3 workload shapes, one seed per cell (not the canonical scenario itself; see <code>internal/report.RunStressMap</code>). Click a cell for its full metrics.</p>
+    <div class="controls">
+      <label>Policy
+        <select id="regime-policy"></select>
+      </label>
+      <button id="regime-btn">&#9654; Run Grid</button>
+      <span id="regime-status" class="status"></span>
+    </div>
+    <div id="regime-grid" class="regime-grid"></div>
+    <div id="regime-detail" class="regime-detail" hidden></div>
+    <div id="stress-reproduce" class="reproduce-box"></div>
+  </div>
+
+  <div class="card">
     <h2>Why Did It Fail?</h2>
     <div class="controls">
       <label>Policy
@@ -56,6 +72,12 @@
       </label>
     </div>
     <div id="explain-content"></div>
+  </div>
+
+  <div class="card">
+    <h2>Evidence</h2>
+    <p class="hint">Every claim below is traced to a specific experiment in <code>docs/StageArtifacts/Stage16-ClaimLedger.md</code> -- highlighted cards apply to the policy currently selected above.</p>
+    <div id="evidence-cards" class="evidence-cards"></div>
   </div>
 
   <div class="card">
@@ -68,6 +90,22 @@
       <span id="timeline-status" class="status"></span>
     </div>
     <svg id="control-timeline-svg" viewBox="0 0 700 440" class="event-timeline"></svg>
+    <div id="timeline-reproduce" class="reproduce-box"></div>
+  </div>
+
+  <div class="card">
+    <h2>Watch Failure</h2>
+    <p class="hint">The same event timeline, played back in real time with synced narration -- no new computation, just this policy's own already-classified run walked through moment by moment.</p>
+    <div class="controls">
+      <label>Policy
+        <select id="story-policy"></select>
+      </label>
+      <button id="story-play-btn">&#9654; Play</button>
+      <button id="story-reset-btn">&#8635; Reset</button>
+      <span id="story-status" class="status"></span>
+    </div>
+    <svg id="story-svg" viewBox="0 0 700 390" class="event-timeline"></svg>
+    <div id="story-narration" class="story-narration">Press Play to watch this run unfold.</div>
   </div>
 
   <div class="card">
@@ -86,6 +124,7 @@
     <div id="div-badges" class="same-world-badges"></div>
     <svg id="div-svg" viewBox="0 0 700 150" class="divergence-timeline"></svg>
     <div id="div-caption" class="hint"></div>
+    <div id="div-reproduce" class="reproduce-box"></div>
   </div>
 </section>
 

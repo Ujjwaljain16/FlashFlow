@@ -53,6 +53,7 @@ func main() {
 	mux.HandleFunc("/api/canonical/report", handleCanonicalReport)
 	mux.HandleFunc("/api/canonical/compare", handleCanonicalCompare)
 	mux.HandleFunc("/api/canonical/timeline", handleCanonicalTimeline)
+	mux.HandleFunc("/api/canonical/stressmap", handleCanonicalStressMap)
 
 	server := newServer(*addr, mux)
 

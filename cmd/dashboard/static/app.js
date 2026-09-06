@@ -56,6 +56,28 @@ function policyLabel(name) {
   return name.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 }
 
+// renderReproduce fills a .reproduce-box with the seed(s) a view used
+// and either the exact CLI command that reproduces it (when one exists)
+// or the internal call recipe (when the view is dashboard-only and has
+// no CLI subcommand yet) -- never overclaiming reproducibility a view
+// doesn't actually have.
+function renderReproduce(el, { seedLine, command, note }) {
+  const cmdId = 'repro-' + Math.random().toString(36).slice(2, 9);
+  el.innerHTML = `
+    <div class="repro-label">Reproduce</div>
+    <div class="repro-seeds mono">${seedLine}</div>
+    <div class="reproduce-cmd"><code id="${cmdId}">${command}</code><button class="repro-copy-btn" type="button">Copy</button></div>
+    ${note ? `<div class="hint" style="margin:6px 0 0">${note}</div>` : ''}
+  `;
+  el.querySelector('.repro-copy-btn').addEventListener('click', (ev) => {
+    const text = $('#' + cmdId).textContent;
+    (navigator.clipboard?.writeText(text) || Promise.reject()).then(() => {
+      ev.target.textContent = 'Copied';
+      setTimeout(() => { ev.target.textContent = 'Copy'; }, 1200);
+    }).catch(() => {});
+  });
+}
+
 // worstFirst mirrors cmd/flashflow's own pickDefaultPolicy ordering --
 // the most concerning classification first, so a fresh page load lands
 // on the policy most worth explaining, not an arbitrary one.
@@ -155,6 +177,95 @@ function renderExplain(policyName) {
     </div>
     <table class="counterfactual-table">${counterfactualRows}</table>
   `;
+  renderEvidence($('#evidence-cards'), pr.classification);
+}
+
+// ---------- Control Room: Evidence ----------
+// Curated directly from docs/StageArtifacts/Stage16-ClaimLedger.md --
+// static content, not a fetch, since these are one-time-established
+// research claims, not live-recomputed data. relevantTo names which
+// classifications this claim is worth surfacing for.
+const ALL_CLASSES = ['STABLE', 'ACUTE_COLLAPSE', 'CHRONIC_COLLAPSE', 'RECOVERY_LIMITED'];
+const EVIDENCE_CLAIMS = [
+  {
+    id: 'C21', status: 'SUPPORTED',
+    claim: 'There are at least two distinct collapse shapes: acute over-commitment and chronic under-provisioning.',
+    evidence: '015a/016-flagship: round-robin shows LOW committed backlog yet high fraction-of-time-over-capacity and never drains; Adaptive shows the opposite pairing.',
+    scope: 'Canonical scenario, replicated across 3 independent seeds.',
+    relevantTo: ['ACUTE_COLLAPSE', 'CHRONIC_COLLAPSE'],
+  },
+  {
+    id: 'C20', status: 'SUPPORTED, bounded',
+    claim: 'Committed backlog is the strongest available predictor of acute-collapse severity.',
+    evidence: '015e: perfect rank agreement across a cross-topology test where peak rho is badly misordered.',
+    scope: 'Virtual engine; topology-size generalization confirmed, workload-shape generalization imperfect (see C22).',
+    relevantTo: ['ACUTE_COLLAPSE'],
+  },
+  {
+    id: 'C22', status: 'LIMITED',
+    claim: 'Committed backlog is a universal severity predictor across any workload shape.',
+    evidence: '015e Part 2: rank distance 2 (not 0) across Constant/Burst/FlashCrowd.',
+    scope: 'Cross-workload -- real predictive value, imperfect generalization.',
+    relevantTo: ['ACUTE_COLLAPSE'],
+  },
+  {
+    id: 'C25', status: 'SUPPORTED',
+    claim: 'P2C and EWMA are mechanistically distinct, not just different by chance in one scenario.',
+    evidence: '015b F6: 8 independent seeds with genuine jitter -- EWMA shows committed_backlog>50 in 8/8 seeds; P2C-load in 0/8.',
+    scope: 'Canonical scenario, seed-independent separation.',
+    relevantTo: ['ACUTE_COLLAPSE', 'STABLE'],
+  },
+  {
+    id: 'C24', status: 'RETIRED',
+    claim: 'Adaptive is "safe" from collapse in general.',
+    evidence: "015a/016-flagship: Adaptive's own P99 was the WORST of all six policies tested, confirmed across all 3 independent seeds.",
+    scope: 'Canonical scenario -- mean latency alone would have hidden this; P99 does not.',
+    relevantTo: ['ACUTE_COLLAPSE'],
+  },
+  {
+    id: 'C13', status: 'SUPPORTED',
+    claim: 'Counterfactual replay isolates two policies: they diverge only after their own decisions actually differ.',
+    evidence: 'internal/replay full-trace reflect.DeepEqual identity/divergence tests.',
+    scope: 'Virtual engine.',
+    relevantTo: ALL_CLASSES,
+  },
+  {
+    id: 'C31', status: 'SUPPORTED, scope-limited',
+    claim: 'Results are byte-for-byte reproducible given a seed.',
+    evidence: 'internal/vtime identity tests; every Stage 11-16 experiment reruns cleanly from its committed seed.',
+    scope: 'Same machine/toolchain, virtual engine only.',
+    relevantTo: ALL_CLASSES,
+  },
+  {
+    id: 'C32', status: 'SUPPORTED',
+    claim: 'The flagship conclusion holds across independent seeds, not just one lucky run.',
+    evidence: '016-flagship: 3 independent seeds (16000-16002) with genuine arrival-stream jitter, consistent qualitative outcome in every seed.',
+    scope: 'Canonical scenario.',
+    relevantTo: ALL_CLASSES,
+  },
+];
+
+function statusBadgeClass(status) {
+  if (status.startsWith('SUPPORTED')) return 'status-supported';
+  if (status.startsWith('LIMITED')) return 'status-limited';
+  if (status.startsWith('RETIRED')) return 'status-retired';
+  return 'status-unresolved';
+}
+
+function renderEvidence(container, classification) {
+  container.innerHTML = EVIDENCE_CLAIMS.map((c) => {
+    const highlighted = classification && c.relevantTo.includes(classification);
+    return `
+      <div class="evidence-card${highlighted ? ' highlight' : ''}">
+        <div class="evidence-top">
+          <span class="evidence-id">${c.id}</span>
+          <span class="status-badge ${statusBadgeClass(c.status)}">${c.status}</span>
+        </div>
+        <div class="evidence-claim">${c.claim}</div>
+        <div class="evidence-meta">${c.evidence}</div>
+        <div class="evidence-meta">Scope: ${c.scope}</div>
+      </div>`;
+  }).join('');
 }
 
 async function loadControlRoom() {
@@ -171,13 +282,23 @@ async function loadControlRoom() {
     $('#timeline-policy').innerHTML = opts;
     $('#div-baseline').innerHTML = opts;
     $('#div-counterfactual').innerHTML = opts;
+    $('#regime-policy').innerHTML = opts;
+    $('#story-policy').innerHTML = opts;
 
     const defaultPolicy = pickDefaultPolicy(controlReport.policies);
     $('#explain-policy').value = defaultPolicy;
     $('#timeline-policy').value = defaultPolicy;
     $('#div-baseline').value = defaultPolicy;
     $('#div-counterfactual').value = names.find((n) => n !== defaultPolicy) || defaultPolicy;
+    $('#regime-policy').value = defaultPolicy;
+    $('#story-policy').value = defaultPolicy;
     renderExplain(defaultPolicy);
+
+    renderReproduce($('#report-reproduce'), {
+      seedLine: `Seeds: ${controlReport.seeds.join(', ')}`,
+      command: `go run ./cmd/flashflow report --seeds ${controlReport.seeds.length}`,
+      note: 'Reproduces this exact Compare/Behavior/Explain data -- pick --policy to print one policy\'s own report.',
+    });
 
     $('#control-status').textContent = '';
   } catch (e) {
@@ -238,6 +359,7 @@ function renderEventTimeline(svg, view) {
   }
 
   svg.innerHTML = svgContent;
+  return { xScale, W, H, padTop };
 }
 
 $('#timeline-btn').addEventListener('click', async () => {
@@ -246,6 +368,11 @@ $('#timeline-btn').addEventListener('click', async () => {
   try {
     const view = await getJSON(`/api/canonical/timeline?policy=${encodeURIComponent(policy)}&buckets=80`);
     renderEventTimeline($('#control-timeline-svg'), view);
+    renderReproduce($('#timeline-reproduce'), {
+      seedLine: `Seed: ${view.seed}`,
+      command: `report.CanonicalArrivals(${view.seed}, 0.3) + report.CanonicalTargets() -> replay.RunWorld(scenario, PolicyByName("${policy}"))`,
+      note: 'A single-seed dashboard view, not yet its own flashflow CLI subcommand -- the Go call above is the exact, literal recipe (internal/dashboard/canonical.go).',
+    });
     $('#timeline-status').textContent = '';
   } catch (e) {
     $('#timeline-status').textContent = 'error: ' + e.message;
@@ -304,10 +431,177 @@ $('#div-btn').addEventListener('click', async () => {
     } else {
       $('#div-caption').textContent = 'No divergence -- both policies made identical decisions for the entire run.';
     }
+    renderReproduce($('#div-reproduce'), {
+      seedLine: `Seed: ${summary.seed}`,
+      command: `report.CanonicalArrivals(${summary.seed}, 0.3) + report.CanonicalTargets() -> replay.RunWorld(scenario, PolicyByName("${baseline}")) and replay.RunWorld(scenario, PolicyByName("${counterfactual}"))`,
+      note: 'Both runs share the identical scenario/seed by construction (internal/dashboard.CompareCanonical) -- not yet its own flashflow CLI subcommand.',
+    });
     $('#div-status').textContent = '';
   } catch (e) {
     $('#div-status').textContent = 'error: ' + e.message;
   }
+});
+
+// ---------- Control Room: Regime Explorer ----------
+const REGIME_WORKLOADS = ['constant', 'burst', 'flash_crowd'];
+const REGIME_HETEROGENEITIES = ['low', 'moderate', 'severe'];
+let regimeByCell = {};
+
+function classificationGlyph(c) {
+  switch (c) {
+    case 'STABLE': return 'OK';
+    case 'RECOVERY_LIMITED': return '~';
+    case 'ACUTE_COLLAPSE': return 'AC';
+    case 'CHRONIC_COLLAPSE': return 'CH';
+    default: return '?';
+  }
+}
+
+function renderRegimeGrid(container, result) {
+  regimeByCell = {};
+  result.cells.forEach((c) => { regimeByCell[c.heterogeneity + '|' + c.workload] = c; });
+
+  let html = `<div class="regime-cell regime-head"></div>`;
+  html += REGIME_WORKLOADS.map((w) => `<div class="regime-cell regime-head">${w.replace('_', ' ')}</div>`).join('');
+  REGIME_HETEROGENEITIES.forEach((h) => {
+    html += `<div class="regime-cell regime-head">${h}</div>`;
+    html += REGIME_WORKLOADS.map((w) => {
+      const cell = regimeByCell[h + '|' + w];
+      if (!cell) return `<div class="regime-cell"></div>`;
+      const color = classColorVar(cell.classification);
+      return `<div class="regime-cell regime-value" style="border-color:${color};color:${color}" data-het="${h}" data-wl="${w}">${classificationGlyph(cell.classification)}</div>`;
+    }).join('');
+  });
+  container.innerHTML = html;
+
+  container.querySelectorAll('.regime-value').forEach((el) => {
+    el.addEventListener('click', () => showRegimeDetail(regimeByCell[el.dataset.het + '|' + el.dataset.wl]));
+  });
+}
+
+function showRegimeDetail(cell) {
+  if (!cell) return;
+  const m = cell.metrics;
+  const el = $('#regime-detail');
+  el.hidden = false;
+  el.innerHTML = `
+    <div style="margin-bottom:8px"><strong>${cell.heterogeneity} heterogeneity &times; ${cell.workload.replace('_', ' ')}</strong> ${classBadge(cell.classification)}</div>
+    <table class="metrics-table">
+      <tr><td>Peak queue</td><td>${m.peak_depth}</td></tr>
+      <tr><td>Committed work</td><td>${m.committed_work}</td></tr>
+      <tr><td>Concentration</td><td>${m.concentration_ratio.toFixed(1)}x fair share</td></tr>
+      <tr><td>Time above capacity</td><td>${fmtSeconds(m.time_above_capacity_ms)}</td></tr>
+      <tr><td>Drained</td><td>${m.drained ? fmtSeconds(m.drain_at_ms) : 'never'}</td></tr>
+    </table>`;
+}
+
+$('#regime-btn').addEventListener('click', async () => {
+  const policy = $('#regime-policy').value;
+  $('#regime-status').textContent = 'running 9 cells...';
+  $('#regime-detail').hidden = true;
+  try {
+    const result = await getJSON(`/api/canonical/stressmap?policy=${encodeURIComponent(policy)}`);
+    renderRegimeGrid($('#regime-grid'), result);
+    renderReproduce($('#stress-reproduce'), {
+      seedLine: `Seed: ${result.seed}`,
+      command: `go run ./cmd/flashflow stress-map --policy ${result.policy} --seed ${result.seed}`,
+    });
+    $('#regime-status').textContent = '';
+  } catch (e) {
+    $('#regime-status').textContent = 'error: ' + e.message;
+  }
+});
+
+// ---------- Control Room: Watch Failure (story mode) ----------
+// Reuses renderEventTimeline's own drawing/scale for the chart -- the
+// playhead and narration are the only new elements, not a second chart
+// implementation.
+let storyView = null;
+let storyRaf = null;
+
+function storyBeats(view) {
+  const m = view.metrics;
+  const beats = [{ t: 0, text: `Replaying ${policyLabel(view.policy)} against the canonical scenario (seed ${view.seed}). Traffic begins arriving.` }];
+  if (!m.congestion_found) {
+    beats.push({ t: 4000, text: `${m.bottleneck} never exceeds its own capacity for the whole run. Classified STABLE.` });
+    return beats;
+  }
+  beats.push({ t: m.first_congestion_ms, text: `${m.bottleneck} crosses its own capacity for the first time.` });
+  if (m.diversion_found) {
+    beats.push({ t: m.first_diversion_ms, text: `The policy diverts new traffic away from ${m.bottleneck} -- but ${m.committed_work} requests were already committed.` });
+  } else {
+    beats.push({ t: m.first_congestion_ms + 50, text: `The policy never diverts new traffic away from ${m.bottleneck} at all.` });
+  }
+  beats.push({ t: m.peak_depth_at_ms, text: `Queue depth peaks at ${m.peak_depth} in-flight requests.` });
+  if (m.drained) {
+    beats.push({ t: m.drain_at_ms, text: `The queue fully drains at ${fmtSeconds(m.drain_at_ms)}.` });
+  } else {
+    beats.push({ t: 7950, text: 'The queue never drains within the observed 8s horizon.' });
+  }
+  return beats.sort((a, b) => a.t - b.t);
+}
+
+function stopStory() {
+  if (storyRaf) cancelAnimationFrame(storyRaf);
+  storyRaf = null;
+}
+
+function playStory(view) {
+  stopStory();
+  const beats = storyBeats(view);
+  const horizonMs = 8000;
+  const realtimeMs = 9000; // compresses the 8s virtual scenario into a 9s real-time playback
+  const svg = $('#story-svg');
+  const scale = renderEventTimeline(svg, view);
+
+  const playhead = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  playhead.setAttribute('y1', scale.padTop);
+  playhead.setAttribute('y2', scale.H - 16);
+  playhead.setAttribute('stroke', '#e6e8eb');
+  playhead.setAttribute('stroke-width', '2');
+  svg.appendChild(playhead);
+
+  const narrationEl = $('#story-narration');
+  let startTs = null;
+
+  function frame(ts) {
+    if (startTs === null) startTs = ts;
+    const elapsed = ts - startTs;
+    const virtualMs = Math.min(horizonMs, (elapsed / realtimeMs) * horizonMs);
+    const x = scale.xScale(virtualMs);
+    playhead.setAttribute('x1', x);
+    playhead.setAttribute('x2', x);
+
+    let current = beats[0];
+    for (const b of beats) { if (b.t <= virtualMs) current = b; }
+    narrationEl.textContent = current.text;
+
+    if (virtualMs < horizonMs) {
+      storyRaf = requestAnimationFrame(frame);
+    } else {
+      $('#story-status').textContent = 'done';
+    }
+  }
+  storyRaf = requestAnimationFrame(frame);
+}
+
+$('#story-play-btn').addEventListener('click', async () => {
+  const policy = $('#story-policy').value;
+  $('#story-status').textContent = 'loading...';
+  try {
+    storyView = await getJSON(`/api/canonical/timeline?policy=${encodeURIComponent(policy)}&buckets=80`);
+    $('#story-status').textContent = 'playing...';
+    playStory(storyView);
+  } catch (e) {
+    $('#story-status').textContent = 'error: ' + e.message;
+  }
+});
+
+$('#story-reset-btn').addEventListener('click', () => {
+  stopStory();
+  $('#story-svg').innerHTML = '';
+  $('#story-narration').textContent = 'Press Play to watch this run unfold.';
+  $('#story-status').textContent = '';
 });
 
 // ---------- Playground: policies ----------

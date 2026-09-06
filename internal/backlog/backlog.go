@@ -304,6 +304,20 @@ func FindFirstCongestionOnset(timeline Timeline, capacity int, ratioThreshold, a
 // stretch of time during which depth/capacity stays above
 // ratioThreshold; onset is the instant depth/capacity first exceeded
 // ratioThreshold at the start of that specific stretch.
+//
+// This is a RETROSPECTIVE computation, not an online one: it scans the
+// timeline's own FULL FUTURE relative to any candidate onset to find
+// where the eventual peak occurs, then reports that episode's start.
+// Nothing here (or in AnalyzeTarget's CommittedWork, which anchors its
+// counting window to this onset) could be evaluated by a live system as
+// events arrive -- at the moment onset itself occurs, whether THIS
+// episode will turn out to be the peak episode is not yet knowable. It
+// is a valid, faithful POST-HOC explanatory statistic (correctly
+// identifying, after a run completes, which episode actually drove the
+// worst outcome) and should not be described as something an online
+// predictor or a live circuit-breaker could compute -- an earlier
+// version of this project's own documentation did exactly that, caught
+// in an independent audit.
 func FindPeakEpisodeCongestionOnset(timeline Timeline, capacity int, ratioThreshold float64) (onsetMs float64, found bool) {
 	depth, peak := 0, 0
 	inEpisode := false

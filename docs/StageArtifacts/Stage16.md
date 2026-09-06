@@ -266,8 +266,10 @@ explicit N/A.
 
 See `docs/StageArtifacts/Stage16-ClaimLedger.md` for the full, evidence-linked list (32 rows). Headline
 supported claims: the six routing policies and caching layer are correctly implemented; the virtual
-engine is deterministic (same machine/toolchain); committed backlog is the strongest available predictor
-of acute collapse, with perfect rank agreement across topology-size generalization; Adaptive's resistance
+engine is deterministic (same machine/toolchain); committed backlog is the strongest available
+retrospective severity measure for acute collapse (a post-hoc statistic, not an online-computable
+predictor -- see Evidence Boundaries), with perfect rank agreement across topology-size generalization;
+Adaptive's resistance
 to collapse traces specifically to its Load signal; P2C and EWMA are mechanistically distinct in a
 seed-independent way; a validated real ceiling reproduces the mechanism's direction in most tested
 conditions.
@@ -369,8 +371,10 @@ Necessary, not sufficient -- directly confirmed by intervention (complete concen
 produced zero congestion and zero committed backlog).
 
 COMMITTED BACKLOG:
-Operationally defined, measured, validated as the strongest predictor of acute collapse; imperfect (not
-zero) across workload-shape generalization.
+Operationally defined, measured, validated as the strongest retrospective severity measure for acute
+collapse; imperfect (not zero) across workload-shape generalization. Retrospective, not online: its
+counting window is anchored to whichever episode contains the run's own peak depth, which can only be
+known after that episode's own future has already been observed.
 
 FRACTION ABOVE CAPACITY:
 The correct complementary metric for chronic collapse, which committed backlog is blind to.

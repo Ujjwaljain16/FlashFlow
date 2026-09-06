@@ -1,7 +1,25 @@
 # FlashFlow
 
-**A research laboratory, in Go, for controlled experiments on distributed edge-routing behavior under
-heterogeneous conditions and finite serving capacity.**
+### Why did your routing system fail under pressure?
+
+**FlashFlow is a routing failure-analysis laboratory for distributed edge systems.** It lets engineers run
+controlled experiments, compare routing policies under identical conditions, reconstruct congestion and
+backlog dynamics, and explain why latency collapses — not just which policy produced the lowest benchmark
+number.
+
+```
+RUN -> COMPARE -> WHY? -> MECHANISM -> EVIDENCE -> REPRODUCE
+```
+
+```bash
+go run ./cmd/flashflow report --policy ewma      # classify a scenario
+go run ./cmd/dashboard                            # or: browse it interactively
+```
+
+FlashFlow is **not** a production CDN, a replacement for Envoy/NGINX/HAProxy, a complete packet-level
+network simulator, or a universal routing optimizer — see [Non-Goals](#non-goals).
+
+---
 
 ## What FlashFlow Studies
 
@@ -116,6 +134,7 @@ Policy: ewma
 
 Failure classification
 ACUTE_COLLAPSE
+(concentrated overload that had not, or had only just, resolved)
 
 Peak queue                   95
 Committed work               97
@@ -143,11 +162,20 @@ Counterfactual (same scenario, same seeds, different policy):
 go run ./cmd/flashflow stress-map --policy least-connections
 ```
 ```text
+POLICY STRESS MAP: least-connections
+
+EXPLORATORY ANALYSIS -- this grid is a new, small (9-cell) run. It is not a
+reproduction of any specific Stage 13-16 experiment, and its numbers should
+not be cited as a Stage 13-16 finding.
+
 heterogeneity  constant  burst  flash_crowd
 low            OK        OK     OK
 moderate       OK        OK     AC
 severe         OK        OK     OK
 ```
+
+Every subcommand also supports `--json` for scripting (`flashflow report --json`, etc.) and its own
+`--help`.
 
 ---
 
@@ -157,8 +185,13 @@ FlashFlow's experiments indicate that routing collapse is not explained by "load
 routing alone. Under finite capacity, concentration can produce two distinguishable failure shapes:
 **acute over-commitment**, where committed backlog (work already dispatched to a target between the
 moment it becomes congested and the moment a policy materially diverts new work elsewhere) becomes the
-strongest available predictor of tail collapse in the tested topology-size generalization, and **chronic
-over-allocation**, where sustained time above capacity is more informative than any single-event metric.
+strongest available *retrospective* severity measure in the tested topology-size generalization, and
+**chronic over-allocation**, where sustained time above capacity is more informative than any single-event
+metric. Committed backlog is computed by anchoring its counting window to whichever congestion episode
+turns out to contain the run's peak depth — a genuinely POST-HOC computation (it requires having already
+seen the episode's own future to know it was the peak one), not something a live system could evaluate
+online as events arrive. It correctly explains, after the fact, which measured runs collapsed worst and
+why; it is not proposed as a real-time predictive signal or a circuit-breaker input.
 
 This result is not a universal law across workload distributions or arbitrary real systems: cross-
 workload prediction is imperfect, the cache-affinity mechanism (Stage 13's own interim-latency finding)
@@ -203,10 +236,34 @@ collapse specifically to its Load signal, not general "smartness."
 Full walkthrough: [`docs/StageArtifacts/Stage16-FlagshipDemo.md`](docs/StageArtifacts/Stage16-FlagshipDemo.md).
 Reproduce it yourself: `./scripts/reproduce-flagship.sh`.
 
+## FlashFlow in Numbers
+
+Every figure below is measured in one specific stage's own experiment, not a general system-performance
+claim — see the **Evidence Boundaries** and **Research History** sections for what each does and doesn't
+generalize to.
+
+| Measurement | Value | Measured in |
+|---|---|---|
+| Virtual-time engine throughput | ~2.53M events/sec | [Stage 5](docs/StageArtifacts/Stage5.md) (100,000 events packed into a 100ms virtual span) |
+| HTTP keep-alive vs. no-reuse throughput | 3.06× | [Stage 2](docs/StageArtifacts/Stage2.md), Experiment 002-A1, at concurrency=100 |
+| EWMA vs. Adaptive mean latency at Capacity=1 | 8× (Cliff's Delta=1.000, 12 seeds) | [Stage 12](docs/StageArtifacts/Stage12.md), the finite-capacity reversal |
+| P2C vs. EWMA committed-backlog separation | 8/8 seeds vs. 0/8 seeds | [Stage 15](docs/StageArtifacts/Stage15.md), claim C25 |
+| Topology-size generalization | Rank ordering holds across N=3/5/8; the raw ρ threshold does not | [Stage 14](docs/StageArtifacts/Stage14.md) |
+
+**Not shown here as a headline number, deliberately**: Adaptive's own P99 was the *worst* of all six
+policies tested in the flagship scenario, despite the strongest mean — see **Key Research Findings**
+above. A benchmark leaderboard would have hidden that behind the mean; FlashFlow's own analysis is what
+surfaced it.
+
 ## Evidence Boundaries
 
 - Committed backlog generalizes with **perfect rank agreement** across topology size (N=3/5/8, plus a
   bimodal shape); its cross-**workload**-shape generalization is real but imperfect.
+- Committed backlog is a **retrospective** severity measure (`internal/backlog.FindPeakEpisodeCongestionOnset`
+  anchors its counting window to whichever episode contains the run's peak depth, which requires having
+  already observed that episode's own future) — a valid post-hoc explanatory statistic, not something a
+  live system could compute online or use as a circuit-breaker input. An earlier version of this
+  documentation implied otherwise; caught in an independent audit.
 - A validated real concurrency ceiling reproduces the mechanism's direction at most, not all, tested
   real-engine overload levels — it reverses at the most extreme level tested.
 - The cache-affinity interim-latency effect (higher cache weight worsens interim latency, improves
@@ -429,6 +486,21 @@ demonstration, and confirmed reproducibility from a clean checkout.
 
 Full findings: [`Stage16.md`](docs/StageArtifacts/Stage16.md) · [`Stage16-ClaimLedger.md`](docs/StageArtifacts/Stage16-ClaimLedger.md) · [`Stage16-ResearchSynthesis.md`](docs/StageArtifacts/Stage16-ResearchSynthesis.md) · [`Stage16-FlagshipDemo.md`](docs/StageArtifacts/Stage16-FlagshipDemo.md) · [`016-stage16-final-synthesis.md`](docs/learning/016-stage16-final-synthesis.md)
 
+### Stage 17 — Diagnostic Tooling
+
+Not a new research stage — tooling built on top of Stages 11-16's completed research. Turns Stage 15's own
+backlog measurements into three commands an engineer can run directly (`flashflow report`/`explain`/
+`stress-map`), validated by running the classifier against the flagship's own six already-published
+policy outcomes; that validation process caught three real classifier design bugs before it shipped (see
+the artifact below for exact details, including a threshold that misclassified EWMA and a concentration
+measurement that looked at the wrong time window).
+
+```bash
+go run ./cmd/flashflow report --policy ewma
+```
+
+Full findings: [`Stage17-DiagnosticTooling.md`](docs/StageArtifacts/Stage17-DiagnosticTooling.md).
+
 ---
 
 ## Specifications
@@ -457,6 +529,12 @@ Full findings: [`Stage16.md`](docs/StageArtifacts/Stage16.md) · [`Stage16-Claim
 | [014](experiments/014-scale-topology/) | Scale & Topology Generalization (falsification) | ✅ Complete — [`Stage14.md`](docs/StageArtifacts/Stage14.md) |
 | [015](experiments/015-mechanism-identification/) | Mechanism Identification (committed backlog) | ✅ Complete — [`Stage15.md`](docs/StageArtifacts/Stage15.md) |
 | [016](experiments/016-final-synthesis/) | Final Synthesis (flagship demonstration) | ✅ Complete — [`Stage16.md`](docs/StageArtifacts/Stage16.md) |
+
+---
+
+## License
+
+MIT — see [`LICENSE`](LICENSE). See [`SECURITY.md`](SECURITY.md) to report a concern.
 
 ---
 

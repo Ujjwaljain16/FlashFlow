@@ -1,0 +1,50 @@
+{
+  "experiment": "015-C-adaptive-signal-ablation",
+  "timestamp": "2026-09-06T20:20:48Z",
+  "results": [
+    {
+      "config": "default",
+      "mean_ms": 576.318010238908,
+      "p99_ms": 4852.784649999999,
+      "bottleneck": "edge-04",
+      "peak_depth": 83,
+      "congestion_found": true,
+      "committed_backlog": 86,
+      "drain_found": false,
+      "drain_at_ms": 0
+    },
+    {
+      "config": "cache=0",
+      "mean_ms": 588.8458561525129,
+      "p99_ms": 4508.52692,
+      "bottleneck": "edge-04",
+      "peak_depth": 86,
+      "congestion_found": true,
+      "committed_backlog": 90,
+      "drain_found": false,
+      "drain_at_ms": 0
+    },
+    {
+      "config": "load=0",
+      "mean_ms": 833.0137111853088,
+      "p99_ms": 2703.8720999999996,
+      "bottleneck": "edge-00",
+      "peak_depth": 177,
+      "congestion_found": true,
+      "committed_backlog": 206,
+      "drain_found": true,
+      "drain_at_ms": 5394.807023
+    },
+    {
+      "config": "latency=0",
+      "mean_ms": 520.9880110701109,
+      "p99_ms": 4813.3599600000025,
+      "bottleneck": "edge-04",
+      "peak_depth": 119,
+      "congestion_found": true,
+      "committed_backlog": 129,
+      "drain_found": false,
+      "drain_at_ms": 0
+    }
+  ]
+}

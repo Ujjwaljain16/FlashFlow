@@ -94,6 +94,61 @@ visualizer, and live policy playground. It reads existing result JSON directly f
 recomputes or overrides a number found there — the dashboard is a presentation surface, never the
 authoritative source for a research claim.
 
+### Diagnostic Tooling
+
+`cmd/flashflow` (`internal/report`): turns Stage 15's own backlog measurements into three things an
+engineer can run directly, built on top of the completed research rather than extending it —
+[`docs/StageArtifacts/Stage17-DiagnosticTooling.md`](docs/StageArtifacts/Stage17-DiagnosticTooling.md)
+has the full classifier design and the three real bugs caught calibrating it against Stage 16's own six
+known policy outcomes.
+
+```bash
+go run ./cmd/flashflow report --policy ewma
+```
+```text
+FLASHFLOW FAILURE REPORT
+---------------------------------------
+
+Scenario
+5 targets (15-75ms) / Capacity=1 / FlashCrowd (peak at t=2.5s) / 8s horizon
+
+Policy: ewma
+
+Failure classification
+ACUTE_COLLAPSE
+
+Peak queue                   95
+Committed work               97
+...
+Primary mechanism
+SMOOTHED-HISTORY LOCK-IN
+```
+
+```bash
+go run ./cmd/flashflow explain --policy ewma <the report JSON above>
+```
+```text
+WHY DID THIS POLICY COLLAPSE?
+
+1. Traffic concentrated on edge-02.
+2. edge-02 crossed capacity at 2.488s.
+3. 97 additional requests were committed before diversion.
+...
+Counterfactual (same scenario, same seeds, different policy):
+  round-robin            committed_work=4     classification=CHRONIC_COLLAPSE
+  least-connections      committed_work=8     classification=STABLE
+```
+
+```bash
+go run ./cmd/flashflow stress-map --policy least-connections
+```
+```text
+heterogeneity  constant  burst  flash_crowd
+low            OK        OK     OK
+moderate       OK        OK     AC
+severe         OK        OK     OK
+```
+
 ---
 
 ## Key Research Findings

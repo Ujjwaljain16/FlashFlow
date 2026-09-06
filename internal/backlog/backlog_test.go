@@ -46,6 +46,33 @@ func TestBuildTimeline_PeakDepth(t *testing.T) {
 	}
 }
 
+// TestTimeline_PeakDepthAt hand-verifies the peak occurs at t=5 (the
+// first moment depth reaches 2 in sampleTimeline's own event sequence:
+// depth 1,2,1,2,1,0 at t=0,5,8,10,12,20 -- the SECOND time depth=2 is
+// reached, at t=10, must NOT overwrite the first).
+func TestTimeline_PeakDepthAt(t *testing.T) {
+	tl := sampleTimeline()
+	peak, atMs := tl.PeakDepthAt()
+	if peak != 2 || atMs != 5 {
+		t.Errorf("PeakDepthAt() = (%d, %v), want (2, 5)", peak, atMs)
+	}
+}
+
+func TestTimeline_DrainedAfter(t *testing.T) {
+	tl := sampleTimeline()
+	// From t=6 onward (after the peak at t=5), depth first returns to
+	// <=1 (capacity=1) at the t=8 completion event.
+	drainAt, found := tl.DrainedAfter(1, 6)
+	if !found || drainAt != 8 {
+		t.Errorf("DrainedAfter(1, 6) = (%v, %v), want (8, true)", drainAt, found)
+	}
+	// No event exists at or after t=100, so it must report not found,
+	// not a false positive from carrying over an earlier depth check.
+	if _, found := tl.DrainedAfter(1, 100); found {
+		t.Errorf("DrainedAfter(1, 100) reported found=true, want false (no events at or after 100)")
+	}
+}
+
 func TestTimeline_AreaUnderCurve(t *testing.T) {
 	tl := sampleTimeline()
 	// Hand-computed: 1*(5-0) + 2*(8-5) + 1*(10-8) + 2*(12-10) + 1*(20-12) = 5+6+2+4+8 = 25.

@@ -91,14 +91,42 @@ func (t Timeline) DepthAt(timeMs float64) int {
 // PeakDepth returns the maximum depth ever reached (M2's "peak queue
 // depth" candidate).
 func (t Timeline) PeakDepth() int {
-	depth, peak := 0, 0
+	peak, _ := t.PeakDepthAt()
+	return peak
+}
+
+// PeakDepthAt is PeakDepth plus the time the peak first occurred --
+// needed by anything that wants to reason about what happened AFTER
+// the worst moment (e.g. internal/report's DrainedAfter call), not just
+// how bad the worst moment was.
+func (t Timeline) PeakDepthAt() (peak int, atMs float64) {
+	depth := 0
 	for _, e := range t.Events {
 		depth += e.Delta
 		if depth > peak {
 			peak = depth
+			atMs = e.TimeMs
 		}
 	}
-	return peak
+	return peak, atMs
+}
+
+// DrainedAfter returns the first time at or after afterMs that depth/
+// capacity returns to at or below 1.0 -- generalizing the drain-check
+// AnalyzeDiversion already performs (there, only reachable once a
+// diversion has been found) into a standalone method usable for a
+// target whose policy never diverts at all (e.g. weighted-round-robin's
+// static allocation): DrainedAfter answers "did this target's queue
+// ever clear," independent of whether any reactive correction occurred.
+func (t Timeline) DrainedAfter(capacity int, afterMs float64) (drainAtMs float64, found bool) {
+	depth := 0
+	for _, e := range t.Events {
+		depth += e.Delta
+		if e.TimeMs >= afterMs && pressureRatio(depth, capacity) <= 1.0 {
+			return e.TimeMs, true
+		}
+	}
+	return 0, false
 }
 
 // AreaUnderCurve integrates depth over [0, horizonMs] -- the "queue

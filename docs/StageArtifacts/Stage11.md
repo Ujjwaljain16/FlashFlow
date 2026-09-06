@@ -595,6 +595,49 @@ Adaptive under severe heterogeneity — is a robust, seed-independent, direction
 checks *seed* robustness only, per Program D's own terminology distinction — it says nothing about
 *distribution* generalization beyond what Program D already established.)
 
+## 19. Reconciling Stage 11 with Stage 8's 62.5-70% Win-Rate Claim
+
+Programs A-E/H all test `AdaptivePolicy()`, which uses `DefaultAdaptiveConfig()` (weights
+Load=0.4/Latency=0.4/Cache=0.1/Cost=0.1) — the **hand-chosen** default, not Stage 8's own **tuned**
+configuration (`Load=0.161, Latency=0.568, Cache=0.051, Cost=0.220`, `ReferenceLatency=192ms`,
+`StaleAfter=3.74s`, per `Stage8.md`). Since Adaptive loses decisively to EWMA throughout Programs
+A-D, and Stage 8 reported Adaptive winning 62.5-70% of its own scenarios, this needed direct
+reconciliation rather than being left as an unexplained tension.
+
+**Checked directly**: rerunning Program A's flagship severe/constant/none scenario with the Stage 8
+tuned config instead of the default:
+
+| Policy | Mean latency | Max share |
+|---|---:|---:|
+| ewma | 15.90ms | 0.973 |
+| adaptive (default weights) | 27.38ms | 0.503 |
+| adaptive (Stage 8 tuned weights) | **22.45ms** | 0.503 |
+
+The tuned configuration is a real, meaningful improvement over the default (27.38ms → 22.45ms, ~18%
+better) — consistent with Stage 8's own tuning result — but it still loses decisively to EWMA on raw
+mean latency in this specific regime (22.45ms vs 15.90ms, ~41% worse). **Tuning narrows but does not
+close this specific gap.**
+
+**The remaining, larger reconciliation is a metric and scenario-distribution difference, not a
+contradiction.** Stage 8's 62.5-70% figure is a win rate on a composite **utility/LatencyScore**
+metric (`Stage8.md`: "driven by a clear lead on latency quality, `LatencyScore` 0.5607 vs. next-best
+0.5310" — a normalized score, not raw mean-latency milliseconds), measured against **randomly-generated**
+Development/Holdout scenarios (`internal/tuning.ScenarioSpace.Generate`, 2-5 targets, 5-200ms service
+times, 50% chance of one failure). Program A instead measures **raw mean latency** on a **systematically
+constructed** regime sweep, specifically including a severe-heterogeneity/no-failure/constant-load
+corner Stage 8's random sampling may rarely or never construct in exactly this form. These are
+legitimately different, complementary questions — not competing answers to the same one. Stage 8 asks
+"does Adaptive win, by its own composite objective, across a broad random scenario distribution" (yes,
+substantially); Program A asks "in this specific, controlled regime, does Adaptive beat EWMA on raw
+mean latency" (no, decisively, even tuned). **This is precisely the kind of regime-boundary finding
+Q1 sets out to discover, not a contradiction requiring one side to be wrong.**
+
+**Consequence**: any future comparison across this project should state explicitly whether it is
+measuring composite utility (Stage 8's metric, which folds in fairness and other factors) or raw mean
+latency (Program A's metric) — the two can and do disagree about which policy "wins," and neither
+number is wrong, they are answering different questions. This is now a documented, evidence-based
+caveat rather than an implicit ambiguity.
+
 ---
 
 *(Limitations, unresolved questions, and claims-supported/not-supported summaries are appended below to

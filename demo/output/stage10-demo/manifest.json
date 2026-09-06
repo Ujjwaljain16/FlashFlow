@@ -1,0 +1,15 @@
+{
+  "experiment_id": "stage10-demo",
+  "name": "Heterogeneous edges, one failure, RR vs Adaptive",
+  "seeds": {
+    "Global": 42,
+    "Traffic": 6138310632098185924,
+    "Topology": 6006080903948571288,
+    "Failure": 176430896811238657,
+    "Policy": 6581343974083971892
+  },
+  "configuration_hash": "5283651e15ebe99e",
+  "git_commit": "c42c28d877954d9241593228c6e799debd3bf71e",
+  "git_dirty": true,
+  "created_at": "2026-09-06T00:13:06.253768Z"
+}

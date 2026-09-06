@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"flashflow/internal/attribution"
 	"flashflow/internal/statistics"
 	"flashflow/internal/topology"
 	"flashflow/internal/transport"
@@ -127,14 +128,23 @@ func runLoadLevel(originURL string, concurrency int, duration, sampleEvery time.
 	lMeasured, _ := statistics.Mean(lSamples)
 	lambda := float64(completed.Load()) / measureElapsed.Seconds()
 
-	lambdaW := lambda * (w / 1000.0) // w is in ms; Little's Law needs matching time units (seconds here)
-	relError := 0.0
-	if lMeasured != 0 {
-		relError = (lambdaW - lMeasured) / lMeasured
+	// w is in ms; internal/attribution.Sample.W must be seconds, matching
+	// Lambda's per-second unit -- the same conversion this function
+	// always made inline, now the shared package's own documented
+	// contract (see internal/attribution/littleslaw.go) rather than a
+	// one-off comment repeated at every call site.
+	metrics, err := attribution.CheckLittlesLaw(attribution.Sample{L: lMeasured, Lambda: lambda, W: w / 1000.0})
+	if err != nil {
+		// L/Lambda/W are all measured, non-negative-by-construction
+		// quantities (a count, a rate, a mean latency) -- a rejection
+		// here would mean the measurement itself produced an impossible
+		// value, a genuine bug worth failing loudly on rather than
+		// silently coercing.
+		log.Fatalf("attribution.CheckLittlesLaw: %v", err)
 	}
 
 	return LoadLevelResult{
-		Concurrency: concurrency, Lambda: lambda, L: lMeasured, W: w, LambdaW: lambdaW, RelError: relError,
+		Concurrency: concurrency, Lambda: lambda, L: lMeasured, W: w, LambdaW: metrics.Predicted, RelError: metrics.RelError,
 	}
 }
 

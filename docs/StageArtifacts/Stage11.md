@@ -357,9 +357,74 @@ generalizes to the simultaneous-recovery case too, at least in the virtual engin
 works correctly (Program F Section 10) — a genuinely different situation from Program F's real-engine
 finding, where Adaptive's own load signal is currently uninstrumented.
 
+## 13. Program C Results — Recovery and Adaptation Dynamics
+
+**Experiment**: `cmd/experiment-011c`, artifact `experiments/011-research-validation/results/011C-recovery-dynamics.json`.
+A 5-phase, 7.5s scenario (edge-a 15ms / edge-b 30ms / edge-c 45ms): phase 1 all up (edge-a best), phase
+2 edge-a down (edge-b best-of-available), phase 3 edge-c ALSO down (only edge-b left — the "C fails"
+phase, using compounding failure since the assignment's literal "capacity changes" can't be expressed
+without time-varying `ServiceTime`, the same gap Program B disclosed), phase 4 edge-a recovers, phase 5
+edge-c recovers too (full topology restored).
+
+**Negative/methodological result, directly connected to Program A's root cause**: the originally-
+planned `transition_p99` metric (p99 over a 300ms window after each phase boundary) is **identical**
+to `steady_state_p99` for every single policy (ratio exactly 1.00x, all six policies). This is not
+because adaptation is instant and costless — it's because **the virtual engine cannot express an
+"adaptation cost" in p99 at all**, for the same reason Section 7 identified: with no queueing model,
+the worst a temporarily-wrong routing decision can cost is exactly one fixed, bounded per-target
+service time (there's no queue buildup, no compounding delay from a string of bad decisions). p99 is
+therefore bounded above by the slowest target in `available` regardless of whether the policy is
+"steady" or "adapting," so this specific metric — as specified in the assignment — is structurally
+unable to distinguish the two in the current platform. This generalizes Section 7's finding: it isn't
+only mean latency under load concentration that the no-queueing model can't penalize; the entire class
+of "does a policy pay extra during a topology transition" claims is out of reach for percentile-based
+metrics here.
+
+**The finer-grained signal that IS visible — per-phase mean latency**:
+
+| Policy | Phase 1 (A best) | Phase 2 (A down) | Phase 3 (A+C down) | Phase 4 (A back) | Phase 5 (all up) |
+|---|---:|---:|---:|---:|---:|
+| round-robin | 29.72 | 37.16 | 30.68 | 23.11 | 29.31 |
+| weighted-round-robin | 24.58 | 34.95 | 30.54 | 20.81 | 24.08 |
+| least-connections | 25.97 | 34.36 | 30.41 | 20.73 | 25.68 |
+| ewma | 16.51 | 28.90 | **30.00** | 16.22 | **15.00** |
+| p2c-load | 27.62 | 36.35 | 30.55 | 21.55 | 27.95 |
+| adaptive | 27.90 | 35.32 | 30.54 | 20.81 | 27.92 |
+
+Two things worth naming directly: **phase 3 converges to ~30.4-30.7ms for every non-EWMA policy** (and
+EWMA lands at exactly 30.00ms) because only one target (edge-b) is available — every policy's
+selection signal is moot with one candidate, an exact structural confirmation of Program B's B2
+"signal scarcity" mechanism, now reproduced in a second, independently-designed scenario. Second,
+**recovery is essentially immediate at this granularity**: no policy shows a lingering elevated mean in
+the phase immediately after a recovery (phase 4/5 fall back in line with phase 1 for every policy),
+which is itself informative — it means whatever health-detection lag `internal/health.Registry` has
+was short enough, relative to this scenario's 1.5s phase length and 300ms transition window, not to
+show up as a visible cost here. This scenario cannot rule out a detection-lag cost at a finer time
+resolution than was measured.
+
+**Consistent with, not contradicting, Program A**: EWMA has the lowest mean in every single phase,
+including the two recovery phases, for the same reason established in Section 7 — pure latency-greedy
+concentration, unpenalized by any queueing cost, wins on this metric in a heterogeneous topology.
+Adaptive tracks close to weighted-round-robin/least-connections/p2c-load throughout, not because it
+performs badly in an absolute sense, but because (per Section 7) it deliberately balances load in a way
+this metric doesn't reward.
+
+## 14. Consolidated Note: A Real Platform-Capability Gap Spans Programs A, B, and C
+
+Three independently-designed experiments — Program A's regime map, Program B's H2 (declined), and
+Program C's "capacity changes" phase — all ran into the same underlying limitation:
+`internal/replay.TargetProfile.ServiceTime` is fixed for an entire `Scenario`, and `RunWorld` has no
+queueing/contention model (a Stage 5 design choice, `docs/learning/005-virtual-time.md`). This is the
+single most consequential platform-capability finding of Stage 11 so far: it doesn't just affect one
+metric in one experiment, it structurally limits what the virtual engine can be asked about the
+research questions this stage exists to answer (regime boundaries under real capacity pressure,
+staleness/oscillation attacks, and adaptation-cost measurement all run into it). Adding a genuinely
+time-varying per-target latency and/or a real queueing model would be a substantial platform change,
+correctly out of scope for Stage 11 itself, but is now an evidence-backed candidate for a future
+stage's actual design goal, not a speculative "nice to have."
+
 ---
 
-*(Recovery/adaptation dynamics (Program C), distribution-shift findings (Program D), mechanistic
-attribution (Program E), reproducibility verification (Program G), statistical methods, limitations,
-unresolved questions, and claims-supported/not-supported summaries are appended below as each
-remaining program actually executes.)*
+*(Distribution-shift findings (Program D), mechanistic attribution (Program E), reproducibility
+verification (Program G), statistical methods, limitations, unresolved questions, and claims-
+supported/not-supported summaries are appended below as each remaining program actually executes.)*

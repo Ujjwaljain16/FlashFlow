@@ -1,0 +1,60 @@
+{
+  "experiment": "011-C-recovery-dynamics",
+  "timestamp": "2026-09-06T01:02:13Z",
+  "phases": [
+    {
+      "policy": "round-robin",
+      "completed": 548,
+      "rejected": 0,
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "transition_requests": 88,
+      "steady_state_requests": 460
+    },
+    {
+      "policy": "weighted-round-robin",
+      "completed": 548,
+      "rejected": 0,
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "transition_requests": 87,
+      "steady_state_requests": 461
+    },
+    {
+      "policy": "least-connections",
+      "completed": 549,
+      "rejected": 0,
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "transition_requests": 90,
+      "steady_state_requests": 459
+    },
+    {
+      "policy": "ewma",
+      "completed": 549,
+      "rejected": 0,
+      "steady_state_p99_ms": 30,
+      "transition_p99_ms": 30,
+      "transition_requests": 88,
+      "steady_state_requests": 461
+    },
+    {
+      "policy": "p2c-load",
+      "completed": 548,
+      "rejected": 0,
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "transition_requests": 88,
+      "steady_state_requests": 460
+    },
+    {
+      "policy": "adaptive",
+      "completed": 547,
+      "rejected": 0,
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "transition_requests": 90,
+      "steady_state_requests": 457
+    }
+  ]
+}

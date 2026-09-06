@@ -530,7 +530,43 @@ matter" has a policy-dependent answer, not a universal one, and a caller expecti
 produce different behavior under a different `seeds.Policy` (with everything else fixed) would be
 mistaken — Adaptive has no consumer of that axis at all.
 
+## 17. Program E Results — Mechanistic Attribution
+
+**Experiment**: `cmd/experiment-011e`, artifact `experiments/011-research-validation/results/011E-mechanistic-attribution.json`.
+Reuses Program A's flagship severe/constant/none scenario. For EWMA and Adaptive, at each of the 3
+targets, computes: `Lambda` (throughput, req/s), `W` (mean sojourn time, ms), and — critically — an
+**independently-measured** `L` (time-averaged in-flight request count), via direct event-timeline
+integration over exact dispatch/completion timestamps (a step function: +1 at each dispatch, -1 at
+each completion, area under the curve divided by horizon). This is a genuinely separate computation
+from `Lambda*W`, not a restatement of it, so comparing the two via `internal/attribution.CheckLittlesLaw`
+is a real (if, in this specific model, expected-to-pass) consistency check.
+
+**Result**: relative error between measured `L` and predicted `Lambda*W` is ≈0 (at floating-point
+precision) for all 6 target/policy combinations — e.g. EWMA/edge-a: `Lambda=72.75 req/s, W=15.00ms,
+L(measured)=1.091, L(predicted)=1.091, relErr=0.0000`. `L(measured)` also equals `ρ` (utilization,
+from `UtilizationFromWorld`) exactly in every row, since capacity is normalized to `1/ServiceTime`.
+
+**What this attribution supports and does not — stated explicitly, per this stage's own instruction not
+to overclaim**:
+
+- **Supports**: internal consistency of the L/Lambda/W bookkeeping across two independently-computed
+  paths (direct timeline integration vs. utilization-derived). This confirms there is no arithmetic or
+  measurement inconsistency in how these three quantities are derived from the same underlying
+  `WorldResult`.
+- **Does NOT support**: any claim about real queueing or wait-time behavior. `W` here is simply the
+  target's fixed `ServiceTime` — there is no wait component in this model at all (per Section 7/14's
+  no-queueing-model finding), so Little's Law holding almost exactly is an expected mathematical
+  consequence of the model's own construction (`L = Lambda * ServiceTime`, trivially, when nothing ever
+  waits), not an independent empirical discovery about queueing dynamics. A claim like "Little's Law
+  confirms this system behaves like a queue" would be an overclaim the model cannot support — the
+  correct claim is narrower: the attribution engine's bookkeeping is internally consistent, and this
+  scenario's utilization numbers (already used causally in Sections 7 and 12) are trustworthy as
+  utilization numbers, not as evidence of queueing dynamics that were never simulated.
+- This directly reuses and quantifies Section 7's own EWMA/edge-a ρ=1.09 (previously reported at 2
+  significant figures from `UtilizationFromWorld` alone) and Section 12's Adaptive balancing numbers,
+  now backed by an independent L measurement rather than resting on `UtilizationFromWorld` alone.
+
 ---
 
-*(Mechanistic attribution (Program E), statistical methods, limitations, unresolved questions, and
-claims-supported/not-supported summaries are appended below to close out Stage 11.)*
+*(Statistical methods, limitations, unresolved questions, and claims-supported/not-supported summaries
+are appended below to close out Stage 11.)*

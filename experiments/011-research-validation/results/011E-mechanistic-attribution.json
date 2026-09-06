@@ -1,0 +1,90 @@
+{
+  "experiment": "011-E-mechanistic-attribution",
+  "timestamp": "2026-09-06T01:12:44Z",
+  "results": [
+    {
+      "policy": "ewma",
+      "target": "edge-a",
+      "lambda_req_per_sec": 72.75,
+      "w_ms": 15,
+      "l_measured_direct_integration": 1.0912499999999998,
+      "littles_law_check": {
+        "Predicted": 1.09125,
+        "Observed": 1.0912499999999998,
+        "AbsError": 2.220446049250313e-16,
+        "RelError": 2.0347730119132312e-16
+      },
+      "utilization_rho": 1.09125
+    },
+    {
+      "policy": "ewma",
+      "target": "edge-b",
+      "lambda_req_per_sec": 0.75,
+      "w_ms": 30,
+      "l_measured_direct_integration": 0.022500000000000003,
+      "littles_law_check": {
+        "Predicted": 0.0225,
+        "Observed": 0.022500000000000003,
+        "AbsError": -3.469446951953614e-18,
+        "RelError": -1.541976423090495e-16
+      },
+      "utilization_rho": 0.0225
+    },
+    {
+      "policy": "ewma",
+      "target": "edge-c",
+      "lambda_req_per_sec": 1.25,
+      "w_ms": 60,
+      "l_measured_direct_integration": 0.075,
+      "littles_law_check": {
+        "Predicted": 0.075,
+        "Observed": 0.075,
+        "AbsError": 0,
+        "RelError": 0
+      },
+      "utilization_rho": 0.075
+    },
+    {
+      "policy": "adaptive",
+      "target": "edge-a",
+      "lambda_req_per_sec": 37.5,
+      "w_ms": 15,
+      "l_measured_direct_integration": 0.5625,
+      "littles_law_check": {
+        "Predicted": 0.5625,
+        "Observed": 0.5625,
+        "AbsError": 0,
+        "RelError": 0
+      },
+      "utilization_rho": 0.5625
+    },
+    {
+      "policy": "adaptive",
+      "target": "edge-b",
+      "lambda_req_per_sec": 24.75,
+      "w_ms": 30,
+      "l_measured_direct_integration": 0.7425,
+      "littles_law_check": {
+        "Predicted": 0.7424999999999999,
+        "Observed": 0.7425,
+        "AbsError": -1.1102230246251565e-16,
+        "RelError": -1.4952498648150255e-16
+      },
+      "utilization_rho": 0.7424999999999999
+    },
+    {
+      "policy": "adaptive",
+      "target": "edge-c",
+      "lambda_req_per_sec": 12.25,
+      "w_ms": 60,
+      "l_measured_direct_integration": 0.735,
+      "littles_law_check": {
+        "Predicted": 0.735,
+        "Observed": 0.735,
+        "AbsError": 0,
+        "RelError": 0
+      },
+      "utilization_rho": 0.735
+    }
+  ]
+}

@@ -283,6 +283,199 @@ func TestEdgeServer_Cache_ExpiredEntryRefetches(t *testing.T) {
 	}
 }
 
+// TestEdgeServer_SetDown_CrashesAndRecovers is Stage 10's (§10.7) real-
+// engine proof that SetDown makes an edge look genuinely crashed to any
+// caller, including its own /health endpoint, and that clearing it
+// restores normal forwarding.
+func TestEdgeServer_SetDown_CrashesAndRecovers(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-setdown"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	edge, err := NewEdgeServer(EdgeConfig{Instance: "edge-setdown", OriginURL: origin.URL()})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+
+	resp, err := client.Get(edge.URL() + "/data/hot")
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200 before SetDown, got %d", resp.StatusCode)
+	}
+
+	edge.SetDown(true)
+
+	resp, err = client.Get(edge.URL() + "/data/hot")
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503 while down, got %d", resp.StatusCode)
+	}
+
+	healthResp, err := client.Get(edge.URL() + "/health")
+	if err != nil {
+		t.Fatalf("health request failed: %v", err)
+	}
+	healthResp.Body.Close()
+	if healthResp.StatusCode != http.StatusServiceUnavailable {
+		t.Fatalf("expected /health to also report 503 while down, got %d", healthResp.StatusCode)
+	}
+
+	edge.SetDown(false)
+
+	resp, err = client.Get(edge.URL() + "/data/hot")
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200 after recovery, got %d", resp.StatusCode)
+	}
+}
+
+// TestEdgeServer_SWR_StaleHitServesImmediatelyThenRevalidates is
+// Stage 10's (§10.5) real-engine end-to-end proof that StaleWindow
+// actually activates GetSWR's behavior through the live HTTP path, not
+// just at the internal/cache package level: a request landing after
+// CacheTTL but within CacheTTL+StaleWindow gets HIT-STALE immediately,
+// and a subsequent request (after giving the background revalidation
+// time to complete) gets a fresh HIT again rather than a MISS.
+func TestEdgeServer_SWR_StaleHitServesImmediatelyThenRevalidates(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-swr"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	mc := clock.NewMockClock(0)
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:    "edge-swr",
+		OriginURL:   origin.URL(),
+		CacheTTL:    10 * time.Millisecond,
+		StaleWindow: 100 * time.Millisecond,
+		Coalesce:    true, // required for SWR's background revalidation to activate -- see EdgeConfig.StaleWindow's own doc comment
+		Clock:       mc,
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	get := func() string {
+		resp, err := client.Get(edge.URL() + "/data/hot")
+		if err != nil {
+			t.Fatalf("request failed: %v", err)
+		}
+		defer resp.Body.Close()
+		return resp.Header.Get(httpx.HeaderCacheStatus)
+	}
+
+	if got := get(); got != "MISS" {
+		t.Fatalf("expected first request MISS, got %q", got)
+	}
+
+	mc.Advance(20 * time.Millisecond) // past the 10ms TTL, within the 100ms StaleWindow
+	if got := get(); got != "HIT-STALE" {
+		t.Fatalf("expected a stale hit within the StaleWindow, got %q", got)
+	}
+
+	// The background revalidation fired by that stale hit runs
+	// concurrently with this test goroutine; give it a moment to
+	// complete and store the fresh entry before checking the next
+	// request's status.
+	deadline := time.Now().Add(2 * time.Second)
+	for time.Now().Before(deadline) {
+		if edge.CacheStats().StaleHits >= 1 {
+			break
+		}
+		time.Sleep(time.Millisecond)
+	}
+	// Poll for the revalidation's completion via TransportStats rather
+	// than a fixed sleep -- it should reach exactly 2 edge->origin
+	// requests (the initial miss, plus the one background revalidation)
+	// well before the deadline.
+	for time.Now().Before(deadline) {
+		if edge.TransportStats().RequestsCompleted >= 2 {
+			break
+		}
+		time.Sleep(time.Millisecond)
+	}
+
+	if got := get(); got != "HIT" {
+		t.Fatalf("expected a fresh HIT after the background revalidation completed (still within a fresh TTL window from the mock clock's perspective), got %q", got)
+	}
+	if stats := edge.TransportStats(); stats.RequestsCompleted != 2 {
+		t.Fatalf("expected exactly 2 edge->origin requests (1 initial miss + 1 background revalidation, no extra synchronous fetch), got %d", stats.RequestsCompleted)
+	}
+	if stats := edge.CacheStats(); stats.StaleHits != 1 {
+		t.Fatalf("expected exactly 1 recorded stale hit, got %d", stats.StaleHits)
+	}
+}
+
+// TestEdgeServer_SWR_PastStaleWindowIsPlainMiss confirms a request
+// arriving after CacheTTL+StaleWindow gets a normal synchronous MISS,
+// not a stale hit -- SWR extends the cache's useful window, it doesn't
+// remove the outer expiry.
+func TestEdgeServer_SWR_PastStaleWindowIsPlainMiss(t *testing.T) {
+	origin := NewOriginServer(OriginConfig{Instance: "origin-swr-expired"})
+	if err := origin.Start(); err != nil {
+		t.Fatalf("failed to start origin: %v", err)
+	}
+	defer origin.Stop(context.Background())
+
+	mc := clock.NewMockClock(0)
+	edge, err := NewEdgeServer(EdgeConfig{
+		Instance:    "edge-swr-expired",
+		OriginURL:   origin.URL(),
+		CacheTTL:    10 * time.Millisecond,
+		StaleWindow: 20 * time.Millisecond,
+		Coalesce:    true,
+		Clock:       mc,
+	})
+	if err != nil {
+		t.Fatalf("failed to create edge: %v", err)
+	}
+	if err := edge.Start(); err != nil {
+		t.Fatalf("failed to start edge: %v", err)
+	}
+	defer edge.Stop(context.Background())
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	get := func() string {
+		resp, err := client.Get(edge.URL() + "/data/hot")
+		if err != nil {
+			t.Fatalf("request failed: %v", err)
+		}
+		defer resp.Body.Close()
+		return resp.Header.Get(httpx.HeaderCacheStatus)
+	}
+
+	if got := get(); got != "MISS" {
+		t.Fatalf("expected first request MISS, got %q", got)
+	}
+	mc.Advance(100 * time.Millisecond) // past CacheTTL+StaleWindow (30ms) entirely
+	if got := get(); got != "MISS" {
+		t.Fatalf("expected a plain MISS past CacheTTL+StaleWindow, got %q", got)
+	}
+}
+
 // TestEdgeServer_Cache_OnlyCachesGET proves POST requests bypass the cache
 // entirely — no X-Cache-Status header, and every POST reaches Origin.
 func TestEdgeServer_Cache_OnlyCachesGET(t *testing.T) {

@@ -33,6 +33,17 @@ type EdgeConfig struct {
 	// this same struct). 0 (the default) means no caching at all — every
 	// existing Stage 2/3 caller is unaffected.
 	CacheTTL time.Duration `json:"cache_ttl"`
+	// StaleWindow enables Stale-While-Revalidate on top of CacheTTL when
+	// > 0 (zero-means-off, matching this struct's other convention):
+	// requests arriving after CacheTTL but within CacheTTL+StaleWindow
+	// get the stale response immediately while one background
+	// revalidation refreshes it. Only meaningful when CacheTTL > 0 and
+	// Coalesce is true -- SWR's background revalidation is deduplicated
+	// through the same Coalescer the synchronous miss path uses (see
+	// internal/cache/swr.go), so without Coalesce enabled this field is
+	// silently inert rather than erroring, matching Coalesce's own
+	// "ignored otherwise" convention just above.
+	StaleWindow time.Duration `json:"stale_window"`
 	// Coalesce deduplicates concurrent cache misses for the same key into
 	// a single origin fetch. Only meaningful when CacheTTL > 0; ignored
 	// otherwise. Kept as a separate opt-in flag (rather than always-on
@@ -60,10 +71,17 @@ type EdgeServer struct {
 	trackedTrans    *transport.TrackedTransport
 	httpClient      *http.Client
 	artificialDelay time.Duration
-	clock           clock.Clock
-	cache           *cache.Cache
-	coalescer       *cache.Coalescer
-	netTransport    *netsim.Transport
+	// down simulates a full crash (Stage 10, §10.7's chaos engine):
+	// every request, including /health, gets a 503 rather than being
+	// forwarded -- so a health.Checker probing this edge correctly
+	// observes it as unhealthy, the same as a real crashed process
+	// would look from the outside. Guarded by mu, the same convention
+	// artificialDelay already uses.
+	down         bool
+	clock        clock.Clock
+	cache        *cache.Cache
+	coalescer    *cache.Coalescer
+	netTransport *netsim.Transport
 }
 
 // NewEdgeServer constructs an Edge forwarding server.
@@ -94,10 +112,10 @@ func NewEdgeServer(cfg EdgeConfig) (*EdgeServer, error) {
 	var c *cache.Cache
 	var co *cache.Coalescer
 	if cfg.CacheTTL > 0 {
-		c = cache.New(clk, cfg.CacheTTL)
 		if cfg.Coalesce {
 			co = cache.NewCoalescer()
 		}
+		c = cache.NewWithConfig(clk, cache.Config{TTL: cfg.CacheTTL, StaleWindow: cfg.StaleWindow}, co)
 	}
 
 	httpClient := tt.HTTPClient(10 * time.Second)
@@ -125,11 +143,37 @@ func NewEdgeServer(cfg EdgeConfig) (*EdgeServer, error) {
 	}, nil
 }
 
+// Instance returns this edge's configured instance name (e.g.
+// "edge-a") -- the identifier telemetry.SnapshotFromEdge keys its
+// single-entry maps by, since one EdgeServer forwards to a single
+// Origin with no per-target routing breakdown to report.
+func (e *EdgeServer) Instance() string {
+	return e.config.Instance
+}
+
 // SetArtificialDelay configures application processing delay on this edge.
 func (e *EdgeServer) SetArtificialDelay(d time.Duration) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.artificialDelay = d
+}
+
+// SetDown simulates a full crash (true) or recovery (false) -- Stage
+// 10's (§10.7) chaos engine's crash/recover actions. While down, every
+// request this edge receives (including /health) gets a 503 rather
+// than being forwarded to Origin, matching how a real crashed process
+// looks from any caller's perspective, including this project's own
+// health.Checker.
+func (e *EdgeServer) SetDown(down bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.down = down
+}
+
+func (e *EdgeServer) isDown() bool {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	return e.down
 }
 
 // TransportStats returns the connection metrics between this Edge and Origin.
@@ -191,6 +235,13 @@ func (e *EdgeServer) Handler() http.Handler {
 
 	// Health endpoint
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		if e.isDown() {
+			// A crashed edge fails its own health check too -- this is
+			// what lets health.Checker actually observe SetDown(true) as
+			// a real outage, not just a change no prober would notice.
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{
@@ -207,14 +258,28 @@ func (e *EdgeServer) Handler() http.Handler {
 		w.Header().Set(httpx.HeaderRequestID, reqID)
 		w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
 
+		if e.isDown() {
+			// Stage 10 (§10.7): SetDown(true) simulates a full crash --
+			// every application request gets a 503 immediately, before
+			// any cache lookup or origin round trip is even attempted.
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+
 		// Cache lookup happens before anything else — including the
-		// artificial delay below. A hit means no origin round trip
-		// happens at all, so there is nothing for that delay to be
-		// simulating latency for. Whether a hit should still cost some
-		// minimal edge-side time of its own is a reasonable question for
-		// a later experiment, not one this increment answers.
+		// artificial delay below. A hit (Fresh or Stale) means no
+		// synchronous origin round trip happens at all, so there is
+		// nothing for that delay to be simulating latency for. Whether a
+		// hit should still cost some minimal edge-side time of its own is
+		// a reasonable question for a later experiment, not one this
+		// increment answers. resolveDelay itself is pure/cheap (no
+		// side effects, no blocking) so computing it unconditionally here
+		// -- even on a path that ends up never using it, a cache hit --
+		// costs nothing and lets a single fetch closure below serve both
+		// the on-miss fetch and Stage 10's SWR background revalidation.
 		cacheable := e.cache != nil && r.Method == http.MethodGet
-		var cacheKey string
+		delay := e.resolveDelay(r)
+
 		if cacheable {
 			// X-Override-Status and X-Artificial-Delay-Ms are debug
 			// headers Origin's own handler treats as response-
@@ -222,29 +287,24 @@ func (e *EdgeServer) Handler() http.Handler {
 			// by this edge -- omitting them from the key would let two
 			// requests differing only in one of these headers collide
 			// on the same cache entry.
-			cacheKey = cache.Key(r.Method, r.URL.Path, r.URL.RawQuery,
+			cacheKey := cache.Key(r.Method, r.URL.Path, r.URL.RawQuery,
 				r.Header.Get("X-Override-Status"), r.Header.Get("X-Artificial-Delay-Ms"))
-			if entry, ok := e.cache.Get(cacheKey); ok {
-				httpx.CopyEndToEndHeaders(w.Header(), entry.Header)
-				w.Header().Set(httpx.HeaderRequestID, reqID)
-				w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
-				w.Header().Set(httpx.HeaderCacheStatus, "HIT")
-				w.WriteHeader(entry.StatusCode)
-				_, _ = w.Write(entry.Body)
-				return
-			}
-		}
 
-		delay := e.resolveDelay(r)
-
-		if cacheable {
 			// The fetch — including the artificial delay — must happen at
 			// most once no matter how many concurrent requests miss on
 			// this exact key. It deliberately builds its outbound request
 			// on context.Background() rather than r.Context(): this fetch
-			// may end up shared by other waiting callers, and the leader's
-			// own client disconnecting must not cancel work they still
-			// need. See cache.Coalescer's doc comment.
+			// may end up shared by other waiting callers (via Coalescer,
+			// on the synchronous miss path below, or via GetSWR's
+			// background revalidation), and the leader's own client
+			// disconnecting must not cancel work they still need. See
+			// cache.Coalescer's doc comment. Note: this closure also
+			// self-stores into e.cache on success (needed for the plain-
+			// miss path below, which relies on it) -- when reused as
+			// GetSWR's revalidate function this makes GetSWR's own
+			// post-revalidation Set call a harmless, redundant second
+			// write of the identical fresh entry, not a correctness
+			// issue.
 			fetch := func() (cache.Entry, error) {
 				if delay > 0 {
 					time.Sleep(delay)
@@ -285,6 +345,20 @@ func (e *EdgeServer) Handler() http.Handler {
 					e.cache.Set(cacheKey, &entry)
 				}
 				return entry, nil
+			}
+
+			if entry, result := e.cache.GetSWR(cacheKey, fetch); result != cache.Miss {
+				status := "HIT"
+				if result == cache.Stale {
+					status = "HIT-STALE"
+				}
+				httpx.CopyEndToEndHeaders(w.Header(), entry.Header)
+				w.Header().Set(httpx.HeaderRequestID, reqID)
+				w.Header().Set(httpx.HeaderEdgeID, e.config.Instance)
+				w.Header().Set(httpx.HeaderCacheStatus, status)
+				w.WriteHeader(entry.StatusCode)
+				_, _ = w.Write(entry.Body)
+				return
 			}
 
 			var entry cache.Entry

@@ -45,11 +45,12 @@ func Key(method, path, rawQuery string, extra ...string) string {
 
 // Stats is a point-in-time snapshot of cache activity counters.
 type Stats struct {
-	Lookups uint64 `json:"lookups"`
-	Hits    uint64 `json:"hits"`
-	Misses  uint64 `json:"misses"`
-	Expired uint64 `json:"expired"`
-	Fills   uint64 `json:"fills"`
+	Lookups   uint64 `json:"lookups"`
+	Hits      uint64 `json:"hits"`
+	Misses    uint64 `json:"misses"`
+	Expired   uint64 `json:"expired"`
+	Fills     uint64 `json:"fills"`
+	StaleHits uint64 `json:"stale_hits"` // subset of Hits served from GetSWR's stale window -- see swr.go
 }
 
 // Cache is a fixed-TTL, unbounded response cache — no eviction policy
@@ -68,25 +69,57 @@ type Stats struct {
 // isn't hard-wired to wall-clock time before Stage 5's virtual-time
 // engine exists to make that actually matter.
 type Cache struct {
-	mu    sync.RWMutex
-	clock clock.Clock
-	ttl   time.Duration
+	mu          sync.RWMutex
+	clock       clock.Clock
+	ttl         time.Duration
+	staleWindow time.Duration // 0 disables SWR entirely -- see swr.go
+	coalescer   *Coalescer    // required for SWR's background revalidation to be deduplicated; nil disables SWR even if staleWindow > 0
 
 	entries map[string]*Entry
 
-	lookups atomic.Uint64
-	hits    atomic.Uint64
-	misses  atomic.Uint64
-	expired atomic.Uint64
-	fills   atomic.Uint64
+	lookups   atomic.Uint64
+	hits      atomic.Uint64
+	misses    atomic.Uint64
+	expired   atomic.Uint64
+	fills     atomic.Uint64
+	staleHits atomic.Uint64
 }
 
-// New creates a Cache with the given fixed TTL. clk must not be nil.
+// New creates a Cache with the given fixed TTL and no SWR support --
+// equivalent to NewWithConfig(clk, Config{TTL: ttl}, nil). Kept as its
+// own function since it's what every existing caller before Stage 10
+// already uses by name.
 func New(clk clock.Clock, ttl time.Duration) *Cache {
+	return NewWithConfig(clk, Config{TTL: ttl}, nil)
+}
+
+// Config configures a Cache, including the optional Stale-While-
+// Revalidate window Stage 10 (§10.5) adds.
+type Config struct {
+	TTL time.Duration
+	// StaleWindow, when > 0, lets GetSWR serve an entry for up to this
+	// long past TTL expiry while firing one background revalidation --
+	// 0 (the default) means "today's behavior": an entry past TTL is a
+	// plain miss.
+	StaleWindow time.Duration
+}
+
+// NewWithConfig creates a Cache from cfg. coalescer must be non-nil for
+// GetSWR's stale-serving behavior to actually activate (see GetSWR's
+// doc comment) -- passing nil with a non-zero StaleWindow does not
+// error, it just means GetSWR never serves stale (falls back to
+// today's fresh-or-miss behavior), since firing uncoalesced background
+// revalidations for every stale hit under concurrent load would be
+// its own, worse problem (a thundering herd of redundant origin
+// fetches, exactly what Coalescer exists to prevent on the synchronous
+// miss path already).
+func NewWithConfig(clk clock.Clock, cfg Config, coalescer *Coalescer) *Cache {
 	return &Cache{
-		clock:   clk,
-		ttl:     ttl,
-		entries: make(map[string]*Entry),
+		clock:       clk,
+		ttl:         cfg.TTL,
+		staleWindow: cfg.StaleWindow,
+		coalescer:   coalescer,
+		entries:     make(map[string]*Entry),
 	}
 }
 
@@ -135,10 +168,11 @@ func (c *Cache) Set(key string, entry *Entry) {
 // Snapshot returns a point-in-time copy of the activity counters.
 func (c *Cache) Snapshot() Stats {
 	return Stats{
-		Lookups: c.lookups.Load(),
-		Hits:    c.hits.Load(),
-		Misses:  c.misses.Load(),
-		Expired: c.expired.Load(),
-		Fills:   c.fills.Load(),
+		Lookups:   c.lookups.Load(),
+		Hits:      c.hits.Load(),
+		Misses:    c.misses.Load(),
+		Expired:   c.expired.Load(),
+		Fills:     c.fills.Load(),
+		StaleHits: c.staleHits.Load(),
 	}
 }

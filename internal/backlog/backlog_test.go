@@ -134,7 +134,8 @@ func TestAnalyzeDiversion(t *testing.T) {
 	}
 	tl := BuildTimeline(records, completions, "a")
 	cfg := CongestionConfig{RatioThreshold: 1.0, DiversionWindow: 4, DiversionShareThreshold: 0.5}
-	result := AnalyzeDiversion(records, tl, "a", 1, cfg, 20)
+	onset, found := FindFirstCongestionOnset(tl, 1, 1.0, 0)
+	result := AnalyzeDiversion(records, tl, "a", 1, onset, found, cfg, 20)
 
 	if !result.CongestionFound || result.CongestionAtMs != 2 {
 		t.Errorf("CongestionAtMs = %v (found=%v), want 2 (found=true)", result.CongestionAtMs, result.CongestionFound)
@@ -147,6 +148,52 @@ func TestAnalyzeDiversion(t *testing.T) {
 	}
 	if !result.QueueDrainFound || result.QueueDrainAtMs != 14 {
 		t.Errorf("QueueDrainAtMs = %v (found=%v), want 14 (found=true)", result.QueueDrainAtMs, result.QueueDrainFound)
+	}
+}
+
+// TestFindPeakEpisodeCongestionOnset_MultipleEpisodes hand-verifies that
+// the peak-anchored onset finder correctly picks the SECOND, larger
+// episode's onset rather than the first, smaller one -- the exact
+// scenario experiment-015a's canonical run exposed (EWMA's target had a
+// tiny early congestion blip that a naive "first congestion ever" onset
+// picked, followed by a much larger episode during the actual workload
+// peak that a first-episode-only analysis silently ignored).
+//
+// Episode 1: dispatches at t=0,2 (peak depth 2), drains by t=4.
+// Episode 2 (bigger, later): dispatches at t=20,22,24,26 (peak depth 4),
+// drains by t=46. The peak-episode onset must be t=22 (episode 2's
+// start), not t=2 (episode 1's start).
+func TestFindPeakEpisodeCongestionOnset_MultipleEpisodes(t *testing.T) {
+	records := []replay.SelectionRecord{
+		{VirtualTimeMs: 0, Target: "a"},
+		{VirtualTimeMs: 2, Target: "a"},
+		{VirtualTimeMs: 20, Target: "a"},
+		{VirtualTimeMs: 22, Target: "a"},
+		{VirtualTimeMs: 24, Target: "a"},
+		{VirtualTimeMs: 26, Target: "a"},
+	}
+	completions := []replay.CompletionRecord{
+		{VirtualTimeMs: 3, Target: "a"},
+		{VirtualTimeMs: 4, Target: "a"},
+		{VirtualTimeMs: 40, Target: "a"},
+		{VirtualTimeMs: 42, Target: "a"},
+		{VirtualTimeMs: 44, Target: "a"},
+		{VirtualTimeMs: 46, Target: "a"},
+	}
+	tl := BuildTimeline(records, completions, "a")
+	if peak := tl.PeakDepth(); peak != 4 {
+		t.Fatalf("PeakDepth() = %d, want 4 (sanity check before testing onset)", peak)
+	}
+	onset, found := FindPeakEpisodeCongestionOnset(tl, 1, 1.0)
+	if !found || onset != 22 {
+		t.Errorf("FindPeakEpisodeCongestionOnset = %v (found=%v), want 22 (found=true) -- must anchor to the SECOND, larger episode, not the first", onset, found)
+	}
+	// Contrast: the naive "first ever" onset finder should still report
+	// the smaller, earlier episode -- confirming the two functions
+	// genuinely differ, not that one is a no-op wrapper of the other.
+	firstOnset, firstFound := FindFirstCongestionOnset(tl, 1, 1.0, 0)
+	if !firstFound || firstOnset != 2 {
+		t.Errorf("FindFirstCongestionOnset = %v (found=%v), want 2 (found=true)", firstOnset, firstFound)
 	}
 }
 
@@ -164,7 +211,8 @@ func TestAnalyzeDiversion_NoCongestion(t *testing.T) {
 	}
 	tl := BuildTimeline(records, completions, "a")
 	cfg := CongestionConfig{RatioThreshold: 1.0, DiversionWindow: 2, DiversionShareThreshold: 0.5}
-	result := AnalyzeDiversion(records, tl, "a", 1, cfg, 20)
+	onset, found := FindFirstCongestionOnset(tl, 1, 1.0, 0)
+	result := AnalyzeDiversion(records, tl, "a", 1, onset, found, cfg, 20)
 	if result.CongestionFound {
 		t.Errorf("expected CongestionFound=false for a target that never exceeds ratio 1.0, got %+v", result)
 	}

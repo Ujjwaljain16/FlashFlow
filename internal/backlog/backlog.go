@@ -247,6 +247,60 @@ type CongestionConfig struct {
 	DiversionShareThreshold float64
 }
 
+// FindFirstCongestionOnset returns the first time (at or after afterMs)
+// that target's depth/capacity ratio strictly exceeds ratioThreshold.
+// This is the right choice when a target only ever has ONE congestion
+// episode; when a target can cycle through multiple build/drain
+// episodes in one run (observed directly in Stage 15's own canonical
+// scenario -- a policy can have a brief, inconsequential early episode
+// followed by a much larger one during a workload's actual peak), the
+// FIRST episode is not necessarily the one that determines the run's
+// worst outcome -- see FindPeakEpisodeCongestionOnset.
+func FindFirstCongestionOnset(timeline Timeline, capacity int, ratioThreshold, afterMs float64) (onsetMs float64, found bool) {
+	depth := 0
+	for _, e := range timeline.Events {
+		depth += e.Delta
+		if e.TimeMs >= afterMs && pressureRatio(depth, capacity) > ratioThreshold {
+			return e.TimeMs, true
+		}
+	}
+	return 0, false
+}
+
+// FindPeakEpisodeCongestionOnset returns the onset of whichever
+// congestion episode contains the target's PEAK depth -- the episode
+// responsible for the run's worst outcome, which is not always the
+// first episode a target experiences (a policy can have a small, early,
+// self-resolving congestion blip well before a workload's real peak
+// creates its dominant collapse). An "episode" is a maximal contiguous
+// stretch of time during which depth/capacity stays above
+// ratioThreshold; onset is the instant depth/capacity first exceeded
+// ratioThreshold at the start of that specific stretch.
+func FindPeakEpisodeCongestionOnset(timeline Timeline, capacity int, ratioThreshold float64) (onsetMs float64, found bool) {
+	depth, peak := 0, 0
+	inEpisode := false
+	var episodeStart, peakEpisodeStart float64
+	peakFound := false
+	for _, e := range timeline.Events {
+		depth += e.Delta
+		ratio := pressureRatio(depth, capacity)
+		if ratio > ratioThreshold {
+			if !inEpisode {
+				inEpisode = true
+				episodeStart = e.TimeMs
+			}
+			if depth > peak {
+				peak = depth
+				peakEpisodeStart = episodeStart
+				peakFound = true
+			}
+		} else {
+			inEpisode = false
+		}
+	}
+	return peakEpisodeStart, peakFound
+}
+
 // DiversionResult is one target's full congestion -> commitment ->
 // diversion -> drain timeline under one CongestionConfig.
 type DiversionResult struct {
@@ -260,32 +314,23 @@ type DiversionResult struct {
 }
 
 // AnalyzeDiversion computes M4 (committed backlog) and M5 (unlock/
-// diversion dynamics) for one target under one CongestionConfig.
+// diversion dynamics) for one target, given an ALREADY-DETERMINED
+// congestion onset time (from FindFirstCongestionOnset or
+// FindPeakEpisodeCongestionOnset -- the caller decides which episode
+// matters, since a target can have more than one across a run).
 //
-// Congestion onset is the first time target's own depth/capacity ratio
-// strictly exceeds cfg.RatioThreshold. Diversion is the first time, at
-// or after congestion onset, that a trailing window of cfg.
-// DiversionWindow dispatch decisions (drawn from ALL of records, so it
-// reflects the policy's ACTUAL routing mix, not just this target's own
-// activity) shows target's own share below cfg.DiversionShareThreshold.
-// Committed backlog is the literal count of dispatches TO target during
-// [congestion, diversion) -- Section 10's definition applied without
-// reinterpretation. Queue drain is the first time at or after diversion
-// that target's depth/capacity ratio returns to at or below 1.0 (fully
-// caught up, not merely "improving").
-func AnalyzeDiversion(records []replay.SelectionRecord, timeline Timeline, target string, capacity int, cfg CongestionConfig, horizonMs float64) DiversionResult {
+// Diversion is the first time, at or after congestionAtMs, that a
+// trailing window of cfg.DiversionWindow dispatch decisions (drawn from
+// ALL of records, so it reflects the policy's ACTUAL routing mix, not
+// just this target's own activity) shows target's own share below cfg.
+// DiversionShareThreshold. Committed backlog is the literal count of
+// dispatches TO target during [congestionAtMs, diversion) -- Section
+// 10's definition applied without reinterpretation. Queue drain is the
+// first time at or after diversion that target's depth/capacity ratio
+// returns to at or below 1.0 (fully caught up, not merely "improving").
+func AnalyzeDiversion(records []replay.SelectionRecord, timeline Timeline, target string, capacity int, congestionAtMs float64, congestionFound bool, cfg CongestionConfig, horizonMs float64) DiversionResult {
 	var result DiversionResult
-
-	// Congestion onset: walk the timeline's own events.
-	depth := 0
-	for _, e := range timeline.Events {
-		depth += e.Delta
-		if pressureRatio(depth, capacity) > cfg.RatioThreshold {
-			result.CongestionAtMs = e.TimeMs
-			result.CongestionFound = true
-			break
-		}
-	}
+	result.CongestionAtMs, result.CongestionFound = congestionAtMs, congestionFound
 	if !result.CongestionFound {
 		return result
 	}
@@ -336,7 +381,7 @@ func AnalyzeDiversion(records []replay.SelectionRecord, timeline Timeline, targe
 
 	// Queue drain: first time at or after diversion that depth/capacity
 	// returns to <= 1.0.
-	depth = 0
+	depth := 0
 	for _, e := range timeline.Events {
 		depth += e.Delta
 		if e.TimeMs >= result.DiversionAtMs && pressureRatio(depth, capacity) <= 1.0 {

@@ -1,0 +1,186 @@
+{
+  "experiment": "012-A-program-a-under-contention",
+  "timestamp": "2026-09-06T17:23:45Z",
+  "results": [
+    {
+      "policy": "round-robin",
+      "capacity": 0,
+      "completed": 297,
+      "mean_ms": 34.84848484848485,
+      "p50_ms": 30,
+      "p95_ms": 60,
+      "p99_ms": 60,
+      "max_share": 0.3367003367003367,
+      "utilization_rho": {
+        "edge-a": 0.375,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 1.47
+      }
+    },
+    {
+      "policy": "ewma",
+      "capacity": 0,
+      "completed": 299,
+      "mean_ms": 15.903010033444817,
+      "p50_ms": 15,
+      "p95_ms": 15,
+      "p99_ms": 60,
+      "max_share": 0.9732441471571907,
+      "utilization_rho": {
+        "edge-a": 1.09125,
+        "edge-b": 0.0225,
+        "edge-c": 0.075
+      }
+    },
+    {
+      "policy": "adaptive",
+      "capacity": 0,
+      "completed": 298,
+      "mean_ms": 27.38255033557047,
+      "p50_ms": 15,
+      "p95_ms": 60,
+      "p99_ms": 60,
+      "max_share": 0.5033557046979866,
+      "utilization_rho": {
+        "edge-a": 0.5625,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "policy": "round-robin",
+      "capacity": 1,
+      "completed": 265,
+      "mean_ms": 193.69811320754718,
+      "p50_ms": 30,
+      "p95_ms": 1095.9999999999995,
+      "p99_ms": 1307.2000000000003,
+      "max_share": 0.37735849056603776,
+      "utilization_rho": {
+        "edge-a": 0.375,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.99
+      }
+    },
+    {
+      "policy": "ewma",
+      "capacity": 1,
+      "completed": 284,
+      "mean_ms": 131.05601056338014,
+      "p50_ms": 99.1665,
+      "p95_ms": 385.66609999999974,
+      "p99_ms": 767.9332200000008,
+      "max_share": 0.7816901408450704,
+      "utilization_rho": {
+        "edge-a": 0.8325,
+        "edge-b": 0.285,
+        "edge-c": 0.36
+      }
+    },
+    {
+      "policy": "adaptive",
+      "capacity": 1,
+      "completed": 298,
+      "mean_ms": 27.93059395973152,
+      "p50_ms": 15,
+      "p95_ms": 60,
+      "p99_ms": 60,
+      "max_share": 0.5033557046979866,
+      "utilization_rho": {
+        "edge-a": 0.5625,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "policy": "round-robin",
+      "capacity": 2,
+      "completed": 297,
+      "mean_ms": 34.84848484848485,
+      "p50_ms": 30,
+      "p95_ms": 60,
+      "p99_ms": 60,
+      "max_share": 0.3367003367003367,
+      "utilization_rho": {
+        "edge-a": 0.375,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 1.47
+      }
+    },
+    {
+      "policy": "ewma",
+      "capacity": 2,
+      "completed": 299,
+      "mean_ms": 16.360083612040135,
+      "p50_ms": 15,
+      "p95_ms": 15,
+      "p99_ms": 60.666659999999396,
+      "max_share": 0.9732441471571907,
+      "utilization_rho": {
+        "edge-a": 1.09125,
+        "edge-b": 0.0225,
+        "edge-c": 0.075
+      }
+    },
+    {
+      "policy": "adaptive",
+      "capacity": 2,
+      "completed": 298,
+      "mean_ms": 27.38255033557047,
+      "p50_ms": 15,
+      "p95_ms": 60,
+      "p99_ms": 60,
+      "max_share": 0.5033557046979866,
+      "utilization_rho": {
+        "edge-a": 0.5625,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "policy": "round-robin",
+      "capacity": 3,
+      "completed": 297,
+      "mean_ms": 34.84848484848485,
+      "p50_ms": 30,
+      "p95_ms": 60,
+      "p99_ms": 60,
+      "max_share": 0.3367003367003367,
+      "utilization_rho": {
+        "edge-a": 0.375,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 1.47
+      }
+    },
+    {
+      "policy": "ewma",
+      "capacity": 3,
+      "completed": 299,
+      "mean_ms": 16.036789297658864,
+      "p50_ms": 15,
+      "p95_ms": 15,
+      "p99_ms": 60,
+      "max_share": 0.9732441471571907,
+      "utilization_rho": {
+        "edge-a": 1.09125,
+        "edge-b": 0.0225,
+        "edge-c": 0.075
+      }
+    },
+    {
+      "policy": "adaptive",
+      "capacity": 3,
+      "completed": 298,
+      "mean_ms": 27.38255033557047,
+      "p50_ms": 15,
+      "p95_ms": 60,
+      "p99_ms": 60,
+      "max_share": 0.5033557046979866,
+      "utilization_rho": {
+        "edge-a": 0.5625,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.735
+      }
+    }
+  ]
+}

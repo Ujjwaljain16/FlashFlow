@@ -160,6 +160,10 @@ func classificationGlyph(c Classification) string {
 func RenderStressMap(policyName string, cells []StressMapCell) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "POLICY STRESS MAP: %s\n\n", policyName)
+	fmt.Fprintln(&b, "EXPLORATORY ANALYSIS -- this grid is a new, small (9-cell) run. It is not a")
+	fmt.Fprintln(&b, "reproduction of any specific Stage 13-16 experiment, and its numbers should")
+	fmt.Fprintln(&b, "not be cited as a Stage 13-16 finding. See docs/StageArtifacts/Stage17-DiagnosticTooling.md.")
+	fmt.Fprintln(&b)
 
 	byCell := map[string]StressMapCell{}
 	var workloads, heterogeneities []string

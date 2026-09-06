@@ -17,7 +17,11 @@ type PolicyReport struct {
 	Reason         string         `json:"reason"`
 	Mechanism      string         `json:"mechanism"`
 	SeedMetrics    []Metrics      `json:"seed_metrics"`
-	Confidence     string         `json:"confidence"`
+	// Replication is a plain seed-agreement count, not a statistical
+	// confidence interval -- named and labeled accordingly so it can't
+	// be misread as a stronger claim than "this many of the seeds we
+	// actually ran landed on the same classification."
+	Replication string `json:"replication"`
 }
 
 // ScenarioReport is every policy's PolicyReport for the SAME scenario
@@ -70,7 +74,7 @@ func BuildScenarioReport(label string, targets []replay.TargetProfile, capacity 
 			Policy: policy, Metrics: primary, Classification: dominant, Reason: reason,
 			Mechanism:   Mechanism(policy),
 			SeedMetrics: seedMetrics,
-			Confidence:  fmt.Sprintf("%d/%d seeded replication", dominantCount, len(results)),
+			Replication: fmt.Sprintf("%d/%d seeds agree", dominantCount, len(results)),
 		})
 	}
 	return sr
@@ -110,6 +114,7 @@ func (sr ScenarioReport) RenderText(policy string) string {
 	fmt.Fprintf(&b, "Policy: %s\n\n", pr.Policy)
 	fmt.Fprintln(&b, "Failure classification")
 	fmt.Fprintln(&b, string(pr.Classification))
+	fmt.Fprintf(&b, "(%s)\n", ClassificationSubtitle(pr.Classification))
 	fmt.Fprintln(&b)
 	fmt.Fprintf(&b, "%-28s %d\n", "Peak queue", pr.Metrics.PeakDepth)
 	fmt.Fprintf(&b, "%-28s %d\n", "Committed work", pr.Metrics.CommittedWork)
@@ -136,8 +141,8 @@ func (sr ScenarioReport) RenderText(policy string) string {
 	fmt.Fprintln(&b, "Interpretation")
 	fmt.Fprintln(&b, Interpretation(pr.Policy, pr.Classification, pr.Reason))
 	fmt.Fprintln(&b)
-	fmt.Fprintln(&b, "Confidence")
-	fmt.Fprintln(&b, pr.Confidence)
+	fmt.Fprintln(&b, "Replication")
+	fmt.Fprintln(&b, pr.Replication)
 	return b.String()
 }
 
@@ -157,7 +162,7 @@ func (sr ScenarioReport) RenderExplanation(policy string) string {
 
 	if !pr.Metrics.CongestionFound {
 		fmt.Fprintf(&b, "1. %s's bottleneck target (%s) never exceeded its own capacity.\n", pr.Policy, pr.Metrics.Bottleneck)
-		fmt.Fprintf(&b, "\nResult classified as %s.\n", pr.Classification)
+		fmt.Fprintf(&b, "\nResult classified as %s (%s).\n", pr.Classification, ClassificationSubtitle(pr.Classification))
 		return b.String()
 	}
 
@@ -181,7 +186,7 @@ func (sr ScenarioReport) RenderExplanation(policy string) string {
 	} else {
 		numbered("The queue never drained within the observed horizon.")
 	}
-	numbered("Result classified as %s.", string(pr.Classification))
+	numbered("Result classified as %s (%s).", string(pr.Classification), ClassificationSubtitle(pr.Classification))
 
 	fmt.Fprintln(&b)
 	fmt.Fprintln(&b, "Most likely mechanism:")

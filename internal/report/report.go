@@ -282,6 +282,28 @@ func Mechanism(policy string) string {
 	return "UNCLASSIFIED MECHANISM"
 }
 
+// ClassificationSubtitle is a short, plain-spoken qualifier meant to be
+// printed directly beside a classification label. STABLE in particular
+// invites misreading as "this policy is safe" -- what the classifier
+// actually means is narrower: no collapse mechanism tripped this
+// decision tree's own gates on this run. Every label gets an equally
+// literal qualifier so none of them implies more certainty than the
+// tree actually has.
+func ClassificationSubtitle(c Classification) string {
+	switch c {
+	case Stable:
+		return "no collapse mechanism detected under current diagnostic criteria"
+	case AcuteCollapse:
+		return "concentrated overload that had not, or had only just, resolved"
+	case ChronicCollapse:
+		return "permanent allocation mismatch; the policy never adapts"
+	case RecoveryLimited:
+		return "recovered, but from the workload easing, not from any active correction"
+	default:
+		return ""
+	}
+}
+
 // Interpretation renders one sentence combining the policy's own
 // mechanism with what actually happened, in the same spirit as Stage
 // 16's own prose explanations.

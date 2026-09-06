@@ -58,9 +58,24 @@ function classColorVar(classification) {
   }
 }
 
+// CLASS_SUBTITLE mirrors internal/report.ClassificationSubtitle -- kept
+// in sync by hand since this is caption text for display, not
+// classification logic (the actual classifying only ever happens in
+// Go; see the file header comment). STABLE especially needs this: read
+// alone, the word invites "this policy is safe," when what the
+// classifier actually means is narrower -- no collapse mechanism
+// tripped this diagnostic tree's own gates on this run.
+const CLASS_SUBTITLE = {
+  STABLE: 'no collapse mechanism detected under current diagnostic criteria',
+  ACUTE_COLLAPSE: 'concentrated overload that had not, or had only just, resolved',
+  CHRONIC_COLLAPSE: 'permanent allocation mismatch; the policy never adapts',
+  RECOVERY_LIMITED: 'recovered, but from the workload easing, not from any active correction',
+};
+
 function classBadge(classification) {
   const cls = 'badge-' + classification.toLowerCase();
-  return `<span class="badge ${cls}">${classification.replace(/_/g, ' ')}</span>`;
+  const subtitle = CLASS_SUBTITLE[classification] || '';
+  return `<span class="badge ${cls}" title="${subtitle}">${classification.replace(/_/g, ' ')}</span>`;
 }
 
 function fmtSeconds(ms) {
@@ -186,8 +201,8 @@ function renderExplain(policyName) {
         <div class="value">${pr.mechanism}</div>
       </div>
       <div>
-        <div class="label">Confidence</div>
-        <div class="value" style="font-size:13px">${pr.confidence}</div>
+        <div class="label">Replication</div>
+        <div class="value" style="font-size:13px">${pr.replication}</div>
       </div>
     </div>
     <table class="counterfactual-table">${counterfactualRows}</table>
@@ -568,7 +583,7 @@ function storyBeats(view) {
   const m = view.metrics;
   const beats = [{ t: 0, text: `Replaying ${policyLabel(view.policy)} against the canonical scenario (seed ${view.seed}). Traffic begins arriving.` }];
   if (!m.congestion_found) {
-    beats.push({ t: 4000, text: `${m.bottleneck} never exceeds its own capacity for the whole run. Classified STABLE.` });
+    beats.push({ t: 4000, text: `${m.bottleneck} never exceeds its own capacity for the whole run. Classified STABLE -- ${CLASS_SUBTITLE.STABLE}.` });
     return beats;
   }
   beats.push({ t: m.first_congestion_ms, text: `${m.bottleneck} crosses its own capacity for the first time.` });

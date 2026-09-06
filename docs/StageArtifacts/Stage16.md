@@ -306,6 +306,15 @@ Working tree clean at commit (see verdict below); `go test ./...` passing across
 `gofmt`/`go vet`/`go build` all clean; `scripts/final-validation.sh` passing; both reproduction scripts
 independently confirmed to work from the current tree.
 
+**Clean-checkout verification, performed as the mandatory last step before release** (Section 14 of this
+stage's own charter): `git clone`d the repository into a completely separate directory (no shared
+filesystem state, no untracked local files, no IDE artifacts) at the commit immediately preceding this
+one. From that isolated clone: `go build ./...` succeeded; `go test ./...` passed across all 23 packages;
+`./scripts/reproduce-flagship.sh` reproduced the flagship result byte-for-byte identical (except the
+timestamp field) to every prior run reported in this document and in
+`docs/StageArtifacts/Stage16-FlagshipDemo.md`. The clean checkout was deleted afterward — nothing about
+this project's reproducibility depends on any file that isn't tracked in git.
+
 ## Conclusion
 
 FlashFlow set out to compare routing policies and ended up discovering that the comparison itself was

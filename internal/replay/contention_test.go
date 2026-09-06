@@ -231,3 +231,48 @@ func TestContention_QueuedWorkSurvivesTargetFailure(t *testing.T) {
 		t.Errorf("expected /b's latency to be unaffected by t1's failure/recovery while queued (still 19ms, same as TestContention_OneSlot_SequentialWaiting), got %v", result.Completions[1].Latency)
 	}
 }
+
+// TestContention_ScaleInvariance pins a genuine Stage 13 discovery
+// (docs/StageArtifacts/Stage13.md, experiment-013d): scaling every
+// target's ServiceTime and the Scenario's Horizon by the same factor k,
+// while holding Requests fixed, keeps utilization (rho) exactly
+// invariant by construction (arrival rate scales by 1/k, service time
+// scales by k, rho = rate*serviceTime/capacity has no net k dependence)
+// -- and every completion's Latency should scale by EXACTLY k too. This
+// is a structural property of the deterministic queueing arithmetic
+// itself (not an empirical claim about which policy wins), verified
+// once with a hand-picked k so a future change to the queueing/timing
+// code can't silently break scale invariance without a test noticing.
+func TestContention_ScaleInvariance(t *testing.T) {
+	build := func(k int) Scenario {
+		arrivals := make([]Arrival, 5)
+		for i := range arrivals {
+			arrivals[i] = Arrival{At: msVT(time.Duration(i*k) * time.Millisecond), Key: "/x"}
+		}
+		return Scenario{
+			Targets:  []TargetProfile{{Name: "t1", ServiceTime: time.Duration(10*k) * time.Millisecond, Capacity: 1}},
+			Arrivals: arrivals,
+			Horizon:  msVT(time.Duration(200*k) * time.Millisecond),
+			Seeds:    DeriveSeeds(1),
+		}
+	}
+
+	base, err := RunWorld(build(1), RoundRobinPolicy())
+	if err != nil {
+		t.Fatalf("RunWorld(k=1) failed: %v", err)
+	}
+	scaled, err := RunWorld(build(4), RoundRobinPolicy())
+	if err != nil {
+		t.Fatalf("RunWorld(k=4) failed: %v", err)
+	}
+	if len(base.Completions) != len(scaled.Completions) {
+		t.Fatalf("expected the same number of completions at both scales, got %d vs %d", len(base.Completions), len(scaled.Completions))
+	}
+	for i := range base.Completions {
+		want := base.Completions[i].Latency * 4
+		got := scaled.Completions[i].Latency
+		if got != want {
+			t.Errorf("completion %d: expected latency to scale by exactly 4x (%v), got %v", i, want, got)
+		}
+	}
+}

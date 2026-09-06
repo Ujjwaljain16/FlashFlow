@@ -190,14 +190,15 @@ Full narrative: [`docs/StageArtifacts/Stage16-ResearchSynthesis.md`](docs/StageA
 One scenario shows the whole mechanism at once: 5 heterogeneous targets (15-75ms), each with exactly one
 serving slot, under a FlashCrowd workload peaking at t=2.5s, run across three independent seeds. EWMA and
 Adaptive both build the deepest queues and show severe, often-non-draining acute collapse (committed
-backlog 93-127 for Adaptive, consistently among the worst P99 latencies of all six policies — in every
-seed, not just one). Round-robin shows a completely different, chronic failure: a tiny committed backlog
-(4) but the highest fraction-of-time-over-capacity of the six (71%), and it never drains either.
-Weighted-round-robin, least-connections, and P2C-load all stay comparatively mild.
+backlog 93-127 for Adaptive, consistently among the worst P99 latencies of all six policies). Round-robin
+shows a completely different, chronic failure: a tiny committed backlog (4) but the highest
+fraction-of-time-over-capacity of the six (71%), and it never drains either. Weighted-round-robin,
+least-connections, and P2C-load all stay comparatively mild.
 
-**This finding is deliberately not framed as "Adaptive wins."** Adaptive's own P99 was the worst of all
-six policies tested in this exact scenario, in every one of the three seeds — a controlled ablation
-traced its resistance to collapse specifically to its Load signal, not general "smartness."
+**This finding is deliberately not framed as "Adaptive wins."** Adaptive's own P99 was worst-of-six in two
+of the three seeds, and a statistical near-tie with EWMA (within 0.3%) in the third — never among the
+safer half of the six policies in any seed tested — a controlled ablation traced its resistance to
+collapse specifically to its Load signal, not general "smartness."
 
 Full walkthrough: [`docs/StageArtifacts/Stage16-FlagshipDemo.md`](docs/StageArtifacts/Stage16-FlagshipDemo.md).
 Reproduce it yourself: `./scripts/reproduce-flagship.sh`.

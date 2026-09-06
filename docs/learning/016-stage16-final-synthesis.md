@@ -42,8 +42,10 @@ not explained away.
 
 ### Which negative result is most valuable?
 
-Adaptive's own worst-of-six P99 in the canonical scenario, confirmed across three independent seeds in
-this very stage. It would have been easy — and would have made for a better-sounding final story — to
+Adaptive's own worst-of-six P99 in the canonical scenario — worst outright in two of three independent
+seeds run in this very stage, and a statistical near-tie with EWMA (within 0.3%) in the third; never among
+the safer half of six policies in any seed tested. It would have been easy — and would have made for a
+better-sounding final story — to
 quietly emphasize Adaptive's better MEAN and let the P99 number sit unremarked in a JSON file nobody reads
 closely. Reporting it prominently, in the flagship demo itself, is the single most credibility-building
 decision made in this stage, precisely because it costs the project's own preferred narrative something

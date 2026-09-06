@@ -124,7 +124,7 @@ backlog=4 — the two metrics correctly disagree because they measure different 
 | LC | Current in-flight count | Anti-concentration, reacts to NOW | Diverts before a large backlog can form — the cleanest "unlock" mechanism tested | Only sees connection count, not actual latency or cost |
 | EWMA | Smoothed latency history | History lock-in | Effective when conditions are genuinely stable | Its own past success becomes the reason it over-commits once a target degrades |
 | P2C | Sampled comparison (2 random targets) | Bounded, structurally limited concentration | Never fully commits the way EWMA does — confirmed seed-independent (8/8 vs. 0/8) | Sampling itself provides no guarantee against a persistently unlucky comparison |
-| Adaptive | Load + Latency + Cache + Cost (weighted) | Multi-signal, protected primarily by Load | Resistance to committed-backlog collapse traced specifically to its Load component | Can still over-commit if Load's own weight is reduced or under specific burst conditions — its own P99 was the worst of six policies in the canonical scenario |
+| Adaptive | Load + Latency + Cache + Cost (weighted) | Multi-signal, protected primarily by Load | Resistance to committed-backlog collapse traced specifically to its Load component | Can still over-commit if Load's own weight is reduced or under specific burst conditions — its own P99 was worst-of-six in 2 of 3 seeds, a near-tie with EWMA in the third |
 
 ## Adaptive Signal Evidence
 
@@ -250,8 +250,10 @@ explicit N/A.
 
 ## Negative Results
 
-- Adaptive's own P99 was the worst of all six policies tested in the canonical scenario, in every one of
-  3 independent seeds.
+- Adaptive's own P99 was worst-of-six in 2 of 3 independent seeds, and a statistical near-tie with EWMA
+  (within 0.3%) in the third — never among the safer half of six policies in any seed tested. (An earlier
+  synthesis of this result overstated it as "worst in every seed"; corrected via independent audit against
+  the committed `016-flagship-results.json` -- seed 16000 actually has EWMA worse than Adaptive.)
 - Round-robin's failure mode has LOW committed backlog yet is the most chronically over-capacity of the
   six policies — committed backlog alone would have called round-robin "fine."
 - Committed backlog's cross-workload rank agreement is imperfect (distance 2, not 0).
@@ -375,9 +377,9 @@ The correct complementary metric for chronic collapse, which committed backlog i
 
 ADAPTIVE:
 Multi-signal; resistance to collapse traced specifically to its Load component via controlled ablation
-(removing it more than doubles committed backlog, worse than EWMA's own). Its own P99 was nonetheless the
-worst of six policies in the canonical scenario, across all three independently-seeded reproductions --
-"Adaptive is safe" is retired as an unqualified claim.
+(removing it more than doubles committed backlog, worse than EWMA's own). Its own P99 was nonetheless
+worst-of-six in 2 of 3 independently-seeded reproductions, and a statistical near-tie with EWMA in the
+third -- "Adaptive is safe" is retired as an unqualified claim.
 
 EWMA:
 Smoothed-history lock-in; its own past success is the reason it over-commits once a target degrades.
@@ -428,8 +430,9 @@ Committed backlog's perfect rank agreement with severity across the target-count
 where peak rho is badly misordered.
 
 STRONGEST NEGATIVE RESULT:
-Adaptive's own P99 was the worst of all six policies tested in the canonical scenario, in every
-independently-seeded reproduction -- mean latency alone would have hidden this.
+Adaptive's own P99 was worst-of-six in 2 of 3 independently-seeded reproductions, and a statistical
+near-tie with EWMA (within 0.3%) in the third -- never among the safer half of six policies in any seed
+tested. Mean latency alone would have hidden this.
 
 MOST IMPORTANT FALSIFICATION:
 "Load-blind vs. load-aware routing is the deepest regime boundary" (Stage 13's own central claim),

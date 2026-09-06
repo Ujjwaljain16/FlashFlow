@@ -1,0 +1,54 @@
+{
+  "experiment": "012-F-recovery-dynamics-under-contention",
+  "timestamp": "2026-09-06T17:38:16Z",
+  "phases": [
+    {
+      "policy": "round-robin",
+      "capacity": 0,
+      "completed": 548,
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "transition_steady_state_ratio": 1
+    },
+    {
+      "policy": "ewma",
+      "capacity": 0,
+      "completed": 549,
+      "steady_state_p99_ms": 30,
+      "transition_p99_ms": 30,
+      "transition_steady_state_ratio": 1
+    },
+    {
+      "policy": "adaptive",
+      "capacity": 0,
+      "completed": 547,
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "transition_steady_state_ratio": 1
+    },
+    {
+      "policy": "round-robin",
+      "capacity": 2,
+      "completed": 548,
+      "steady_state_p99_ms": 150,
+      "transition_p99_ms": 180,
+      "transition_steady_state_ratio": 1.2
+    },
+    {
+      "policy": "ewma",
+      "capacity": 2,
+      "completed": 549,
+      "steady_state_p99_ms": 147.272,
+      "transition_p99_ms": 177.46291999999994,
+      "transition_steady_state_ratio": 1.2050010864251177
+    },
+    {
+      "policy": "adaptive",
+      "capacity": 2,
+      "completed": 547,
+      "steady_state_p99_ms": 150,
+      "transition_p99_ms": 180,
+      "transition_steady_state_ratio": 1.2
+    }
+  ]
+}

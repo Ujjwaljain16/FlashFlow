@@ -1,0 +1,72 @@
+{
+  "experiment": "011-B-adversarial-adaptive",
+  "timestamp": "2026-09-06T00:58:53Z",
+  "runs": [
+    {
+      "scenario": "B1-cache-affinity-deception",
+      "policy": "round-robin",
+      "completed": 297,
+      "rejected": 0,
+      "mean_ms": 37.42424242424242,
+      "p99_ms": 60,
+      "max_share": 0.37373737373737376,
+      "affinity_target_share_pct": 30
+    },
+    {
+      "scenario": "B1-cache-affinity-deception",
+      "policy": "ewma",
+      "completed": 299,
+      "rejected": 0,
+      "mean_ms": 19.665551839464882,
+      "p99_ms": 60,
+      "max_share": 0.7224080267558528,
+      "affinity_target_share_pct": 94
+    },
+    {
+      "scenario": "B1-cache-affinity-deception",
+      "policy": "adaptive",
+      "completed": 297,
+      "rejected": 0,
+      "mean_ms": 30.505050505050505,
+      "p99_ms": 60,
+      "max_share": 0.4175084175084175
+    },
+    {
+      "scenario": "B1-cache-affinity-deception",
+      "policy": "adaptive-no-cache-weight",
+      "completed": 299,
+      "rejected": 0,
+      "mean_ms": 28.294314381270905,
+      "p99_ms": 60,
+      "max_share": 0.4280936454849498,
+      "affinity_target_share_pct": 54
+    },
+    {
+      "scenario": "B2-correlated-failure",
+      "policy": "round-robin",
+      "completed": 298,
+      "rejected": 0,
+      "mean_ms": 26.241610738255034,
+      "p99_ms": 30,
+      "max_share": 0.5
+    },
+    {
+      "scenario": "B2-correlated-failure",
+      "policy": "ewma",
+      "completed": 299,
+      "rejected": 0,
+      "mean_ms": 22.642140468227424,
+      "p99_ms": 30,
+      "max_share": 0.7324414715719063
+    },
+    {
+      "scenario": "B2-correlated-failure",
+      "policy": "adaptive",
+      "completed": 298,
+      "rejected": 0,
+      "mean_ms": 24.93288590604027,
+      "p99_ms": 30,
+      "max_share": 0.3389261744966443
+    }
+  ]
+}

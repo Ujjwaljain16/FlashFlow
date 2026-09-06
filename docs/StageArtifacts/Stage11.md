@@ -282,9 +282,84 @@ majority — both would fail intermittently (roughly coin-flip, across repeated 
 frozen-tracker behavior and pass consistently once real observations reach the policy's tracker. Run 5x
 fresh (`-count=1`) during development with no failures.
 
+## 12. Program B Results — Adversarial Adaptive Testing
+
+**Experiment**: `cmd/experiment-011b`, artifact `experiments/011-research-validation/results/011B-adversarial-adaptive.json`.
+
+**Capability gap disclosed up front**: H2 (a latency-oscillation/staleness attack — "the best target
+changes faster than `StaleAfter` allows detection") is **not implemented**. It requires a per-target
+service time that changes mid-run, and `internal/replay.TargetProfile` has no such mechanism —
+`ServiceTime` is one fixed value for the entire `Scenario`. Rather than fake this via an unrelated
+proxy mechanism (e.g. treating a crash/recover cycle as a stand-in for "got slow, got fast"), Program B
+reports this honestly as a genuine platform-capability gap: **H2 as originally stated cannot be tested
+with Stage 10's current machinery.** Adding time-varying `ServiceTime` would be a real capability
+addition, not attempted here per this stage's own charter (add capability only when genuinely
+necessary and demonstrated missing — this is such a case, but implementing it is scoped as a follow-up,
+not squeezed into this investigation).
+
+### B1 — Cache-Affinity Deception (H3): CONFIRMED, decisively
+
+**Setup**: 3 targets (edge-a 15ms, edge-b 30ms, edge-c 60ms), constant workload with a hot key (50% of
+traffic). edge-a — the fastest, and the hot key's natural affinity target — crashes at t=1s and
+recovers at t=2s, objectively regaining "best target" status for the remaining 2s of the 4s run.
+
+**Hypothesized mechanism**: Adaptive's cache-affinity signal (weight 0.1) rewards whichever target
+last served a given key, independent of that target's current latency. If the fixed 0.1 score gap
+isn't overcome by the real latency difference once weighted (0.4), Adaptive should show a measurably
+*lower* post-recovery share of hot-key traffic returning to the recovered target than a latency-only
+policy (EWMA) does.
+
+**Result**: of the 75 post-recovery hot-key routing decisions,
+
+| Policy | % routed back to recovered edge-a | Mean latency (whole run) |
+|---|---:|---:|
+| round-robin | 30% (chance level, ignores latency entirely) | 37.42ms |
+| ewma (latency only) | **94%** | 19.67ms |
+| adaptive (default weights) | **0%** | 30.51ms |
+| adaptive, `Weights.Cache` forced to 0 | **54%** | 28.29ms |
+
+**Adaptive never once routed the hot key back to the recovered, objectively-fastest target for the
+remaining two seconds of the scenario — a complete, permanent cache-affinity lock-in, confirmed
+exactly as hypothesized, and confirmed CAUSALLY, not just by pattern-match**: zeroing out
+`AdaptiveConfig.Weights.Cache` and rerunning the identical scenario jumps the return rate from 0% to
+54% — direct evidence the affinity term itself, not some other coincidental factor, is what causes the
+lock-in (the falsifier from the table below was checked, not just proposed). The 54% (vs EWMA's 94%)
+still falls short of full latency-driven behavior because Adaptive's Load term (weight 0.4) remains
+active and can still mildly disfavor edge-a if it has accumulated relative load — a secondary,
+smaller effect layered on top of the primary cache-affinity cause. This is a genuine case of Adaptive
+losing to a simpler policy (EWMA) for a directly identified, mechanistically-explained, and now
+causally-verified reason. Adaptive's own mean latency (30.51ms) sits worse than EWMA's (19.67ms) as
+the direct, traceable consequence.
+
+**What Would Falsify This**:
+
+| Claim | Falsifier |
+|---|---|
+| Cache-affinity's fixed 0.1 weight, not something else, causes the 0% return rate | **Checked directly**: forcing `Weights.Cache = 0` raises the return rate from 0% to 54% — confirmed, not merely consistent |
+| This is deterministic, not a seed artifact | Rerun with a different `Global` seed (not yet done — flagged for Program G) |
+
+### B2 — Correlated Failure (signal scarcity): NOT CONFIRMED — a genuine negative result
+
+**Setup**: 3 near-homogeneous targets (20/25/30ms); edge-a AND edge-b crash simultaneously at t=1.5s,
+both recover at t=2.5s, leaving only edge-c as the sole available target for 1 second.
+
+**Hypothesized mechanism**: with exactly one available target during the outage, no policy's selection
+signal can matter (there is nothing to choose between); the interesting question was whether Adaptive's
+heavier multi-signal decision process would behave WORSE once all three targets become simultaneously
+available again (a burst of re-balancing decisions).
+
+**Result**: adaptive was NOT worse here — if anything, it was the best-balanced of the three
+(`max_share` 0.339 vs round-robin's 0.500 and EWMA's 0.732), with mean latency (24.93ms) between the
+other two. **This specific adversarial construction did not make Adaptive lose.** Per this stage's own
+discipline, this is reported as a real negative result, not redesigned repeatedly until a failure
+appears. It suggests Adaptive's load-based signal (Section 7's "keeps utilization balanced" finding)
+generalizes to the simultaneous-recovery case too, at least in the virtual engine, where load tracking
+works correctly (Program F Section 10) — a genuinely different situation from Program F's real-engine
+finding, where Adaptive's own load signal is currently uninstrumented.
+
 ---
 
-*(Negative results, adversarial findings (Program B), recovery/adaptation dynamics (Program C),
-distribution-shift findings (Program D), mechanistic attribution (Program E), reproducibility
-verification (Program G), statistical methods, limitations, unresolved questions, and claims-
-supported/not-supported summaries are appended below as each remaining program actually executes.)*
+*(Recovery/adaptation dynamics (Program C), distribution-shift findings (Program D), mechanistic
+attribution (Program E), reproducibility verification (Program G), statistical methods, limitations,
+unresolved questions, and claims-supported/not-supported summaries are appended below as each
+remaining program actually executes.)*

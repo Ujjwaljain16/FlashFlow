@@ -1,0 +1,79 @@
+{
+  "experiment": "015-F-real-engine-validation",
+  "timestamp": "2026-09-06T20:35:21Z",
+  "cells": [
+    {
+      "level": "below_ceiling",
+      "requests": 30,
+      "policy": "round-robin",
+      "p50_ms": 31.188895,
+      "p99_ms": 62.373483,
+      "max_share": 0.3333333333333333
+    },
+    {
+      "level": "below_ceiling",
+      "requests": 30,
+      "policy": "ewma",
+      "p50_ms": 15.848931,
+      "p99_ms": 63.386971,
+      "max_share": 0.9333333333333333
+    },
+    {
+      "level": "below_ceiling",
+      "requests": 30,
+      "policy": "adaptive",
+      "p50_ms": 15.848931,
+      "p99_ms": 17.041193,
+      "max_share": 1
+    },
+    {
+      "level": "near_ceiling",
+      "requests": 75,
+      "policy": "round-robin",
+      "p50_ms": 30.938553,
+      "p99_ms": 63.386971,
+      "max_share": 0.3333333333333333
+    },
+    {
+      "level": "near_ceiling",
+      "requests": 75,
+      "policy": "ewma",
+      "p50_ms": 16.106456,
+      "p99_ms": 70.388222,
+      "max_share": 0.96
+    },
+    {
+      "level": "near_ceiling",
+      "requests": 75,
+      "policy": "adaptive",
+      "p50_ms": 16.106456,
+      "p99_ms": 17.885455,
+      "max_share": 1
+    },
+    {
+      "level": "above_ceiling",
+      "requests": 400,
+      "policy": "round-robin",
+      "p50_ms": 94.080583,
+      "p99_ms": 4055.085354,
+      "max_share": 0.335
+    },
+    {
+      "level": "above_ceiling",
+      "requests": 400,
+      "policy": "ewma",
+      "p50_ms": 385.478357,
+      "p99_ms": 3235.936569,
+      "max_share": 0.4875
+    },
+    {
+      "level": "above_ceiling",
+      "requests": 400,
+      "policy": "adaptive",
+      "p50_ms": 30.690219,
+      "p99_ms": 141.905752,
+      "max_share": 0.5425
+    }
+  ],
+  "limitation": "committed backlog is not directly measurable on the real engine with existing instrumentation (RealMetrics exposes only a histogram and per-target completion counts, no per-request dispatch/completion timeline); this experiment validates directional agreement only (p99 ranking, max_share concentration), not committed backlog itself"
+}

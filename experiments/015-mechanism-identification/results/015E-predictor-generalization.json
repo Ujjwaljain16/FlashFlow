@@ -1,0 +1,85 @@
+{
+  "experiment": "015-E-predictor-generalization",
+  "timestamp": "2026-09-06T20:31:56Z",
+  "cross_topology": [
+    {
+      "scenario": "graduated_n3",
+      "mean_ms": 93.7770657439446,
+      "p99_ms": 414.7330400000001,
+      "offered_rho_max": 0.9149999999999999,
+      "top1_share": 0.8062283737024222,
+      "entropy_bits": 0.8848382526001073,
+      "peak_depth": 15,
+      "committed_backlog": 24,
+      "drain_found": true
+    },
+    {
+      "scenario": "graduated_n5",
+      "mean_ms": 201.81260517799356,
+      "p99_ms": 1162.342400000001,
+      "offered_rho_max": 0.8325,
+      "top1_share": 0.6440129449838188,
+      "entropy_bits": 1.569481180332923,
+      "peak_depth": 26,
+      "committed_backlog": 30,
+      "drain_found": false
+    },
+    {
+      "scenario": "graduated_n8",
+      "mean_ms": 307.3198294117646,
+      "p99_ms": 1313.9910200000004,
+      "offered_rho_max": 0.7162499999999999,
+      "top1_share": 0.49117647058823527,
+      "entropy_bits": 2.2285567697883044,
+      "peak_depth": 35,
+      "committed_backlog": 40,
+      "drain_found": false
+    },
+    {
+      "scenario": "bimodal_n8",
+      "mean_ms": 28.16522818791945,
+      "p99_ms": 201.39997999999872,
+      "offered_rho_max": 0.23625,
+      "top1_share": 0.20469798657718122,
+      "entropy_bits": 2.5696729395362503,
+      "peak_depth": 5,
+      "committed_backlog": 4,
+      "drain_found": true
+    }
+  ],
+  "cross_workload": [
+    {
+      "scenario": "constant",
+      "mean_ms": 194.40093782383354,
+      "p99_ms": 1753.5665200000017,
+      "offered_rho_max": 0.8999999999999999,
+      "top1_share": 0.7927461139896373,
+      "entropy_bits": 1.1359084378570121,
+      "peak_depth": 29,
+      "committed_backlog": 33,
+      "drain_found": true
+    },
+    {
+      "scenario": "burst",
+      "mean_ms": 793.175668918919,
+      "p99_ms": 3761.66846,
+      "offered_rho_max": 1.696875,
+      "top1_share": 0.47072072072072074,
+      "entropy_bits": 2.050043167044839,
+      "peak_depth": 171,
+      "committed_backlog": 177,
+      "drain_found": false
+    },
+    {
+      "scenario": "flash_crowd",
+      "mean_ms": 950.283503367003,
+      "p99_ms": 4721.582560000003,
+      "offered_rho_max": 0.72,
+      "top1_share": 0.5,
+      "entropy_bits": 1.9694798942459757,
+      "peak_depth": 95,
+      "committed_backlog": 97,
+      "drain_found": true
+    }
+  ]
+}

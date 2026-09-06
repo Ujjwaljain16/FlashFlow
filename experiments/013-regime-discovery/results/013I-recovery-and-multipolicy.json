@@ -1,0 +1,164 @@
+{
+  "experiment": "013-I-recovery-and-multipolicy",
+  "timestamp": "2026-09-06T18:42:00Z",
+  "regime_map": [
+    {
+      "capacity": 0,
+      "policy": "round-robin",
+      "mean_ms": 34.84848484848485,
+      "max_share": 0.3367003367003367
+    },
+    {
+      "capacity": 0,
+      "policy": "weighted-round-robin",
+      "mean_ms": 25.48494983277592,
+      "max_share": 0.5752508361204013
+    },
+    {
+      "capacity": 0,
+      "policy": "least-connections",
+      "mean_ms": 25.620805369127517,
+      "max_share": 0.5738255033557047
+    },
+    {
+      "capacity": 0,
+      "policy": "ewma",
+      "mean_ms": 15.903010033444817,
+      "max_share": 0.9732441471571907
+    },
+    {
+      "capacity": 0,
+      "policy": "p2c-load",
+      "mean_ms": 30.906040268456376,
+      "max_share": 0.40268456375838924
+    },
+    {
+      "capacity": 0,
+      "policy": "adaptive",
+      "mean_ms": 27.38255033557047,
+      "max_share": 0.5033557046979866
+    },
+    {
+      "capacity": 1,
+      "policy": "round-robin",
+      "mean_ms": 193.69811320754718,
+      "max_share": 0.37735849056603776
+    },
+    {
+      "capacity": 1,
+      "policy": "weighted-round-robin",
+      "mean_ms": 25.78026086956524,
+      "max_share": 0.5752508361204013
+    },
+    {
+      "capacity": 1,
+      "policy": "least-connections",
+      "mean_ms": 25.855610738255052,
+      "max_share": 0.5738255033557047
+    },
+    {
+      "capacity": 1,
+      "policy": "ewma",
+      "mean_ms": 131.05601056338014,
+      "max_share": 0.7816901408450704
+    },
+    {
+      "capacity": 1,
+      "policy": "p2c-load",
+      "mean_ms": 36.58818120805367,
+      "max_share": 0.44966442953020136
+    },
+    {
+      "capacity": 1,
+      "policy": "adaptive",
+      "mean_ms": 27.93059395973152,
+      "max_share": 0.5033557046979866
+    }
+  ],
+  "recovery_cells": [
+    {
+      "capacity": 0,
+      "policy": "round-robin",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 0,
+      "policy": "weighted-round-robin",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 0,
+      "policy": "least-connections",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 0,
+      "policy": "ewma",
+      "steady_state_p99_ms": 30,
+      "transition_p99_ms": 30,
+      "ratio": 1
+    },
+    {
+      "capacity": 0,
+      "policy": "p2c-load",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 0,
+      "policy": "adaptive",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 3,
+      "policy": "round-robin",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 3,
+      "policy": "weighted-round-robin",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 3,
+      "policy": "least-connections",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 3,
+      "policy": "ewma",
+      "steady_state_p99_ms": 30,
+      "transition_p99_ms": 30,
+      "ratio": 1
+    },
+    {
+      "capacity": 3,
+      "policy": "p2c-load",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    },
+    {
+      "capacity": 3,
+      "policy": "adaptive",
+      "steady_state_p99_ms": 45,
+      "transition_p99_ms": 45,
+      "ratio": 1
+    }
+  ]
+}

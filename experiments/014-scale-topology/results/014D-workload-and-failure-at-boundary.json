@@ -1,0 +1,98 @@
+{
+  "experiment": "014-D-workload-and-failure-at-boundary",
+  "timestamp": "2026-09-06T19:22:01Z",
+  "workload": [
+    {
+      "scenario": "constant",
+      "policy": "round-robin",
+      "mean_ms": 170.4773667621776,
+      "p99_ms": 1111.0081999999993
+    },
+    {
+      "scenario": "constant",
+      "policy": "ewma",
+      "mean_ms": 307.3198294117646,
+      "p99_ms": 1313.9910200000004
+    },
+    {
+      "scenario": "constant",
+      "policy": "adaptive",
+      "mean_ms": 29.88126649076517,
+      "p99_ms": 60
+    },
+    {
+      "scenario": "flash_crowd",
+      "policy": "round-robin",
+      "mean_ms": 286.47952694610774,
+      "p99_ms": 1500.9806600000004
+    },
+    {
+      "scenario": "flash_crowd",
+      "policy": "ewma",
+      "mean_ms": 332.39760997067464,
+      "p99_ms": 1618.338600000001
+    },
+    {
+      "scenario": "flash_crowd",
+      "policy": "adaptive",
+      "mean_ms": 135.72568947368418,
+      "p99_ms": 951.106739999999
+    }
+  ],
+  "failure": [
+    {
+      "scenario": "no_failure",
+      "policy": "round-robin",
+      "mean_ms": 170.4773667621776,
+      "p99_ms": 1111.0081999999993
+    },
+    {
+      "scenario": "no_failure",
+      "policy": "ewma",
+      "mean_ms": 307.3198294117646,
+      "p99_ms": 1313.9910200000004
+    },
+    {
+      "scenario": "no_failure",
+      "policy": "adaptive",
+      "mean_ms": 29.88126649076517,
+      "p99_ms": 60
+    },
+    {
+      "scenario": "failure_of_concentrated_target",
+      "policy": "round-robin",
+      "mean_ms": 186.98036549707604,
+      "p99_ms": 1193.2143099999987
+    },
+    {
+      "scenario": "failure_of_concentrated_target",
+      "policy": "ewma",
+      "mean_ms": 323.3610680473372,
+      "p99_ms": 1378.2196299999998
+    },
+    {
+      "scenario": "failure_of_concentrated_target",
+      "policy": "adaptive",
+      "mean_ms": 37.598944591029024,
+      "p99_ms": 120
+    },
+    {
+      "scenario": "failure_of_non_concentrated_target",
+      "policy": "round-robin",
+      "mean_ms": 161.79733426966297,
+      "p99_ms": 951.6600999999999
+    },
+    {
+      "scenario": "failure_of_non_concentrated_target",
+      "policy": "ewma",
+      "mean_ms": 307.3198294117646,
+      "p99_ms": 1313.9910200000004
+    },
+    {
+      "scenario": "failure_of_non_concentrated_target",
+      "policy": "adaptive",
+      "mean_ms": 29.88126649076517,
+      "p99_ms": 60
+    }
+  ]
+}

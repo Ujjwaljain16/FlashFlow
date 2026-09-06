@@ -3,11 +3,36 @@ package chaos
 import (
 	"context"
 	"net/http"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	"flashflow/internal/topology"
 )
+
+// TestRunReal_WaitGroupBlocksUntilEveryActionFires is a regression test
+// for a real bug an independent audit found: internal/engine's real
+// engine used to call RunReal and immediately move on to wait only for
+// TRAFFIC to finish, snapshot metrics, and tear down the edges -- with
+// no way to know whether a chaos action scheduled near or after the
+// traffic horizon had actually fired yet. A late action would then
+// silently run against an already-stopped edge, never affecting the
+// recorded run at all. The fix is this function's returned WaitGroup;
+// this test proves it genuinely blocks until every action's own Run has
+// been called, not just until they've been scheduled.
+func TestRunReal_WaitGroupBlocksUntilEveryActionFires(t *testing.T) {
+	var fired int32
+	actions := []ScheduledAction{
+		{At: 40 * time.Millisecond, Run: func() { atomic.AddInt32(&fired, 1) }},
+		{At: 10 * time.Millisecond, Run: func() { atomic.AddInt32(&fired, 1) }},
+		{At: 0, Run: func() { atomic.AddInt32(&fired, 1) }},
+	}
+	wg := RunReal(actions, time.Now())
+	wg.Wait()
+	if got := atomic.LoadInt32(&fired); got != int32(len(actions)) {
+		t.Fatalf("after wg.Wait(), fired=%d, want %d -- every scheduled action's Run must have been called before Wait returns", got, len(actions))
+	}
+}
 
 func TestToRealSchedule_RejectsUnknownTarget(t *testing.T) {
 	s := Schedule{{At: time.Second, Target: "edge-nonexistent", Action: Crash}}

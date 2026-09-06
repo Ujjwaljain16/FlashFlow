@@ -160,12 +160,13 @@ func (r RealEngine) run(exp Experiment, policy replay.PolicySpec) (RunResult, er
 
 	hist := telemetry.AttachHistogram(pxy)
 
+	var chaosWG *sync.WaitGroup
 	if len(cfg.Chaos) > 0 {
 		actions, err := cfg.Chaos.ToRealSchedule(edges)
 		if err != nil {
 			return RunResult{}, fmt.Errorf("engine: compiling chaos schedule for %q: %w", exp.ID, err)
 		}
-		chaos.RunReal(actions, time.Now())
+		chaosWG = chaos.RunReal(actions, time.Now())
 	}
 
 	arrivals, err := traffic.Generate(cfg.TrafficPattern, cfg.TrafficParams, exp.Scenario.Seeds.Traffic)
@@ -197,6 +198,17 @@ func (r RealEngine) run(exp Experiment, policy replay.PolicySpec) (RunResult, er
 	}
 	traffic.ScheduleReal(arrivals, time.Now(), dispatch)
 	wg.Wait()
+
+	// Chaos actions must be given the chance to actually fire before
+	// metrics are snapshotted or the proxy is torn down (the deferred
+	// pxy.Stop above) -- an action scheduled near or after the traffic
+	// horizon could otherwise still be asleep at this point, and would
+	// then silently fire against an already-stopped edge, never
+	// affecting the recorded run at all. See chaos.RunReal's own doc
+	// comment for the bug this closes (found in an independent audit).
+	if chaosWG != nil {
+		chaosWG.Wait()
+	}
 
 	m := telemetry.SnapshotFromProxy(pxy)
 	m.Histogram = hist

@@ -2,6 +2,7 @@ package chaos
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"flashflow/internal/topology"
@@ -60,21 +61,38 @@ func (s Schedule) ToRealSchedule(edges map[string]*topology.EdgeServer) ([]Sched
 
 // RunReal dispatches actions against wall-clock time, each on its own
 // independent absolute-time sleep -- the same open-loop pattern
-// internal/traffic.ScheduleReal and cmd/experiment-008g's own dispatch
-// loop already use, and for the identical reason: a shared time.Ticker
-// silently drops ticks under load, throttling the dispatcher itself
-// rather than accurately timing the scheduled actions. Fire-and-forget:
-// callers needing to know when every action has fired should wrap this
-// with their own synchronization, the same convention ScheduleReal
-// already documents.
-func RunReal(actions []ScheduledAction, start time.Time) {
+// internal/traffic.ScheduleReal already uses, and for the identical
+// reason: a shared time.Ticker silently drops ticks under load,
+// throttling the dispatcher itself rather than accurately timing the
+// scheduled actions.
+//
+// The returned WaitGroup lets the caller wait for every action to have
+// actually fired before doing anything that assumes the schedule is
+// complete (snapshotting metrics, tearing down the servers these
+// actions act on). A real bug shipped here before this WaitGroup
+// existed: internal/engine.Run fired chaos.RunReal and immediately went
+// on to wait only for TRAFFIC to finish, snapshot metrics, and (via a
+// deferred call registered earlier) stop the proxy -- a chaos action
+// scheduled near or after the traffic horizon could still be asleep
+// when that happened, so it fired against an already-stopped edge (a
+// silent no-op: EdgeServer.SetDown just flips a bool under a mutex,
+// no panic, no error) with zero signal that the schedule's own declared
+// event never actually manifested in the recorded run. Found in an
+// independent audit, not by any test in this package -- every existing
+// test here used a chaos schedule that starts well before its own short
+// wall-clock deadline, which could never trigger this race.
+func RunReal(actions []ScheduledAction, start time.Time) *sync.WaitGroup {
+	var wg sync.WaitGroup
+	wg.Add(len(actions))
 	for _, a := range actions {
 		target := start.Add(a.At)
 		go func(run func(), target time.Time) {
+			defer wg.Done()
 			if d := time.Until(target); d > 0 {
 				time.Sleep(d)
 			}
 			run()
 		}(a.Run, target)
 	}
+	return &wg
 }

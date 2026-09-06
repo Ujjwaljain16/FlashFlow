@@ -1,0 +1,86 @@
+{
+  "experiment": "013-B-capacity-1-artifact-test",
+  "timestamp": "2026-09-06T18:20:34Z",
+  "cells": [
+    {
+      "capacity": 1,
+      "requests": 300,
+      "effective_rate_per_sec": 75,
+      "policy": "ewma",
+      "mean_ms": 131.05601056338014,
+      "completed": 284,
+      "max_share": 0.7816901408450704,
+      "offered_rho_max": 0.8925
+    },
+    {
+      "capacity": 1,
+      "requests": 300,
+      "effective_rate_per_sec": 75,
+      "policy": "adaptive",
+      "mean_ms": 27.93059395973152,
+      "completed": 298,
+      "max_share": 0.5033557046979866,
+      "offered_rho_max": 0.75
+    },
+    {
+      "capacity": 2,
+      "requests": 600,
+      "effective_rate_per_sec": 150,
+      "policy": "ewma",
+      "mean_ms": 101.18208199643453,
+      "completed": 561,
+      "max_share": 0.8306595365418895,
+      "offered_rho_max": 0.8887499999999999
+    },
+    {
+      "capacity": 2,
+      "requests": 600,
+      "effective_rate_per_sec": 150,
+      "policy": "adaptive",
+      "mean_ms": 27.347845896147405,
+      "completed": 597,
+      "max_share": 0.5058626465661642,
+      "offered_rho_max": 0.74625
+    },
+    {
+      "capacity": 4,
+      "requests": 1200,
+      "effective_rate_per_sec": 300,
+      "policy": "ewma",
+      "mean_ms": 108.33891054030039,
+      "completed": 1129,
+      "max_share": 0.8573959255978743,
+      "offered_rho_max": 0.9075
+    },
+    {
+      "capacity": 4,
+      "requests": 1200,
+      "effective_rate_per_sec": 300,
+      "policy": "adaptive",
+      "mean_ms": 24.875661357921206,
+      "completed": 1193,
+      "max_share": 0.6705783738474435,
+      "offered_rho_max": 0.751875
+    },
+    {
+      "capacity": 8,
+      "requests": 2400,
+      "effective_rate_per_sec": 600,
+      "policy": "ewma",
+      "mean_ms": 107.89221535087806,
+      "completed": 2280,
+      "max_share": 0.8552631578947368,
+      "offered_rho_max": 0.9703124999999999
+    },
+    {
+      "capacity": 8,
+      "requests": 2400,
+      "effective_rate_per_sec": 600,
+      "policy": "adaptive",
+      "mean_ms": 29.754689019278974,
+      "completed": 2386,
+      "max_share": 0.6102263202011735,
+      "offered_rho_max": 0.6853125
+    }
+  ]
+}

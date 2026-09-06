@@ -1,0 +1,5 @@
+{
+  "experiment": "015-B-falsification-program",
+  "timestamp": "2026-09-06T20:17:44Z",
+  "note": "primary output is console-printed analysis for F1/F3/F4/F6; see stdout captured in the Stage 15 writeup"
+}

@@ -63,6 +63,7 @@ FlashFlow is built learning-first — not architecture-first.
 | **12** | Model fidelity: real-engine load instrumentation, genuine SeedTree axis independence, time-varying target service time, and a minimal finite-capacity contention model — built to close exactly four gaps Stage 11 proved consequential, then re-ran Stage 11's own findings under the corrected model | ✅ Complete — **PASS**, see `docs/StageArtifacts/Stage12.md` |
 | **13** | Regime discovery: is Stage 12's capacity-dependent reversal a general rule or a one-scenario artifact? 11 experiments testing the boundary across heterogeneity, arrival rate, workload shape, failure, smoothing, cache-affinity, recovery, the full 6-policy set, and virtual-vs-real | ✅ Complete — **PASS**, see `docs/StageArtifacts/Stage13.md` |
 | **14** | Scale & topology generalization: does Stage 13's regime survive beyond 3 targets? 9 experiments testing target-count scaling, bimodal heterogeneity, normalized-rho matching across scale, a validated real concurrency ceiling, alpha/recovery follow-ups, and a full-policy-set falsification attempt | ✅ Complete — **PASS WITH LIMITATIONS**, see `docs/StageArtifacts/Stage14.md` |
+| **15** | Mechanism identification: what measurable property predicts whether a policy escapes or becomes trapped in an already-forming backlog? A new `internal/backlog` analysis package plus 6 experiments (a canonical scenario, a falsification program, Adaptive signal ablation, a cache-affinity mechanism test, predictor generalization across topology/workload, and real-engine validation) | ✅ Complete — **PASS WITH LIMITATIONS**, see `docs/StageArtifacts/Stage15.md` |
 
 A note on Stage 10's own numbers: widening `Scenario.Seed` into a hierarchical `SeedTree` (needed
 for genuine independent-axis seed control) changed the actual Development/Holdout scenario content,
@@ -341,6 +342,50 @@ Full findings, the mandatory regime/rho/virtual-vs-real/falsification tables, an
 changed in our understanding, narratively:
 [`docs/learning/014-stage14-scale-and-topology.md`](docs/learning/014-stage14-scale-and-topology.md).
 
+## Stage 15 Findings — Mechanism Identification
+
+Stage 14 named a replacement mechanism for its own falsified "load-blind vs. load-aware" claim —
+"concentration-proneness under already-committed queueing" — but never measured it. Stage 15's job was to
+turn that phrase into an actual, falsifiable quantity and try to break it. Six experiments plus a new
+analysis package later:
+
+- **Committed backlog, not raw concentration or whole-run rho, is the strongest predictor of ACUTE
+  collapse.** Operationally defined as the count of dispatches to a target between congestion onset and
+  material diversion, it achieves PERFECT rank agreement with actual severity across a target-count
+  generalization test (N=3/5/8 graduated, N=8 bimodal) where peak rho is badly misordered — rho actually
+  DECREASES as N grows while severity increases, exactly quantifying Stage 14's own "rho necessary but
+  insufficient" finding.
+- **But committed backlog isn't the whole story — there are at least two distinct collapse shapes.**
+  Round-robin's own failure in the canonical scenario has a tiny committed backlog (4 requests) yet spends
+  71% of the run above capacity and never drains — a CHRONIC, structural under-provisioning failure, not
+  an acute one. Adaptive's failure (committed backlog 86, also never drains) is the opposite shape. No
+  single metric captures both; a second metric (fraction-of-time-over-capacity) is needed for the chronic
+  case.
+- **Adaptive's own resistance to collapse traces specifically to its LOAD signal, not its latency
+  smoothing.** Controlled ablation on the exact canonical scenario: removing Load more than doubles
+  committed backlog (86→206, worse than EWMA's own 97) and recreates an EWMA-style single-target lock-in;
+  removing Latency or Cache has a far smaller effect. Also found: Adaptive's own P99 was the WORST of all
+  six policies tested in this scenario despite a comparatively good mean — "Adaptive is safe" was never
+  fully true, and mean latency alone would have hidden this.
+- **P2C and EWMA are mechanistically distinct in a real, seed-independent way.** Across 8 independent
+  seeds with genuine arrival-stream jitter, EWMA shows committed_backlog>50 in 8/8 seeds; P2C-load in 0/8
+  — sampling-based comparison structurally avoids the full lock-in that smoothed-history comparison
+  doesn't.
+- **The real engine mostly confirms the mechanism's direction, with an honest exception.** Extending Stage
+  14's own validated concurrency ceiling to Stage 15's round-robin-beats-EWMA falsifier: it reproduces at
+  low/moderate real overload, then REVERSES at the highest level tested — round-robin's permanently fixed
+  allocation to the slowest real edge is eventually worse than EWMA's "wrong but at least concentrated"
+  lock-in. Documented as a genuine boundary, not smoothed over.
+- **One clean negative result, reported honestly**: Stage 13's cache-affinity interim-latency effect
+  (higher cache weight worsens interim latency but improves eventual recovery) is NOT explained by
+  committed backlog in either the originally-hypothesized location or the natural alternative — it remains
+  genuinely unresolved.
+
+Full findings, the mandatory mechanism/predictor/falsification tables, the five-stage historical
+reconciliation, and the final verdict (**PASS WITH LIMITATIONS**):
+[`docs/StageArtifacts/Stage15.md`](docs/StageArtifacts/Stage15.md). What changed in our understanding,
+narratively: [`docs/learning/015-stage15-mechanism-identification.md`](docs/learning/015-stage15-mechanism-identification.md).
+
 ## Running Stage 10 Features
 
 ```bash
@@ -433,6 +478,21 @@ go run -buildvcs=true ./cmd/experiment-014h   # Section 23 (Program H): recovery
 go run -buildvcs=true ./cmd/experiment-014i   # Section 25: 10-seed statistical confirmation of the N=8 boundary
 ```
 
+## Running Stage 15 Research
+
+```bash
+go run -buildvcs=true ./cmd/experiment-015a   # Section 8: canonical scenario, full 6-policy backlog dynamics
+go run -buildvcs=true ./cmd/experiment-015b   # Falsification program: F1 (concentration alone), F3 (alpha),
+                                               #   F4 (concentration shape), F6 (P2C vs EWMA, 8 seeds)
+go run -buildvcs=true ./cmd/experiment-015c   # Section 20: Adaptive signal ablation (default/cache=0/load=0/latency=0)
+go run -buildvcs=true ./cmd/experiment-015d   # Section 21: cache-affinity vs committed backlog
+go run -buildvcs=true ./cmd/experiment-015e   # Sections 23-25: predictor generalization across topology/workload
+go run -buildvcs=true ./cmd/experiment-015f   # Section 26: real-engine validation of the falsifier
+
+# internal/backlog's own hand-computed unit tests
+go test ./internal/backlog/... -v
+```
+
 ## Specifications
 
 - [PRD v3.1](prd.md) — Product requirements and build sequence authority
@@ -459,6 +519,7 @@ go run -buildvcs=true ./cmd/experiment-014i   # Section 25: 10-seed statistical 
 | [012](experiments/012-model-fidelity/) | Model Fidelity (contention model, time-varying service time, real-engine load fix, seed-isolation fix — Stage 11's flagship finding re-tested and reversed under a specific, identified regime) | ✅ Complete — see [`Stage12.md`](docs/StageArtifacts/Stage12.md) |
 | [013](experiments/013-regime-discovery/) | Regime Discovery (11 experiments: capacity boundary generalization, rho analysis, heterogeneity/arrival-rate/workload-shape/failure sweeps, H2 smoothing intervention, cache-affinity and recovery generalization, multi-policy regime map, virtual-vs-real triangulation) | ✅ Complete — see [`Stage13.md`](docs/StageArtifacts/Stage13.md) |
 | [014](experiments/014-scale-topology/) | Scale & Topology Generalization (9 experiments: target-count scaling, bimodal heterogeneity, normalized-rho cross-scale test, workload/failure at a generalized boundary, validated real concurrency ceiling, full-policy-set falsification, alpha/recovery follow-ups, statistical confirmation) | ✅ Complete — see [`Stage14.md`](docs/StageArtifacts/Stage14.md) |
+| [015](experiments/015-mechanism-identification/) | Mechanism Identification (new `internal/backlog` analysis package; 6 experiments: canonical scenario backlog dynamics, falsification program, Adaptive signal ablation, cache-affinity mechanism test, predictor generalization across topology/workload, real-engine validation) | ✅ Complete — see [`Stage15.md`](docs/StageArtifacts/Stage15.md) |
 
 ---
 

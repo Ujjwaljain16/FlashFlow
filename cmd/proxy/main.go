@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
@@ -15,6 +16,7 @@ import (
 	"flashflow/internal/clock"
 	"flashflow/internal/health"
 	"flashflow/internal/proxy"
+	"flashflow/internal/telemetry"
 	"flashflow/internal/transport"
 )
 
@@ -60,6 +62,7 @@ func main() {
 	checkTimeoutMs := flag.Int("check-timeout-ms", 200, "Health check timeout in milliseconds")
 	debugHeaders := flag.Bool("debug-headers", true, "Expose debug headers in response")
 	policyName := flag.String("policy", "round-robin", "Routing policy: round-robin, weighted-round-robin, least-connections, ewma, p2c-load, adaptive")
+	metricsAddr := flag.String("metrics-addr", "", "If set, serve Prometheus-format metrics at /metrics on this address (e.g. :9090) -- a separate listener from -addr, not a route on the proxy's own mux, so a scraper hitting it can never be confused with real proxied traffic. Empty (default) disables metrics entirely.")
 	flag.Parse()
 
 	var targets []string
@@ -100,6 +103,20 @@ func main() {
 	}
 
 	log.Printf("[FlashFlow Proxy] Listening on %s routing to [%s] using policy %q", pxy.AddrPort(), strings.Join(targets, ", "), *policyName)
+
+	if *metricsAddr != "" {
+		hist := telemetry.AttachHistogram(pxy)
+		metricsMux := http.NewServeMux()
+		metricsMux.Handle("/metrics", telemetry.ProxyHandler(pxy, hist))
+		metricsServer := &http.Server{Addr: *metricsAddr, Handler: metricsMux, ReadHeaderTimeout: 10 * time.Second}
+		go func() {
+			if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Printf("[FlashFlow Proxy] metrics server exited unexpectedly: %v", err)
+			}
+		}()
+		defer metricsServer.Close()
+		log.Printf("[FlashFlow Proxy] Serving Prometheus metrics at http://%s/metrics", *metricsAddr)
+	}
 
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()

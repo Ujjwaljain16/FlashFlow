@@ -1,0 +1,42 @@
+{
+  "experiment": "015-D-cache-affinity-committed-backlog",
+  "timestamp": "2026-09-06T20:29:01Z",
+  "cells": [
+    {
+      "cache_weight": 0.02,
+      "mean_ms": 101.9695218855219,
+      "post_recovery_return_pct": 64,
+      "absorbing_target": "edge-b",
+      "absorbing_target_peak_depth": 20,
+      "committed_backlog_on_absorbing_target": 14,
+      "drain_found": true,
+      "drain_at_ms": 1520,
+      "edge_a_post_recovery_peak_depth": 5,
+      "edge_a_post_recovery_committed_backlog": 0
+    },
+    {
+      "cache_weight": 0.1,
+      "mean_ms": 100.6765469798658,
+      "post_recovery_return_pct": 68,
+      "absorbing_target": "edge-b",
+      "absorbing_target_peak_depth": 24,
+      "committed_backlog_on_absorbing_target": 8,
+      "drain_found": true,
+      "drain_at_ms": 1333.333333,
+      "edge_a_post_recovery_peak_depth": 3,
+      "edge_a_post_recovery_committed_backlog": 93
+    },
+    {
+      "cache_weight": 0.3,
+      "mean_ms": 168.550797250859,
+      "post_recovery_return_pct": 94,
+      "absorbing_target": "edge-b",
+      "absorbing_target_peak_depth": 24,
+      "committed_backlog_on_absorbing_target": 8,
+      "drain_found": true,
+      "drain_at_ms": 1333.333333,
+      "edge_a_post_recovery_peak_depth": 1,
+      "edge_a_post_recovery_committed_backlog": 0
+    }
+  ]
+}

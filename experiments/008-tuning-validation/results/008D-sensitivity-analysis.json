@@ -1,130 +1,130 @@
 {
   "experiment": "008-D-sensitivity-analysis",
-  "timestamp": "2026-09-05T12:34:07Z",
-  "winner_config_hash": "3215da2cc0dd6ad3",
+  "timestamp": "2026-09-05T18:44:26Z",
+  "winner_config_hash": "814c4f656afdbfce",
   "development_report": {
     "baseline_config": {
       "Weights": {
-        "Load": 0.16093257359019994,
-        "Latency": 0.5678504991153457,
-        "Cache": 0.05087082884339706,
-        "Cost": 0.22034609845105735
+        "Load": 0.08856498320575033,
+        "Latency": 0.4400267659063718,
+        "Cache": 0.017902558749796654,
+        "Cost": 0.4535056921380811
       },
-      "ReferenceLatency": 192267378,
-      "StaleAfter": 3742261892
+      "ReferenceLatency": 180332078,
+      "StaleAfter": 4575386841
     },
-    "baseline_utility": 0.6593823566325195,
+    "baseline_utility": 0.7191333670927468,
     "perturbations": [
       {
         "parameter": "Weights.Load",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.1742220309672528,
-            "Latency": 0.5588566748206508,
-            "Cache": 0.05006511801448032,
-            "Cost": 0.21685617619761613
+            "Load": 0.09656624275950164,
+            "Latency": 0.4361638812248089,
+            "Cache": 0.017745396673955832,
+            "Cost": 0.4495244793417338
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.659135002096452,
-        "delta": -0.00024735453606750113
+        "utility": 0.7190686607772461,
+        "delta": -0.0000647063155007066
       },
       {
         "parameter": "Weights.Load",
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.1472083785526315,
-            "Latency": 0.5771385381414648,
-            "Cache": 0.05170289686891538,
-            "Cost": 0.22395018643698827
+            "Load": 0.08042073095380713,
+            "Latency": 0.44395868525675297,
+            "Cache": 0.01806252951208578,
+            "Cost": 0.45755805427735413
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6597055785257927,
-        "delta": 0.0003232218932731623
+        "utility": 0.7194232747205935,
+        "delta": 0.0002899076278467527
       },
       {
         "parameter": "Weights.Latency",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.15228505891871943,
-            "Latency": 0.5910715230870929,
-            "Cache": 0.048137347181108917,
-            "Cost": 0.20850607081307868
+            "Load": 0.0848321419011816,
+            "Latency": 0.46362854554902766,
+            "Cache": 0.017148000815726268,
+            "Cost": 0.4343913117340644
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6593987724450391,
-        "delta": 0.000016415812519543493
+        "utility": 0.7193451007035794,
+        "delta": 0.00021173361083259845
       },
       {
         "parameter": "Weights.Latency",
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.1706213133868434,
-            "Latency": 0.5418334910360333,
-            "Cache": 0.05393344204163198,
-            "Cost": 0.2336117535354913
+            "Load": 0.09264145519770077,
+            "Latency": 0.4142522992673225,
+            "Cache": 0.018726578319226833,
+            "Cost": 0.4743796672157499
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.658417677333587,
-        "delta": -0.0009646792989325137
+        "utility": 0.7191513910035426,
+        "delta": 0.000018023910795861298
       },
       {
         "parameter": "Weights.Cache",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.16011803985020392,
-            "Latency": 0.5649764172530819,
-            "Cache": 0.055674689965323244,
-            "Cost": 0.21923085293139083
+            "Load": 0.08840671256918571,
+            "Latency": 0.4392404131761547,
+            "Cache": 0.01965762245069583,
+            "Cost": 0.4526952518039637
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6586790531918273,
-        "delta": -0.0007033034406922489
+        "utility": 0.7191333670927468,
+        "delta": 0
       },
       {
         "parameter": "Weights.Cache",
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.16175543690472685,
-            "Latency": 0.5707539718768493,
-            "Cache": 0.04601784253820771,
-            "Cost": 0.22147274868021613
+            "Load": 0.08872382154852824,
+            "Latency": 0.4408159392313655,
+            "Cache": 0.016141199752503128,
+            "Cost": 0.45431903946760316
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6590925323328356,
-        "delta": -0.0002898242996839384
+        "utility": 0.7192441237366014,
+        "delta": 0.00011075664385462591
       },
       {
         "parameter": "Weights.Cost",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.15746293916072962,
-            "Latency": 0.5556078959022788,
-            "Cache": 0.0497740764875925,
-            "Cost": 0.237155088449399
+            "Load": 0.08472275790920426,
+            "Latency": 0.42093703190625237,
+            "Cache": 0.01712588989477558,
+            "Cost": 0.4772143202897678
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6593823566325195,
+        "utility": 0.7191333670927468,
         "delta": 0
       },
       {
@@ -132,15 +132,15 @@
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.16455855719465773,
-            "Latency": 0.5806447803080302,
-            "Cache": 0.05201700321454108,
-            "Cost": 0.20277965928277095
+            "Load": 0.09277225790918195,
+            "Latency": 0.4609302134543696,
+            "Cache": 0.018753018828129592,
+            "Cost": 0.4275445098083189
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6593823566325195,
+        "utility": 0.7191333670927468,
         "delta": 0
       },
       {
@@ -148,47 +148,47 @@
         "direction": "+100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 292267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 280332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6590674340637922,
-        "delta": -0.00031492256872733826
+        "utility": 0.7181567750050826,
+        "delta": -0.0009765920876642076
       },
       {
         "parameter": "ReferenceLatency",
         "direction": "-100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 92267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 80332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6568442228884899,
-        "delta": -0.002538133744029669
+        "utility": 0.7191620176987803,
+        "delta": 0.0000286506060335201
       },
       {
         "parameter": "StaleAfter",
         "direction": "+100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3842261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4675386841
         },
-        "utility": 0.6593823566325195,
+        "utility": 0.7191333670927468,
         "delta": 0
       },
       {
@@ -196,144 +196,144 @@
         "direction": "-100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3642261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4475386841
         },
-        "utility": 0.6593823566325195,
+        "utility": 0.7191333670927468,
         "delta": 0
       }
     ],
-    "max_abs_delta": 0.002538133744029669,
-    "mean_abs_delta": 0.00044982129949382627
+    "max_abs_delta": 0.0009765920876642076,
+    "mean_abs_delta": 0.00014169756687735605
   },
   "holdout_report": {
     "baseline_config": {
       "Weights": {
-        "Load": 0.16093257359019994,
-        "Latency": 0.5678504991153457,
-        "Cache": 0.05087082884339706,
-        "Cost": 0.22034609845105735
+        "Load": 0.08856498320575033,
+        "Latency": 0.4400267659063718,
+        "Cache": 0.017902558749796654,
+        "Cost": 0.4535056921380811
       },
-      "ReferenceLatency": 192267378,
-      "StaleAfter": 3742261892
+      "ReferenceLatency": 180332078,
+      "StaleAfter": 4575386841
     },
-    "baseline_utility": 0.6782193541375922,
+    "baseline_utility": 0.6947340002686436,
     "perturbations": [
       {
         "parameter": "Weights.Load",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.1742220309672528,
-            "Latency": 0.5588566748206508,
-            "Cache": 0.05006511801448032,
-            "Cost": 0.21685617619761613
+            "Load": 0.09656624275950164,
+            "Latency": 0.4361638812248089,
+            "Cache": 0.017745396673955832,
+            "Cost": 0.4495244793417338
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6781933907224741,
-        "delta": -0.000025963415118068767
+        "utility": 0.6943808511635853,
+        "delta": -0.00035314910505834796
       },
       {
         "parameter": "Weights.Load",
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.1472083785526315,
-            "Latency": 0.5771385381414648,
-            "Cache": 0.05170289686891538,
-            "Cost": 0.22395018643698827
+            "Load": 0.08042073095380713,
+            "Latency": 0.44395868525675297,
+            "Cache": 0.01806252951208578,
+            "Cost": 0.45755805427735413
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6791116264257976,
-        "delta": 0.0008922722882054313
+        "utility": 0.6948898142176583,
+        "delta": 0.0001558139490146493
       },
       {
         "parameter": "Weights.Latency",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.15228505891871943,
-            "Latency": 0.5910715230870929,
-            "Cache": 0.048137347181108917,
-            "Cost": 0.20850607081307868
+            "Load": 0.0848321419011816,
+            "Latency": 0.46362854554902766,
+            "Cache": 0.017148000815726268,
+            "Cost": 0.4343913117340644
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.67845786134009,
-        "delta": 0.00023850720249785073
+        "utility": 0.6946727850961667,
+        "delta": -0.00006121517247692498
       },
       {
         "parameter": "Weights.Latency",
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.1706213133868434,
-            "Latency": 0.5418334910360333,
-            "Cache": 0.05393344204163198,
-            "Cost": 0.2336117535354913
+            "Load": 0.09264145519770077,
+            "Latency": 0.4142522992673225,
+            "Cache": 0.018726578319226833,
+            "Cost": 0.4743796672157499
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6777441636015012,
-        "delta": -0.0004751905360909081
+        "utility": 0.6943808511635853,
+        "delta": -0.00035314910505834796
       },
       {
         "parameter": "Weights.Cache",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.16011803985020392,
-            "Latency": 0.5649764172530819,
-            "Cache": 0.055674689965323244,
-            "Cost": 0.21923085293139083
+            "Load": 0.08840671256918571,
+            "Latency": 0.4392404131761547,
+            "Cache": 0.01965762245069583,
+            "Cost": 0.4526952518039637
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6781724503535981,
-        "delta": -0.00004690378399407891
+        "utility": 0.6947340002686436,
+        "delta": 0
       },
       {
         "parameter": "Weights.Cache",
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.16175543690472685,
-            "Latency": 0.5707539718768493,
-            "Cache": 0.04601784253820771,
-            "Cost": 0.22147274868021613
+            "Load": 0.08872382154852824,
+            "Latency": 0.4408159392313655,
+            "Cache": 0.016141199752503128,
+            "Cost": 0.45431903946760316
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6780787944625095,
-        "delta": -0.000140559675082641
+        "utility": 0.6936483488284446,
+        "delta": -0.0010856514401990092
       },
       {
         "parameter": "Weights.Cost",
         "direction": "+10%",
         "config": {
           "Weights": {
-            "Load": 0.15746293916072962,
-            "Latency": 0.5556078959022788,
-            "Cache": 0.0497740764875925,
-            "Cost": 0.237155088449399
+            "Load": 0.08472275790920426,
+            "Latency": 0.42093703190625237,
+            "Cache": 0.01712588989477558,
+            "Cost": 0.4772143202897678
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6782193541375922,
+        "utility": 0.6947340002686436,
         "delta": 0
       },
       {
@@ -341,15 +341,15 @@
         "direction": "-10%",
         "config": {
           "Weights": {
-            "Load": 0.16455855719465773,
-            "Latency": 0.5806447803080302,
-            "Cache": 0.05201700321454108,
-            "Cost": 0.20277965928277095
+            "Load": 0.09277225790918195,
+            "Latency": 0.4609302134543696,
+            "Cache": 0.018753018828129592,
+            "Cost": 0.4275445098083189
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6782193541375922,
+        "utility": 0.6947340002686436,
         "delta": 0
       },
       {
@@ -357,47 +357,47 @@
         "direction": "+100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 292267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 280332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6794868221755738,
-        "delta": 0.0012674680379816117
+        "utility": 0.693291338414611,
+        "delta": -0.0014426618540326341
       },
       {
         "parameter": "ReferenceLatency",
         "direction": "-100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 92267378,
-          "StaleAfter": 3742261892
+          "ReferenceLatency": 80332078,
+          "StaleAfter": 4575386841
         },
-        "utility": 0.6766977502489302,
-        "delta": -0.0015216038886619598
+        "utility": 0.6929431731330208,
+        "delta": -0.0017908271356228411
       },
       {
         "parameter": "StaleAfter",
         "direction": "+100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3842261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4675386841
         },
-        "utility": 0.6782193541375922,
+        "utility": 0.6947340002686436,
         "delta": 0
       },
       {
@@ -405,22 +405,22 @@
         "direction": "-100ms",
         "config": {
           "Weights": {
-            "Load": 0.16093257359019994,
-            "Latency": 0.5678504991153457,
-            "Cache": 0.05087082884339706,
-            "Cost": 0.22034609845105735
+            "Load": 0.08856498320575033,
+            "Latency": 0.4400267659063718,
+            "Cache": 0.017902558749796654,
+            "Cost": 0.4535056921380811
           },
-          "ReferenceLatency": 192267378,
-          "StaleAfter": 3642261892
+          "ReferenceLatency": 180332078,
+          "StaleAfter": 4475386841
         },
-        "utility": 0.6782193541375922,
+        "utility": 0.6947340002686436,
         "delta": 0
       }
     ],
-    "max_abs_delta": 0.0015216038886619598,
-    "mean_abs_delta": 0.00038403906896937917
+    "max_abs_delta": 0.0017908271356228411,
+    "mean_abs_delta": 0.00043687231345522953
   },
   "fragile_threshold_fraction": 0.1,
   "verdict": "robust",
-  "findings": "Every one of the winning configuration's 6 tunable parameters was perturbed in both directions (4 weights +/-10%, ReferenceLatency and StaleAfter +/-100ms) and re-evaluated on both Development and Holdout. On Development, the largest single perturbation moved utility by -0.0025 (mean absolute movement 0.0004) against a baseline of 0.6594 -- 0.4% of baseline. On Holdout, the largest movement was -0.0015 (mean 0.0004) against a baseline of 0.6782 -- 0.2% of baseline. Neither exceeds the 10% fragile-knife-edge threshold, so this configuration is judged robust: modest parameter nudges produce modest utility changes, not the kind of cliff-edge sensitivity that would suggest the search got lucky landing on an isolated spike rather than finding a genuinely good region of the configuration space."
+  "findings": "Every one of the winning configuration's 6 tunable parameters was perturbed in both directions (4 weights +/-10%, ReferenceLatency and StaleAfter +/-100ms) and re-evaluated on both Development and Holdout. On Development, the largest single perturbation moved utility by -0.0010 (mean absolute movement 0.0001) against a baseline of 0.7191 -- 0.1% of baseline. On Holdout, the largest movement was -0.0018 (mean 0.0004) against a baseline of 0.6947 -- 0.3% of baseline. Neither exceeds the 10% fragile-knife-edge threshold, so this configuration is judged robust: modest parameter nudges produce modest utility changes, not the kind of cliff-edge sensitivity that would suggest the search got lucky landing on an isolated spike rather than finding a genuinely good region of the configuration space."
 }

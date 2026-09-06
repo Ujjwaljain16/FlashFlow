@@ -1,16 +1,16 @@
 {
   "experiment": "008-C-holdout-validation-generalization-gap",
-  "timestamp": "2026-09-05T12:33:55Z",
-  "winner_config_hash": "3215da2cc0dd6ad3",
+  "timestamp": "2026-09-05T18:48:52Z",
+  "winner_config_hash": "814c4f656afdbfce",
   "winner_config": {
     "Weights": {
-      "Load": 0.16093257359019994,
-      "Latency": 0.5678504991153457,
-      "Cache": 0.05087082884339706,
-      "Cost": 0.22034609845105735
+      "Load": 0.08856498320575033,
+      "Latency": 0.4400267659063718,
+      "Cache": 0.017902558749796654,
+      "Cost": 0.4535056921380811
     },
-    "ReferenceLatency": 192267378,
-    "StaleAfter": 3742261892
+    "ReferenceLatency": 180332078,
+    "StaleAfter": 4575386841
   },
   "baseline_config": {
     "Weights": {
@@ -22,56 +22,56 @@
     "ReferenceLatency": 100000000,
     "StaleAfter": 1000000000
   },
-  "baseline_dev_utility": 0.6441256403777436,
-  "winner_dev_utility": 0.6593823566325195,
-  "baseline_holdout_utility": 0.6607489021466059,
-  "winner_holdout_utility": 0.6782193541375922,
+  "baseline_dev_utility": 0.697533788783002,
+  "winner_dev_utility": 0.7191333670927468,
+  "baseline_holdout_utility": 0.6837453007918439,
+  "winner_holdout_utility": 0.6947340002686436,
   "baseline_holdout_metrics": {
-    "MeanLatencyMs": 83.62724283333374,
-    "P50LatencyMs": 65.31,
-    "P99LatencyMs": 189.16,
+    "MeanLatencyMs": 71.92208566666811,
+    "P50LatencyMs": 56.224,
+    "P99LatencyMs": 184.845,
     "RejectedRate": 0,
-    "MeanMaxShare": 0.6599999999999999
+    "MeanMaxShare": 0.6525000000000001
   },
   "winner_holdout_metrics": {
-    "MeanLatencyMs": 66.43426550000133,
-    "P50LatencyMs": 56.364,
-    "P99LatencyMs": 183.791,
+    "MeanLatencyMs": 60.09221300000065,
+    "P50LatencyMs": 52.031,
+    "P99LatencyMs": 167.037,
     "RejectedRate": 0,
-    "MeanMaxShare": 0.8228333333333333
+    "MeanMaxShare": 0.8005000000000002
   },
-  "training_improvement": 0.015256716254775982,
-  "holdout_improvement": 0.01747045199098629,
-  "generalization_gap": -0.0022137357362103094,
+  "training_improvement": 0.021599578309744794,
+  "holdout_improvement": 0.010988699476799701,
+  "generalization_gap": 0.010610878832945092,
   "baseline_dev_robustness": {
-    "mean": 0.6660131569136591,
-    "median": 0.6664885966161688,
-    "worst": 0.5397075314704467,
-    "std_dev": 0.08284096814819304
+    "mean": 0.7158313624172539,
+    "median": 0.7208354092948799,
+    "worst": 0.5569391356464892,
+    "std_dev": 0.07664025920826746
   },
   "winner_dev_robustness": {
-    "mean": 0.6807157114699846,
-    "median": 0.6746311508385201,
-    "worst": 0.5501828561494873,
-    "std_dev": 0.08337735388284895
+    "mean": 0.7362171752008364,
+    "median": 0.7320113611166488,
+    "worst": 0.5815761962029079,
+    "std_dev": 0.08111754020886047
   },
   "baseline_holdout_robustness": {
-    "mean": 0.6852858676155874,
-    "median": 0.6856511200034386,
-    "worst": 0.5235481910101092,
-    "std_dev": 0.08627046064422846
+    "mean": 0.7026494418308935,
+    "median": 0.7001027197756635,
+    "worst": 0.5751480883144855,
+    "std_dev": 0.07483715978345236
   },
   "winner_holdout_robustness": {
-    "mean": 0.7022584861315624,
-    "median": 0.6957207591676899,
-    "worst": 0.5235481910101092,
-    "std_dev": 0.08992571329110666
+    "mean": 0.71674090847486,
+    "median": 0.7116102111124981,
+    "worst": 0.571024185161123,
+    "std_dev": 0.08390534812426707
   },
-  "worst_case_regression": 0,
+  "worst_case_regression": -0.004123903153362529,
   "generalization_gap_bootstrap_ci": {
-    "estimate": -0.0022700639596494616,
-    "lower": -0.011210563628985367,
-    "upper": 0.006512185856064033,
+    "estimate": 0.0062943461396162,
+    "lower": -0.0019667078078138725,
+    "upper": 0.014775038803319521,
     "confidence": 0.95,
     "n_resamples": 5000,
     "sample_size": 60
@@ -80,5 +80,5 @@
   "scenario_distribution_note": "Development and Holdout are drawn from the identical ScenarioSpace (same target-count range, service-time range, and failure probability -- see internal/tuning/scenario.go's DefaultScenarioSpace), differing only in seed range. This experiment tests generalization to unseen SAMPLES from the same generating distribution, not to a distributionally different traffic shape; it says nothing about robustness under distribution shift, which is what the hand-crafted challenge suite (008-F) probes instead.",
   "holdout_touch_note": "Holdout was scored twice across this stage's lifetime: once under the original (p99-based) objective, and again here under the corrected (mean-latency-based) objective after the objective function itself was found to be flawed (see docs/learning/008-tuning-final-validation.md). The correction was motivated entirely by Development-side evidence (008-F's contradictory ranking and the p99/median mismatch found while investigating it) -- Holdout numbers were never inspected or compared before the objective was corrected, so this was not a case of adjusting the method after seeing a disappointing Holdout result. Recorded explicitly because master context rule 9 asks for any re-touching of Holdout to be stated honestly rather than left implicit.",
   "evidence_tier": "suggestive: improved on both sets with a small pooled generalization gap, but its 95% bootstrap CI includes zero -- not distinguishable from no gap at this scenario-set size",
-  "findings": "008-B's winning candidate (Development utility 0.6594, a 0.0153 improvement over the hand-chosen baseline's 0.6441) was evaluated against the 20-scenario Holdout set for the first and only time. Its Holdout utility was 0.6782 against the baseline's 0.6607 Holdout utility -- a holdout improvement of +0.0175, against a training improvement of +0.0153, for a generalization gap of -0.0022, whose 95% bootstrap CI (per-scenario paired, 5000 resamples) is [-0.0112, 0.0065] (excludes zero: false). Looking past the pooled aggregate: the winner's per-scenario utility distribution on Holdout was mean=0.7023/median=0.6957/worst=0.5235/stddev=0.0899 versus the baseline's mean=0.6853/median=0.6857/worst=0.5235/stddev=0.0863 -- a worst-case regression of +0.0000. Evidence tier: suggestive: improved on both sets with a small pooled generalization gap, but its 95% bootstrap CI includes zero -- not distinguishable from no gap at this scenario-set size. Scope note: Development and Holdout are drawn from the identical ScenarioSpace (same target-count range, service-time range, and failure probability -- see internal/tuning/scenario.go's DefaultScenarioSpace), differing only in seed range. This experiment tests generalization to unseen SAMPLES from the same generating distribution, not to a distributionally different traffic shape; it says nothing about robustness under distribution shift, which is what the hand-crafted challenge suite (008-F) probes instead. Provenance note: Holdout was scored twice across this stage's lifetime: once under the original (p99-based) objective, and again here under the corrected (mean-latency-based) objective after the objective function itself was found to be flawed (see docs/learning/008-tuning-final-validation.md). The correction was motivated entirely by Development-side evidence (008-F's contradictory ranking and the p99/median mismatch found while investigating it) -- Holdout numbers were never inspected or compared before the objective was corrected, so this was not a case of adjusting the method after seeing a disappointing Holdout result. Recorded explicitly because master context rule 9 asks for any re-touching of Holdout to be stated honestly rather than left implicit."
+  "findings": "008-B's winning candidate (Development utility 0.7191, a 0.0216 improvement over the hand-chosen baseline's 0.6975) was evaluated against the 20-scenario Holdout set for the first and only time. Its Holdout utility was 0.6947 against the baseline's 0.6837 Holdout utility -- a holdout improvement of +0.0110, against a training improvement of +0.0216, for a generalization gap of +0.0106, whose 95% bootstrap CI (per-scenario paired, 5000 resamples) is [-0.0020, 0.0148] (excludes zero: false). Looking past the pooled aggregate: the winner's per-scenario utility distribution on Holdout was mean=0.7167/median=0.7116/worst=0.5710/stddev=0.0839 versus the baseline's mean=0.7026/median=0.7001/worst=0.5751/stddev=0.0748 -- a worst-case regression of -0.0041. Evidence tier: suggestive: improved on both sets with a small pooled generalization gap, but its 95% bootstrap CI includes zero -- not distinguishable from no gap at this scenario-set size. Scope note: Development and Holdout are drawn from the identical ScenarioSpace (same target-count range, service-time range, and failure probability -- see internal/tuning/scenario.go's DefaultScenarioSpace), differing only in seed range. This experiment tests generalization to unseen SAMPLES from the same generating distribution, not to a distributionally different traffic shape; it says nothing about robustness under distribution shift, which is what the hand-crafted challenge suite (008-F) probes instead. Provenance note: Holdout was scored twice across this stage's lifetime: once under the original (p99-based) objective, and again here under the corrected (mean-latency-based) objective after the objective function itself was found to be flawed (see docs/learning/008-tuning-final-validation.md). The correction was motivated entirely by Development-side evidence (008-F's contradictory ranking and the p99/median mismatch found while investigating it) -- Holdout numbers were never inspected or compared before the objective was corrected, so this was not a case of adjusting the method after seeing a disappointing Holdout result. Recorded explicitly because master context rule 9 asks for any re-touching of Holdout to be stated honestly rather than left implicit."
 }

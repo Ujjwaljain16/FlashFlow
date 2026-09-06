@@ -1,6 +1,6 @@
 {
   "experiment": "006-D-queueing-concurrency-attribution",
-  "timestamp": "2026-09-05T07:17:31Z",
+  "timestamp": "2026-09-05T18:06:18Z",
   "service_delay_ms": 20,
   "max_conns_per_host": 5,
   "duration_ms": 1000,
@@ -9,168 +9,168 @@
     {
       "concurrency": 2,
       "replicate": 0,
-      "lambda_req_per_sec": 93.94016950604161,
-      "l_avg_in_system": 1.9861932938856015,
-      "w_avg_latency_ms": 21.567436170212762,
-      "lambda_w_predicted_l": 2.0260486096405197,
-      "rel_error": 0.020066181815038255
+      "lambda_req_per_sec": 97.97272439352884,
+      "l_avg_in_system": 2,
+      "w_avg_latency_ms": 20.617132653061233,
+      "lambda_w_predicted_l": 2.019916655203192,
+      "rel_error": 0.009958327601595984
     },
     {
       "concurrency": 2,
       "replicate": 1,
-      "lambda_req_per_sec": 91.95235029207865,
-      "l_avg_in_system": 1.9940944881889764,
-      "w_avg_latency_ms": 22.03260869565218,
-      "lambda_w_predicted_l": 2.0259501526309074,
-      "rel_error": 0.015975002503949603
+      "lambda_req_per_sec": 97.96770004929375,
+      "l_avg_in_system": 1.9940357852882704,
+      "w_avg_latency_ms": 20.552673469387756,
+      "lambda_w_predicted_l": 2.013498149660057,
+      "rel_error": 0.009760288413767363
     },
     {
       "concurrency": 2,
       "replicate": 2,
-      "lambda_req_per_sec": 89.93912020953017,
-      "l_avg_in_system": 1.9880952380952381,
-      "w_avg_latency_ms": 22.408066666666667,
-      "lambda_w_predicted_l": 2.0153618015964994,
-      "rel_error": 0.013714918168299057
+      "lambda_req_per_sec": 97.95274759456038,
+      "l_avg_in_system": 1.996031746031746,
+      "w_avg_latency_ms": 20.556173469387748,
+      "lambda_w_predicted_l": 2.0135336713569365,
+      "rel_error": 0.008768360202679912
     },
     {
       "concurrency": 4,
       "replicate": 0,
-      "lambda_req_per_sec": 173.9575717482506,
-      "l_avg_in_system": 3.9291338582677167,
-      "w_avg_latency_ms": 23.101925287356313,
-      "lambda_w_predicted_l": 4.01875482569801,
-      "rel_error": 0.022809344416126736
+      "lambda_req_per_sec": 195.88552449948253,
+      "l_avg_in_system": 3.99009900990099,
+      "w_avg_latency_ms": 20.619275510204087,
+      "lambda_w_predicted_l": 4.039017598115663,
+      "rel_error": 0.01225999357241184
     },
     {
       "concurrency": 4,
       "replicate": 1,
-      "lambda_req_per_sec": 159.8947412918076,
-      "l_avg_in_system": 3.963144963144963,
-      "w_avg_latency_ms": 25.200956249999997,
-      "lambda_w_predicted_l": 4.029500379899911,
-      "rel_error": 0.01674312127666699
+      "lambda_req_per_sec": 195.955145867111,
+      "l_avg_in_system": 3.9822485207100593,
+      "w_avg_latency_ms": 20.663423469387777,
+      "lambda_w_predicted_l": 4.049104160057767,
+      "rel_error": 0.01678841463560561
     },
     {
       "concurrency": 4,
       "replicate": 2,
-      "lambda_req_per_sec": 179.9406195955335,
-      "l_avg_in_system": 3.970178926441352,
-      "w_avg_latency_ms": 22.374849999999995,
-      "lambda_w_predicted_l": 4.0261443723571215,
-      "rel_error": 0.01409645432931004
+      "lambda_req_per_sec": 195.97193681864758,
+      "l_avg_in_system": 3.974459724950884,
+      "w_avg_latency_ms": 20.772887755102047,
+      "lambda_w_predicted_l": 4.070903046683716,
+      "rel_error": 0.024265769037079273
     },
     {
       "concurrency": 5,
       "replicate": 0,
-      "lambda_req_per_sec": 215.92468546970815,
-      "l_avg_in_system": 4.967078189300412,
-      "w_avg_latency_ms": 23.147462962962962,
-      "lambda_w_predicted_l": 4.998108659699497,
-      "rel_error": 0.006247228091945104
+      "lambda_req_per_sec": 244.86725745973106,
+      "l_avg_in_system": 4.99015748031496,
+      "w_avg_latency_ms": 20.727889795918344,
+      "lambda_w_predicted_l": 5.075581527254069,
+      "rel_error": 0.017118507236713012
     },
     {
       "concurrency": 5,
       "replicate": 1,
-      "lambda_req_per_sec": 222.83984500339608,
-      "l_avg_in_system": 4.930830039525691,
-      "w_avg_latency_ms": 22.594955156950682,
-      "lambda_w_predicted_l": 5.035056305033574,
-      "rel_error": 0.021137671481759025
+      "lambda_req_per_sec": 244.9472383648562,
+      "l_avg_in_system": 4.988165680473373,
+      "w_avg_latency_ms": 20.811926530612258,
+      "lambda_w_predicted_l": 5.097823928725755,
+      "rel_error": 0.021983682033988757
     },
     {
       "concurrency": 5,
       "replicate": 2,
-      "lambda_req_per_sec": 195.8659297710717,
-      "l_avg_in_system": 4.864485981308412,
-      "w_avg_latency_ms": 25.532438775510172,
-      "lambda_w_predicted_l": 5.000934860088263,
-      "rel_error": 0.028050009662716775
+      "lambda_req_per_sec": 244.99034738031324,
+      "l_avg_in_system": 4.9783889980353635,
+      "w_avg_latency_ms": 20.784346938775496,
+      "lambda_w_predicted_l": 5.091964376603559,
+      "rel_error": 0.022813681014684877
     },
     {
       "concurrency": 8,
       "replicate": 0,
-      "lambda_req_per_sec": 222.8725837438736,
-      "l_avg_in_system": 7.868884540117417,
-      "w_avg_latency_ms": 36.58796412556055,
-      "lambda_w_predicted_l": 8.154454098591838,
-      "rel_error": 0.03629098343208883
+      "lambda_req_per_sec": 247.85765534853334,
+      "l_avg_in_system": 7.891682785299807,
+      "w_avg_latency_ms": 32.98748387096773,
+      "lambda_w_predicted_l": 8.176200408105622,
+      "rel_error": 0.03605284583103097
     },
     {
       "concurrency": 8,
       "replicate": 1,
-      "lambda_req_per_sec": 222.87211597985078,
-      "l_avg_in_system": 7.8216432865731464,
-      "w_avg_latency_ms": 36.38657847533631,
-      "lambda_w_predicted_l": 8.109553738065095,
-      "rel_error": 0.0368094581845971
+      "lambda_req_per_sec": 247.96007842737316,
+      "l_avg_in_system": 7.8882466281310215,
+      "w_avg_latency_ms": 33.0708508064516,
+      "lambda_w_predicted_l": 8.200250759627696,
+      "rel_error": 0.039553039630379636
     },
     {
       "concurrency": 8,
       "replicate": 2,
-      "lambda_req_per_sec": 222.84599113552622,
-      "l_avg_in_system": 7.867850098619329,
-      "w_avg_latency_ms": 36.488479820627816,
-      "lambda_w_predicted_l": 8.131311450656453,
-      "rel_error": 0.03348581235468076
+      "lambda_req_per_sec": 242.90764651279585,
+      "l_avg_in_system": 7.884990253411306,
+      "w_avg_latency_ms": 33.3657366255144,
+      "lambda_w_predicted_l": 8.104792557869498,
+      "rel_error": 0.0278760400956866
     },
     {
       "concurrency": 15,
       "replicate": 0,
-      "lambda_req_per_sec": 202.88309875849535,
-      "l_avg_in_system": 14.475409836065573,
-      "w_avg_latency_ms": 76.18882266009847,
-      "lambda_w_predicted_l": 15.457424432042245,
-      "rel_error": 0.06784019292704076
+      "lambda_req_per_sec": 249.8589795919183,
+      "l_avg_in_system": 14.687140115163148,
+      "w_avg_latency_ms": 61.373164000000045,
+      "lambda_w_predicted_l": 15.334636131367466,
+      "rel_error": 0.04408591537407864
     },
     {
       "concurrency": 15,
       "replicate": 1,
-      "lambda_req_per_sec": 234.75128101776167,
-      "l_avg_in_system": 14.631679389312977,
-      "w_avg_latency_ms": 66.36138723404257,
-      "lambda_w_predicted_l": 15.578420663307229,
-      "rel_error": 0.06470489468801204
+      "lambda_req_per_sec": 254.90318776928524,
+      "l_avg_in_system": 14.686792452830188,
+      "w_avg_latency_ms": 61.15996078431378,
+      "lambda_w_predicted_l": 15.589868967766057,
+      "rel_error": 0.06148902272816166
     },
     {
       "concurrency": 15,
       "replicate": 2,
-      "lambda_req_per_sec": 234.9739413898999,
-      "l_avg_in_system": 14.658959537572255,
-      "w_avg_latency_ms": 65.97085957446808,
-      "lambda_w_predicted_l": 15.501432891092378,
-      "rel_error": 0.05747156552010305
+      "lambda_req_per_sec": 254.855522404349,
+      "l_avg_in_system": 14.697142857142858,
+      "w_avg_latency_ms": 60.63649803921569,
+      "lambda_w_predicted_l": 15.453546384554597,
+      "rel_error": 0.05146602538765725
     },
     {
       "concurrency": 30,
       "replicate": 0,
-      "lambda_req_per_sec": 245.81598215575818,
-      "l_avg_in_system": 28.268115942028984,
-      "w_avg_latency_ms": 128.96141869918694,
-      "lambda_w_predicted_l": 31.700777797740592,
-      "rel_error": 0.12143228302696793
+      "lambda_req_per_sec": 269.91470695260296,
+      "l_avg_in_system": 28.56887298747764,
+      "w_avg_latency_ms": 118.49142592592592,
+      "lambda_w_predicted_l": 31.982578505192357,
+      "rel_error": 0.11949038098951327
     },
     {
       "concurrency": 30,
       "replicate": 1,
-      "lambda_req_per_sec": 204.6432045728273,
-      "l_avg_in_system": 28.49095607235142,
-      "w_avg_latency_ms": 168.08645853658538,
-      "lambda_w_predicted_l": 34.397751520224496,
-      "rel_error": 0.2073217702092219
+      "lambda_req_per_sec": 265.96260565764453,
+      "l_avg_in_system": 28.183600713012478,
+      "w_avg_latency_ms": 119.05051503759395,
+      "lambda_w_predicted_l": 31.66298518428308,
+      "rel_error": 0.12345422100960142
     },
     {
       "concurrency": 30,
       "replicate": 2,
-      "lambda_req_per_sec": 245.88893196942942,
-      "l_avg_in_system": 28.412296564195298,
-      "w_avg_latency_ms": 129.55760569105703,
-      "lambda_w_predicted_l": 31.856781291890485,
-      "rel_error": 0.12123218268937362
+      "lambda_req_per_sec": 269.88537967925026,
+      "l_avg_in_system": 28.579606440071558,
+      "w_avg_latency_ms": 118.52748148148152,
+      "lambda_w_predicted_l": 31.988834342054943,
+      "rel_error": 0.11928883307515725
     }
   ],
-  "mean_abs_rel_error": 0.05030161526543876,
-  "throughput_multiplier_2_to_30": 2.5245403996390734,
+  "mean_abs_rel_error": 0.04258185265943296,
+  "throughput_multiplier_2_to_30": 2.7416856495972133,
   "predicted_ceiling_req_per_sec": 250,
-  "findings": "Across 18 (concurrency, replicate) measurements spanning offered concurrency from 2 (below the 5-connection capacity) to 30 (6x capacity), L (independently sampled, time-averaged outstanding-request count) and lambda*W (computed from independently measured throughput and mean latency) agreed within a mean absolute relative error of 5.0% -- consistent with Little's Law holding over these stable, closed-loop measurement windows, using one self-consistent system boundary (client-observed dispatch-to-response) for all three quantities. Offered concurrency grew 15x (2 to 30) while measured throughput grew only 2.5x (91.9 to 232.1 req/s) -- essentially flat, and close to the 250 req/s ceiling predicted directly from capacity/service-time (5 connections / 20ms), a genuine finite-capacity effect from transport.MaxConnsPerHost, not a simulated one. This is a measured association between increased in-flight work and constrained throughput/rising latency under a real, finite-capacity system boundary -- not a claim that FlashFlow's edge or origin behave like a textbook M/M/c queue in general; the finding is scoped specifically to the transport-layer connection limit exercised here."
+  "findings": "Across 18 (concurrency, replicate) measurements spanning offered concurrency from 2 (below the 5-connection capacity) to 30 (6x capacity), L (independently sampled, time-averaged outstanding-request count) and lambda*W (computed from independently measured throughput and mean latency) agreed within a mean absolute relative error of 4.3% -- consistent with Little's Law holding over these stable, closed-loop measurement windows, using one self-consistent system boundary (client-observed dispatch-to-response) for all three quantities. Offered concurrency grew 15x (2 to 30) while measured throughput grew only 2.7x (98.0 to 268.6 req/s) -- essentially flat, and close to the 250 req/s ceiling predicted directly from capacity/service-time (5 connections / 20ms), a genuine finite-capacity effect from transport.MaxConnsPerHost, not a simulated one. This is a measured association between increased in-flight work and constrained throughput/rising latency under a real, finite-capacity system boundary -- not a claim that FlashFlow's edge or origin behave like a textbook M/M/c queue in general; the finding is scoped specifically to the transport-layer connection limit exercised here."
 }

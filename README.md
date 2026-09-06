@@ -61,6 +61,7 @@ FlashFlow is built learning-first — not architecture-first.
 | **10** | Traffic generator, SWR cache, declarative YAML chaos engine, experiment manifest/provenance, a generalized queueing-attribution engine, HdrHistogram+Prometheus telemetry, LHS/Bayesian tuner tiers, a formal `ExperimentEngine` interface | ✅ Complete — see `docs/StageArtifacts/Stage10.md` |
 | **11** | Research validation: an 8-program experimental sweep (162+ runs) mapping policy regime boundaries, attacking Adaptive adversarially, testing distribution shift, and validating virtual-vs-real agreement — using Stage 10's platform, not extending it | ✅ Complete — **PASS WITH LIMITATIONS**, see `docs/StageArtifacts/Stage11.md` |
 | **12** | Model fidelity: real-engine load instrumentation, genuine SeedTree axis independence, time-varying target service time, and a minimal finite-capacity contention model — built to close exactly four gaps Stage 11 proved consequential, then re-ran Stage 11's own findings under the corrected model | ✅ Complete — **PASS**, see `docs/StageArtifacts/Stage12.md` |
+| **13** | Regime discovery: is Stage 12's capacity-dependent reversal a general rule or a one-scenario artifact? 11 experiments testing the boundary across heterogeneity, arrival rate, workload shape, failure, smoothing, cache-affinity, recovery, the full 6-policy set, and virtual-vs-real | ✅ Complete — **PASS**, see `docs/StageArtifacts/Stage13.md` |
 
 A note on Stage 10's own numbers: widening `Scenario.Seed` into a hierarchical `SeedTree` (needed
 for genuine independent-axis seed control) changed the actual Development/Holdout scenario content,
@@ -262,6 +263,42 @@ Full findings, the claim-reconciliation table, and the final verdict (**PASS**):
 understanding, narratively:
 [`docs/learning/012-stage12-model-fidelity-and-control.md`](docs/learning/012-stage12-model-fidelity-and-control.md).
 
+## Stage 13 Findings — Regime Discovery
+
+Stage 12 found a sharp reversal at Capacity=1 but explicitly declined to call ρ≈1 a general predictor.
+Stage 13's job was to find out: is that reversal a real, generalizable regime, or a property of one
+scenario? Eleven experiments later:
+
+- **The reversal generalizes within a specific, now-precisely-bounded regime, not universally.** Low
+  and moderate heterogeneity never destabilize at ANY capacity 0-5, because both share the same 10ms
+  fastest target — only severe heterogeneity's 15ms fastest target, against the same offered load,
+  crosses the line. The operative variable is the fastest (concentrated) target's absolute service time
+  relative to offered load, not the heterogeneity ratio between targets.
+- **Normalized offered load (ρ), not the literal "Capacity=1" number, drives the transition** —
+  confirmed via two independent methods: scaling arrival rate proportionally with capacity (ρ stayed in
+  a tight 0.89-0.97 band across Capacity 1/2/4/8, Adaptive won every time) and fixing capacity while
+  varying only arrival rate (the winner flipped right at the same ρ≈0.89 zone). A real bug was caught
+  and fixed along the way: the first version of the analysis forgot to normalize by capacity for multi-
+  slot targets, which would have supported the opposite, wrong conclusion.
+- **The deepest reframing this stage found: the real boundary is load-blind vs. load-aware routing, not
+  "EWMA vs. Adaptive."** Expanding to the full 6-policy set shows round-robin and EWMA (no live load
+  signal) both collapse under contention, while weighted-round-robin, least-connections, P2C-load, AND
+  Adaptive (every policy with some load signal, static or live) all stay nearly unaffected.
+- **H2's residual Adaptive lag has genuine causal evidence now**: a targeted intervention on
+  `LatencyTracker`'s smoothing alpha (not `StaleAfter`, already ruled out in Stage 12) shows the
+  swap-window degraded-share decreasing strictly as alpha increases (70%→47%) — a real contributing
+  mechanism, confirmed via ablation, not correlation.
+- **Honest limits, found and reported, not smoothed over**: a severe burst that exceeds total system
+  capacity erases Adaptive's advantage (a different, capacity-shortfall regime, not a contradiction);
+  cache-affinity self-healing and the recovery transition-cost penalty are both real but require actual
+  queueing pressure, vanishing at higher capacity; and the real engine does NOT reproduce the virtual
+  reversal at the concurrency levels tested — a genuine, disclosed divergence.
+
+Full findings, the mandatory claim-reconciliation table, counterexamples, and the final verdict
+(**PASS**): [`docs/StageArtifacts/Stage13.md`](docs/StageArtifacts/Stage13.md). What changed in our
+understanding, narratively:
+[`docs/learning/013-stage13-regime-discovery.md`](docs/learning/013-stage13-regime-discovery.md).
+
 ## Running Stage 10 Features
 
 ```bash
@@ -321,6 +358,25 @@ go test ./internal/replay/... -run TestContention -v
 go test ./internal/replay/... -run TestServiceTimeSchedule -v
 ```
 
+## Running Stage 13 Research
+
+```bash
+go run -buildvcs=true ./cmd/experiment-013a   # Program A+C: capacity boundary across 3 heterogeneity levels
+go run -buildvcs=true ./cmd/experiment-013b   # Section 21: is Capacity=1 special, or does normalized rho matter?
+go run -buildvcs=true ./cmd/experiment-013c   # Program B: arrival-rate sweep at fixed topology/capacity
+go run -buildvcs=true ./cmd/experiment-013d   # Section 22 + Program C: service-time scaling + heterogeneity ratio
+go run -buildvcs=true ./cmd/experiment-013e   # Program E: workload shape (constant/burst/flash-crowd)
+go run -buildvcs=true ./cmd/experiment-013f   # Program F: failure as capacity removal
+go run -buildvcs=true ./cmd/experiment-013g   # Program G: H2 smoothing-alpha causal intervention
+go run -buildvcs=true ./cmd/experiment-013h   # Program H: cache-affinity self-healing generalization
+go run -buildvcs=true ./cmd/experiment-013i   # Programs I+J: recovery generalization + multi-policy regime map
+go run -buildvcs=true ./cmd/experiment-013j   # statistical confirmation at the boundary + default vs tuned Adaptive
+go run -buildvcs=true ./cmd/experiment-013k   # Section 25: virtual-vs-real triangulation (qualitative only)
+
+# Scale-invariance regression test (a genuine Stage 13 discovery)
+go test ./internal/replay/... -run TestContention_ScaleInvariance -v
+```
+
 ## Specifications
 
 - [PRD v3.1](prd.md) — Product requirements and build sequence authority
@@ -345,6 +401,7 @@ go test ./internal/replay/... -run TestServiceTimeSchedule -v
 | [010-A](experiments/010-stage10-features/) | Tuner Comparison (Random Search vs LHS vs Bayesian Optimization) | ✅ Complete |
 | [011](experiments/011-research-validation/) | Research Validation (Programs A-H: regime map, adversarial testing, distribution shift, mechanistic attribution, virtual-vs-real, reproducibility) | ✅ Complete — see [`INDEX.json`](experiments/011-research-validation/INDEX.json) |
 | [012](experiments/012-model-fidelity/) | Model Fidelity (contention model, time-varying service time, real-engine load fix, seed-isolation fix — Stage 11's flagship finding re-tested and reversed under a specific, identified regime) | ✅ Complete — see [`Stage12.md`](docs/StageArtifacts/Stage12.md) |
+| [013](experiments/013-regime-discovery/) | Regime Discovery (11 experiments: capacity boundary generalization, rho analysis, heterogeneity/arrival-rate/workload-shape/failure sweeps, H2 smoothing intervention, cache-affinity and recovery generalization, multi-policy regime map, virtual-vs-real triangulation) | ✅ Complete — see [`Stage13.md`](docs/StageArtifacts/Stage13.md) |
 
 ---
 

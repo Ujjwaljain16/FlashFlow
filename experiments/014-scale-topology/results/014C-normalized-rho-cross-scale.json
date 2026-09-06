@@ -1,0 +1,66 @@
+{
+  "experiment": "014-C-normalized-rho-cross-scale",
+  "timestamp": "2026-09-06T19:19:46Z",
+  "results": [
+    {
+      "target_count": 3,
+      "requests": 300,
+      "policy": "ewma",
+      "mean_ms": 93.7770657439446,
+      "p99_ms": 414.7330400000001,
+      "achieved_rho_max": 0.9149999999999999,
+      "top1_share": 0.8062283737024222,
+      "wait_share_pct_at_max_rho_target": 78.53183949334404
+    },
+    {
+      "target_count": 3,
+      "requests": 300,
+      "policy": "adaptive",
+      "mean_ms": 26.187290969899667,
+      "p99_ms": 45,
+      "achieved_rho_max": 0.84375,
+      "top1_share": 0.5016722408026756,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "target_count": 5,
+      "requests": 336,
+      "policy": "ewma",
+      "mean_ms": 201.81260517799356,
+      "p99_ms": 1162.342400000001,
+      "achieved_rho_max": 0.8325,
+      "top1_share": 0.6440129449838188,
+      "wait_share_pct_at_max_rho_target": 86.4445239759587
+    },
+    {
+      "target_count": 5,
+      "requests": 336,
+      "policy": "adaptive",
+      "mean_ms": 26.182634730538922,
+      "p99_ms": 45,
+      "achieved_rho_max": 0.945,
+      "top1_share": 0.5029940119760479,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "target_count": 8,
+      "requests": 381,
+      "policy": "ewma",
+      "mean_ms": 307.3198294117646,
+      "p99_ms": 1313.9910200000004,
+      "achieved_rho_max": 0.7162499999999999,
+      "top1_share": 0.49117647058823527,
+      "wait_share_pct_at_max_rho_target": 87.49283771485108
+    },
+    {
+      "target_count": 8,
+      "requests": 381,
+      "policy": "adaptive",
+      "mean_ms": 29.88126649076517,
+      "p99_ms": 60,
+      "achieved_rho_max": 0.945,
+      "top1_share": 0.5013192612137203,
+      "wait_share_pct_at_max_rho_target": 0
+    }
+  ]
+}

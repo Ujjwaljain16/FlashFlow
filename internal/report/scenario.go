@@ -5,6 +5,9 @@ import (
 	"log"
 	"time"
 
+	"flashflow/internal/backlog"
+	"flashflow/internal/clock"
+	"flashflow/internal/engine"
 	"flashflow/internal/replay"
 	"flashflow/internal/traffic"
 )
@@ -59,3 +62,53 @@ func CanonicalArrivals(seed int64, jitterFraction float64) (arrivals []replay.Ar
 // used in every rendered report, matching Stage 16's own flagship
 // description exactly.
 const CanonicalScenarioLabel = "5 targets (15-75ms) / Capacity=1 / FlashCrowd (peak at t=2.5s) / 8s horizon"
+
+// CanonicalCongestionConfig is the same convention every Stage 14-16
+// canonical-scenario experiment already used (ratio threshold 1.0, a
+// 20-decision trailing window, share threshold scaled to 1.5x the
+// topology's own fair share -- see cmd/experiment-016-flagship's own
+// comment for why this generalizes, not replaces, the fixed 0.5 Stage
+// 14/15 used at N=3). Fixed to CanonicalTargetCount since every
+// canonical-scenario caller uses the same 5-target topology.
+func CanonicalCongestionConfig() backlog.CongestionConfig {
+	return backlog.CongestionConfig{RatioThreshold: 1.0, DiversionWindow: 20, DiversionShareThreshold: 1.5 / float64(CanonicalTargetCount)}
+}
+
+// RunCanonicalScenario runs every policy in PolicyNames across
+// seedCount independent seeds of the canonical scenario and returns the
+// resulting ScenarioReport -- the shared implementation behind both
+// `cmd/flashflow report` and the dashboard's own Control Room view, so
+// neither duplicates the other.
+func RunCanonicalScenario(seedCount int) (ScenarioReport, error) {
+	targets := CanonicalTargets()
+	capacity := CanonicalCapacity
+	horizonMs := float64(CanonicalHorizon.Milliseconds())
+	cfg := CanonicalCongestionConfig()
+
+	perPolicy := map[string][]*replay.WorldResult{}
+	for i := 0; i < seedCount; i++ {
+		seed := int64(17000 + i)
+		arrivals, seeds := CanonicalArrivals(seed, 0.3)
+		scenario := replay.Scenario{Targets: targets, Arrivals: arrivals, Horizon: clock.VirtualTime(CanonicalHorizon.Nanoseconds()), Seeds: seeds}
+		v := engine.NewVirtualEngine()
+		for j, name := range PolicyNames() {
+			spec, err := PolicyByName(name)
+			if err != nil {
+				return ScenarioReport{}, err
+			}
+			exp := engine.Experiment{ID: fmt.Sprintf("canonical-seed%d-%s", seed, name), Scenario: scenario, Policy: spec}
+			var result engine.RunResult
+			var err2 error
+			if j == 0 {
+				result, err2 = v.Run(exp)
+			} else {
+				result, err2 = v.Replay(exp, spec)
+			}
+			if err2 != nil {
+				return ScenarioReport{}, fmt.Errorf("report: seed %d/%s: %w", seed, name, err2)
+			}
+			perPolicy[name] = append(perPolicy[name], result.WorldResult)
+		}
+	}
+	return BuildScenarioReport(CanonicalScenarioLabel, targets, capacity, horizonMs, cfg, perPolicy, PolicyNames()), nil
+}

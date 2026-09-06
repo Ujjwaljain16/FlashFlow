@@ -25,24 +25,10 @@ import (
 	"strings"
 	"time"
 
-	"flashflow/internal/backlog"
-	"flashflow/internal/clock"
-	"flashflow/internal/engine"
-	"flashflow/internal/replay"
 	"flashflow/internal/report"
 )
 
 const outDirName = "experiments/016-final-synthesis/results"
-
-// congestionConfig is the same convention every Stage 14-16 canonical-
-// scenario experiment already used (ratio threshold 1.0, a 20-decision
-// trailing window, share threshold scaled to 1.5x the topology's own
-// fair share -- see cmd/experiment-016-flagship's own comment for why
-// this generalizes, not replaces, the fixed 0.5 Stage 14/15 used at
-// N=3).
-func congestionConfig(targetCount int) backlog.CongestionConfig {
-	return backlog.CongestionConfig{RatioThreshold: 1.0, DiversionWindow: 20, DiversionShareThreshold: 1.5 / float64(targetCount)}
-}
 
 // worstFirst orders classifications from most to least concerning, used
 // to pick a sensible default policy when the caller doesn't name one.
@@ -62,40 +48,6 @@ func pickDefaultPolicy(sr report.ScenarioReport) string {
 	return ""
 }
 
-func buildCanonicalReport(seedCount int) report.ScenarioReport {
-	targets := report.CanonicalTargets()
-	capacity := report.CanonicalCapacity
-	horizonMs := float64(report.CanonicalHorizon.Milliseconds())
-	cfg := congestionConfig(len(targets))
-
-	perPolicy := map[string][]*replay.WorldResult{}
-	for i := 0; i < seedCount; i++ {
-		seed := int64(17000 + i)
-		arrivals, seeds := report.CanonicalArrivals(seed, 0.3)
-		scenario := replay.Scenario{Targets: targets, Arrivals: arrivals, Horizon: clock.VirtualTime(report.CanonicalHorizon.Nanoseconds()), Seeds: seeds}
-		v := engine.NewVirtualEngine()
-		for j, name := range report.PolicyNames() {
-			spec, err := report.PolicyByName(name)
-			if err != nil {
-				log.Fatalf("flashflow report: %v", err)
-			}
-			exp := engine.Experiment{ID: fmt.Sprintf("flashflow-report-seed%d-%s", seed, name), Scenario: scenario, Policy: spec}
-			var result engine.RunResult
-			var err2 error
-			if j == 0 {
-				result, err2 = v.Run(exp)
-			} else {
-				result, err2 = v.Replay(exp, spec)
-			}
-			if err2 != nil {
-				log.Fatalf("flashflow report: seed %d/%s: %v", seed, name, err2)
-			}
-			perPolicy[name] = append(perPolicy[name], result.WorldResult)
-		}
-	}
-	return report.BuildScenarioReport(report.CanonicalScenarioLabel, targets, capacity, horizonMs, cfg, perPolicy, report.PolicyNames())
-}
-
 func runReport(args []string) {
 	fs := flag.NewFlagSet("report", flag.ExitOnError)
 	policy := fs.String("policy", "", "policy to print the full report for (default: the worst-classified policy)")
@@ -106,7 +58,10 @@ func runReport(args []string) {
 		log.Fatalf("flashflow report: creating results dir: %v", err)
 	}
 
-	sr := buildCanonicalReport(*seeds)
+	sr, err := report.RunCanonicalScenario(*seeds)
+	if err != nil {
+		log.Fatalf("flashflow report: %v", err)
+	}
 	selected := *policy
 	if selected == "" {
 		selected = pickDefaultPolicy(sr)

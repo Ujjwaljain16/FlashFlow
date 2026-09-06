@@ -19,6 +19,7 @@ import (
 
 	"flashflow/internal/backlog"
 	"flashflow/internal/replay"
+	"flashflow/internal/statistics"
 )
 
 // Classification labels the shape of a target's failure, per Stage
@@ -70,6 +71,8 @@ const (
 // run. Every field is computed from data internal/backlog already
 // exposes; nothing here is a new measurement.
 type Metrics struct {
+	MeanMs                float64 `json:"mean_ms"` // whole-run outcome, not a backlog/mechanism quantity, but the headline number every comparison view needs alongside the mechanism classification
+	P99Ms                 float64 `json:"p99_ms"`
 	Bottleneck            string  `json:"bottleneck"`
 	Capacity              int     `json:"capacity"`
 	PeakDepth             int     `json:"peak_depth"`
@@ -101,6 +104,14 @@ func AnalyzeTarget(wr *replay.WorldResult, targets []replay.TargetProfile, capac
 	}
 
 	m := Metrics{Bottleneck: bottleneck, Capacity: capacity, PeakDepth: peak, PeakDepthAtMs: peakAt}
+	if len(wr.Completions) > 0 {
+		latenciesMs := make([]float64, len(wr.Completions))
+		for i, c := range wr.Completions {
+			latenciesMs[i] = float64(c.Latency.Microseconds()) / 1000.0
+		}
+		m.MeanMs, _ = statistics.Mean(latenciesMs)
+		m.P99Ms, _ = statistics.Percentile(latenciesMs, 99)
+	}
 	tl := backlog.BuildTimeline(wr.Records, wr.Completions, bottleneck)
 	m.FractionAboveCapacity = tl.FractionAboveThreshold(capacity, cfg.RatioThreshold, horizonMs)
 	m.TimeAboveCapacityMs = tl.TimeAboveThreshold(capacity, cfg.RatioThreshold, horizonMs)

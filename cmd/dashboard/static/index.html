@@ -8,9 +8,10 @@
 </head>
 <body>
 <header>
-  <h1>FlashFlow <span class="muted">Laboratory Dashboard</span></h1>
+  <h1>FlashFlow <span class="muted">Routing Failure Analysis Lab</span></h1>
   <nav>
-    <button class="tab-btn active" data-tab="playground">Playground</button>
+    <button class="tab-btn active" data-tab="control">Control Room</button>
+    <button class="tab-btn" data-tab="playground">Playground</button>
     <button class="tab-btn" data-tab="experiments">Experiments</button>
     <button class="tab-btn" data-tab="tuning">Tuning</button>
   </nav>
@@ -18,8 +19,78 @@
 
 <main>
 
+<!-- ===================== CONTROL ROOM ===================== -->
+<section id="tab-control" class="tab-panel active">
+  <p class="hint">
+    Stage 15/16's own canonical scenario -- 5 heterogeneous targets (15-75ms), Capacity=1, a FlashCrowd
+    workload peaking at t=2.5s, 8s horizon. Every number below is a fresh, real run, classified by the
+    same mechanism (acute/chronic collapse, committed backlog) Stage 15's own research established --
+    see <code>docs/StageArtifacts/Stage17-DiagnosticTooling.md</code>.
+  </p>
+
+  <div class="card scenario-banner">
+    <div class="scenario-label mono" id="control-scenario-label">Loading scenario&hellip;</div>
+    <div>
+      <button id="control-refresh-btn">&#8635; Re-run (fresh seeds)</button>
+      <span id="control-status" class="status"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Policy Comparison</h2>
+    <p class="hint">P99 is the headline number, not mean -- a policy can improve the average while still producing the worst tail in the scenario.</p>
+    <div id="control-cards" class="policy-cards"></div>
+  </div>
+
+  <div class="card">
+    <h2>Behavior</h2>
+    <p class="hint">Concentration (how far above fair share the bottleneck target's own traffic rose), committed work (requests sent there before the policy corrected), and time above capacity -- the three signals the classification below is built from.</p>
+    <div id="control-bars" class="behavior-bars"></div>
+  </div>
+
+  <div class="card">
+    <h2>Why Did It Fail?</h2>
+    <div class="controls">
+      <label>Policy
+        <select id="explain-policy"></select>
+      </label>
+    </div>
+    <div id="explain-content"></div>
+  </div>
+
+  <div class="card">
+    <h2>Event Timeline</h2>
+    <div class="controls">
+      <label>Policy
+        <select id="timeline-policy"></select>
+      </label>
+      <button id="timeline-btn">&#9654; Load</button>
+      <span id="timeline-status" class="status"></span>
+    </div>
+    <svg id="control-timeline-svg" viewBox="0 0 700 440" class="event-timeline"></svg>
+  </div>
+
+  <div class="card">
+    <h2>First Divergence</h2>
+    <p class="hint">Two policies, the byte-for-byte identical exogenous scenario and seed -- where their independently-evolving routing decisions first differ.</p>
+    <div class="controls">
+      <label>Baseline
+        <select id="div-baseline"></select>
+      </label>
+      <label>Counterfactual
+        <select id="div-counterfactual"></select>
+      </label>
+      <button id="div-btn">&#9654; Compare</button>
+      <span id="div-status" class="status"></span>
+    </div>
+    <div id="div-badges" class="same-world-badges"></div>
+    <svg id="div-svg" viewBox="0 0 700 150" class="divergence-timeline"></svg>
+    <div id="div-caption" class="hint"></div>
+  </div>
+</section>
+
 <!-- ===================== PLAYGROUND ===================== -->
-<section id="tab-playground" class="tab-panel active">
+<section id="tab-playground" class="tab-panel">
   <p class="hint">
     One canonical scenario: 3 edges (A fast/stable, B fastest-until-it-fails-and-recovers, C medium),
     mixed hot/cold keys, a real mid-run health failure and recovery. Every run below executes a fresh,

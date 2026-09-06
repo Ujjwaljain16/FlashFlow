@@ -50,6 +50,9 @@ func main() {
 	mux.HandleFunc("/api/playground/run", handleRun)
 	mux.HandleFunc("/api/playground/compare", handleCompare)
 	mux.HandleFunc("/api/tuning", handleTuning)
+	mux.HandleFunc("/api/canonical/report", handleCanonicalReport)
+	mux.HandleFunc("/api/canonical/compare", handleCanonicalCompare)
+	mux.HandleFunc("/api/canonical/timeline", handleCanonicalTimeline)
 
 	server := newServer(*addr, mux)
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"flashflow/internal/dashboard"
@@ -100,4 +101,78 @@ func handleCompare(w http.ResponseWriter, r *http.Request) {
 // handleTuning serves GET /api/tuning -- the tuning view (rule 32).
 func handleTuning(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, dashboard.LoadTuningSummary())
+}
+
+// handleCanonicalReport serves GET /api/canonical/report?seeds=N -- the
+// Control Room's own Compare/Explain/Mechanism-cards data source: every
+// policy's classification against the Stage 15/16 canonical scenario,
+// run fresh (default 3 seeds, matching the flagship's own convention).
+func handleCanonicalReport(w http.ResponseWriter, r *http.Request) {
+	seeds := 3
+	if raw := r.URL.Query().Get("seeds"); raw != "" {
+		if n, err := strconv.Atoi(raw); err == nil && n > 0 {
+			seeds = n
+		}
+	}
+	result, err := dashboard.RunCanonicalReport(seeds)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err)
+		return
+	}
+	writeJSON(w, result)
+}
+
+// handleCanonicalCompare serves GET /api/canonical/compare?baseline=&
+// counterfactual=&seed= -- the First Divergence view: two policies run
+// against the identical canonical scenario/seed, with their first point
+// of trace divergence.
+func handleCanonicalCompare(w http.ResponseWriter, r *http.Request) {
+	baseline := r.URL.Query().Get("baseline")
+	counterfactual := r.URL.Query().Get("counterfactual")
+	if baseline == "" || counterfactual == "" {
+		writeError(w, http.StatusBadRequest, fmt.Errorf("missing baseline or counterfactual parameter"))
+		return
+	}
+	seed := int64(17000)
+	if raw := r.URL.Query().Get("seed"); raw != "" {
+		if n, err := strconv.ParseInt(raw, 10, 64); err == nil {
+			seed = n
+		}
+	}
+	result, err := dashboard.CompareCanonical(baseline, counterfactual, seed)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err)
+		return
+	}
+	writeJSON(w, result)
+}
+
+// handleCanonicalTimeline serves GET /api/canonical/timeline?policy=&
+// seed=&buckets= -- the Event Timeline view: one policy's own traffic
+// and per-target queue-depth series, plus its congestion/diversion/
+// drain marker timestamps.
+func handleCanonicalTimeline(w http.ResponseWriter, r *http.Request) {
+	policy := r.URL.Query().Get("policy")
+	if policy == "" {
+		writeError(w, http.StatusBadRequest, fmt.Errorf("missing policy parameter"))
+		return
+	}
+	seed := int64(17000)
+	if raw := r.URL.Query().Get("seed"); raw != "" {
+		if n, err := strconv.ParseInt(raw, 10, 64); err == nil {
+			seed = n
+		}
+	}
+	buckets := 60
+	if raw := r.URL.Query().Get("buckets"); raw != "" {
+		if n, err := strconv.Atoi(raw); err == nil && n > 0 {
+			buckets = n
+		}
+	}
+	result, err := dashboard.RunCanonicalTimeline(policy, seed, buckets)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err)
+		return
+	}
+	writeJSON(w, result)
 }

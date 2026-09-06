@@ -62,6 +62,7 @@ FlashFlow is built learning-first — not architecture-first.
 | **11** | Research validation: an 8-program experimental sweep (162+ runs) mapping policy regime boundaries, attacking Adaptive adversarially, testing distribution shift, and validating virtual-vs-real agreement — using Stage 10's platform, not extending it | ✅ Complete — **PASS WITH LIMITATIONS**, see `docs/StageArtifacts/Stage11.md` |
 | **12** | Model fidelity: real-engine load instrumentation, genuine SeedTree axis independence, time-varying target service time, and a minimal finite-capacity contention model — built to close exactly four gaps Stage 11 proved consequential, then re-ran Stage 11's own findings under the corrected model | ✅ Complete — **PASS**, see `docs/StageArtifacts/Stage12.md` |
 | **13** | Regime discovery: is Stage 12's capacity-dependent reversal a general rule or a one-scenario artifact? 11 experiments testing the boundary across heterogeneity, arrival rate, workload shape, failure, smoothing, cache-affinity, recovery, the full 6-policy set, and virtual-vs-real | ✅ Complete — **PASS**, see `docs/StageArtifacts/Stage13.md` |
+| **14** | Scale & topology generalization: does Stage 13's regime survive beyond 3 targets? 9 experiments testing target-count scaling, bimodal heterogeneity, normalized-rho matching across scale, a validated real concurrency ceiling, alpha/recovery follow-ups, and a full-policy-set falsification attempt | ✅ Complete — **PASS WITH LIMITATIONS**, see `docs/StageArtifacts/Stage14.md` |
 
 A note on Stage 10's own numbers: widening `Scenario.Seed` into a hierarchical `SeedTree` (needed
 for genuine independent-axis seed control) changed the actual Development/Holdout scenario content,
@@ -299,6 +300,47 @@ Full findings, the mandatory claim-reconciliation table, counterexamples, and th
 understanding, narratively:
 [`docs/learning/013-stage13-regime-discovery.md`](docs/learning/013-stage13-regime-discovery.md).
 
+## Stage 14 Findings — Scale & Topology Generalization
+
+Stage 13 found a two-regime split (load-blind vs. load-aware) within one 3-target topology and
+deliberately declined to generalize it. Stage 14's job was to find out whether that regime survives more
+targets, a different heterogeneity shape, and a real concurrency ceiling. Nine experiments later:
+
+- **The qualitative phenomenon generalizes; the specific classification used to explain it does not.**
+  Adaptive's advantage over EWMA survives target-count scaling (N=3,5,8) and a fundamentally different
+  bimodal (fast-group/slow-group) topology. But the "load-blind vs. load-aware" axis itself is directly
+  **falsified**: EWMA — a policy with a live latency signal — loses outright to round-robin at N=8 near
+  the boundary (307ms vs 170ms), confirmed across 10 independent seeds (Cliff's Delta=1.000).
+- **The real mechanism is concentration-proneness under already-committed queueing, not signal
+  presence.** EWMA's early cold-start dispatches commit requests to one target; once that target queues,
+  no later re-routing decision can retroactively drain the backlog — confirmed by a clean negative
+  result: varying smoothing alpha across a 16× range has NO effect on this collapse, unlike its real,
+  causal effect on Stage 13's H2 scenario. Least-connections and Adaptive avoid the trap because their
+  signals react to CURRENT congestion, redirecting new requests before a backlog forms, not after.
+- **Rho is necessary but increasingly insufficient as target count grows.** Deliberately matching
+  EWMA's own achieved offered-load ratio across N=3/5/8 revealed that its concentration percentage isn't
+  fixed — the achieved rho actually DECREASED with N (0.915→0.833→0.716) even as EWMA's degradation
+  WORSENED (93.78ms→201.81ms→307.32ms), the opposite of what a clean rho-as-predictor story would need.
+- **A validated real concurrency ceiling reproduces the virtual reversal Stage 13 couldn't.** Exposing
+  Go's existing `http.Transport.MaxConnsPerHost` through a new, additive `RealExperimentConfig` field,
+  and validating it policy-neutrally first (a raw atomic-counter probe, before trusting any policy
+  comparison), a ceiling matched exactly to the virtual model's own capacity assumption reproduces the
+  reversal cleanly and monotonically (EWMA p99 62ms→71ms→2914ms vs Adaptive's 17ms→32ms→103ms). Stage
+  13's prior non-replication is explained as a missing-mechanism artifact, not a model disagreement.
+- **Bimodal topology preserves the mechanism in a different shape**: EWMA still degrades under a
+  fast-group/slow-group split despite a structurally lower per-target rho (0.236), because it now
+  concentrates onto the whole fast GROUP rather than one target — concentration, not literal single-
+  target lock-in, is the true operative variable.
+- **Recovery only differentiates policies that have a stable baseline to recover to**: at the same N=8
+  near-boundary point, least-connections and Adaptive show a clean recovery signal after a target
+  failure; EWMA's own pre-failure state is already collapsed, making its "recovery" numbers
+  uninterpretable as a recovery signal specifically.
+
+Full findings, the mandatory regime/rho/virtual-vs-real/falsification tables, and the final verdict
+(**PASS WITH LIMITATIONS**): [`docs/StageArtifacts/Stage14.md`](docs/StageArtifacts/Stage14.md). What
+changed in our understanding, narratively:
+[`docs/learning/014-stage14-scale-and-topology.md`](docs/learning/014-stage14-scale-and-topology.md).
+
 ## Running Stage 10 Features
 
 ```bash
@@ -377,6 +419,20 @@ go run -buildvcs=true ./cmd/experiment-013k   # Section 25: virtual-vs-real tria
 go test ./internal/replay/... -run TestContention_ScaleInvariance -v
 ```
 
+## Running Stage 14 Research
+
+```bash
+go run -buildvcs=true ./cmd/experiment-014a   # Track A + Program A: capacity boundary at N=3/5/8 targets
+go run -buildvcs=true ./cmd/experiment-014b   # Track B + Program B: bimodal (fast-group/slow-group) heterogeneity
+go run -buildvcs=true ./cmd/experiment-014c   # Track C + Program C: the central rho-matched cross-scale test
+go run -buildvcs=true ./cmd/experiment-014d   # Programs E+F: workload shape + failure at the N=8 boundary
+go run -buildvcs=true ./cmd/experiment-014e   # Track D: validated real concurrency ceiling (MaxConnsPerHost)
+go run -buildvcs=true ./cmd/experiment-014f   # Section 24+28: full 6-policy set + falsification attempt
+go run -buildvcs=true ./cmd/experiment-014g   # Section 22 (Program G): smoothing alpha on the MAIN boundary
+go run -buildvcs=true ./cmd/experiment-014h   # Section 23 (Program H): recovery differentiation at N=8
+go run -buildvcs=true ./cmd/experiment-014i   # Section 25: 10-seed statistical confirmation of the N=8 boundary
+```
+
 ## Specifications
 
 - [PRD v3.1](prd.md) — Product requirements and build sequence authority
@@ -402,6 +458,7 @@ go test ./internal/replay/... -run TestContention_ScaleInvariance -v
 | [011](experiments/011-research-validation/) | Research Validation (Programs A-H: regime map, adversarial testing, distribution shift, mechanistic attribution, virtual-vs-real, reproducibility) | ✅ Complete — see [`INDEX.json`](experiments/011-research-validation/INDEX.json) |
 | [012](experiments/012-model-fidelity/) | Model Fidelity (contention model, time-varying service time, real-engine load fix, seed-isolation fix — Stage 11's flagship finding re-tested and reversed under a specific, identified regime) | ✅ Complete — see [`Stage12.md`](docs/StageArtifacts/Stage12.md) |
 | [013](experiments/013-regime-discovery/) | Regime Discovery (11 experiments: capacity boundary generalization, rho analysis, heterogeneity/arrival-rate/workload-shape/failure sweeps, H2 smoothing intervention, cache-affinity and recovery generalization, multi-policy regime map, virtual-vs-real triangulation) | ✅ Complete — see [`Stage13.md`](docs/StageArtifacts/Stage13.md) |
+| [014](experiments/014-scale-topology/) | Scale & Topology Generalization (9 experiments: target-count scaling, bimodal heterogeneity, normalized-rho cross-scale test, workload/failure at a generalized boundary, validated real concurrency ceiling, full-policy-set falsification, alpha/recovery follow-ups, statistical confirmation) | ✅ Complete — see [`Stage14.md`](docs/StageArtifacts/Stage14.md) |
 
 ---
 

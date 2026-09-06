@@ -131,9 +131,18 @@ func (r RealEngine) run(exp Experiment, policy replay.PolicySpec) (RunResult, er
 	// sharing those exact objects with the selector means every dynamic
 	// policy (least-connections, ewma, p2c-load, adaptive) now sees
 	// genuine, concurrency-correct signals, not an approximation.
+	// MaxConnsPerHost is capped PER EDGE HOST here, not globally -- Go's
+	// http.Transport.MaxConnsPerHost is scoped per (scheme, host, port),
+	// and each edge listens on its own ephemeral port, so setting this
+	// once on the shared transport genuinely limits concurrency to each
+	// individual edge independently (Stage 14 Track D).
+	tcfg := transport.DefaultTransportConfig(exp.ID + "_proxy")
+	if cfg.MaxConnsPerHost > 0 {
+		tcfg.MaxConnsPerHost = cfg.MaxConnsPerHost
+	}
 	pxy := proxy.NewReverseProxy(proxy.Config{
 		Targets:         targetURLs,
-		TransportConfig: transport.DefaultTransportConfig(exp.ID + "_proxy"),
+		TransportConfig: tcfg,
 		HealthConfig:    health.DefaultConfig(),
 		ProberConfig:    health.DefaultCheckerConfig(),
 	}, clk, nil)

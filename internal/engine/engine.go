@@ -38,6 +38,17 @@ type RealExperimentConfig struct {
 	TrafficPattern traffic.Pattern
 	TrafficParams  traffic.Params // Horizon governs how long the real run's dispatch window (and the whole Run/Replay call) lasts
 	Chaos          chaos.Schedule
+	// MaxConnsPerHost, when > 0, caps the number of concurrent connections
+	// the proxy-to-edge transport will open to EACH edge (Go's own
+	// http.Transport.MaxConnsPerHost semantics: additional requests block
+	// until a connection frees up) -- an honest, already-existing
+	// mechanism for giving RealEngine a genuine concurrency ceiling,
+	// analogous to (but not semantically identical to) the virtual
+	// engine's TargetProfile.Capacity slot model (Stage 14 Track D,
+	// docs/StageArtifacts/Stage14.md). 0 (the default) means unlimited,
+	// preserving every pre-Stage-14 RealExperimentConfig's behavior
+	// exactly.
+	MaxConnsPerHost int
 }
 
 // Experiment bundles everything one experiment needs to run on either

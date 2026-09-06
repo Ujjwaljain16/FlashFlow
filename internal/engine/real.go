@@ -10,6 +10,7 @@ import (
 	"flashflow/internal/chaos"
 	"flashflow/internal/clock"
 	"flashflow/internal/health"
+	"flashflow/internal/httpx"
 	"flashflow/internal/proxy"
 	"flashflow/internal/replay"
 	"flashflow/internal/telemetry"
@@ -110,17 +111,32 @@ func (r RealEngine) run(exp Experiment, policy replay.PolicySpec) (RunResult, er
 	}
 
 	clk := clock.NewWallClock()
-	selector, _ := policy.New(clk, exp.Scenario.Seeds, targets)
+	// instr is NOT discarded: policy.New builds selector's own LoadTracker/
+	// LatencyTracker fresh, entirely separate from ReverseProxy's own
+	// internal pair (proxy.go's p.loadTracker/p.latencyTracker) -- the two
+	// are never the same objects here (unlike EWMASelector's own doc
+	// comment's stated contract, "tracker must be the same *LatencyTracker
+	// instance the proxy updates"). Without this bridge, every policy that
+	// reads load/latency (least-connections, ewma, p2c-load, adaptive)
+	// selects blind for the ENTIRE run: its trackers never receive a single
+	// real observation, so every decision after cold-start ties forever and
+	// the deterministic tie-break silently repeats one target 100% of the
+	// time -- a real, confirmed defect found by Stage 11 Program F
+	// (docs/StageArtifacts/Stage11.md §10). ExposeDebugHeaders plus this
+	// dispatch-side read of X-Selected-Edge closes it for the latency
+	// signal, which is what makes the fix below possible.
+	selector, instr := policy.New(clk, exp.Scenario.Seeds, targets)
 
 	targetURLs := make([]string, len(targets))
 	for i, t := range targets {
 		targetURLs[i] = t.Name
 	}
 	pxy := proxy.NewReverseProxy(proxy.Config{
-		Targets:         targetURLs,
-		TransportConfig: transport.DefaultTransportConfig(exp.ID + "_proxy"),
-		HealthConfig:    health.DefaultConfig(),
-		ProberConfig:    health.DefaultCheckerConfig(),
+		Targets:            targetURLs,
+		TransportConfig:    transport.DefaultTransportConfig(exp.ID + "_proxy"),
+		HealthConfig:       health.DefaultConfig(),
+		ProberConfig:       health.DefaultCheckerConfig(),
+		ExposeDebugHeaders: true,
 	}, clk, selector)
 	if err := pxy.Start(); err != nil {
 		return RunResult{}, fmt.Errorf("engine: starting proxy for %q: %w", exp.ID, err)
@@ -149,11 +165,27 @@ func (r RealEngine) run(exp Experiment, policy replay.PolicySpec) (RunResult, er
 	wg.Add(len(arrivals))
 	dispatch := func(key string) {
 		defer wg.Done()
+		start := clk.Now()
 		resp, err := client.Get(pxy.URL() + key)
 		if err != nil {
 			return
 		}
-		resp.Body.Close()
+		defer resp.Body.Close()
+		// Bridges the real response back to policy.New's own tracker (see
+		// the selector/instr construction above): this is the only way an
+		// adaptive-family policy's latency signal reflects real observed
+		// behavior rather than staying frozen at its cold-start default for
+		// the whole run. Load (in-flight count) is deliberately NOT
+		// restored the same way -- OnDispatch/OnComplete both fire only
+		// after the response already returned, so pairing them here would
+		// net to zero without ever reflecting genuine concurrent in-flight
+		// state; least-connections/p2c-load/adaptive's load signal remains
+		// a known, disclosed RealEngine limitation (Stage11.md §10).
+		if target := resp.Header.Get(httpx.HeaderSelectedEdge); target != "" {
+			latency := clk.Now().Sub(start)
+			instr.OnDispatch(target)
+			instr.OnComplete(target, latency)
+		}
 		mu.Lock()
 		completed++
 		mu.Unlock()

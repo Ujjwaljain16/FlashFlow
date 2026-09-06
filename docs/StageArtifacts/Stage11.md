@@ -169,10 +169,122 @@ concentrates 85-99% of traffic on one target in every heterogeneous config; Adap
 latency" framing being, if anything, backwards *relative to EWMA specifically* — here Adaptive is the
 policy buying fairness/balance, at a cost, not the one taking it.
 
+## 10. Program F Results — Virtual vs Real Validation
+
+**Experiment**: `cmd/experiment-011f`, artifact `experiments/011-research-validation/results/011F-virtual-vs-real.json`.
+Rather than a generic sweep, this program targets Program A's single sharpest, most surprising
+finding directly: does the virtual engine's "EWMA beats Adaptive on mean latency under heterogeneity"
+ranking (Section 7) survive contact with the real engine, which has genuine OS-level concurrency the
+virtual engine's flat, queueing-free model cannot express? Same topology (severe: 15/30/60ms),
+same traffic pattern (constant, `HotColdKeys(0.5)`), same 3 policies (round-robin, ewma, adaptive), run
+through both `VirtualEngine` and `RealEngine`.
+
+**This program found a real, severe, previously-undiscovered defect in `internal/engine.RealEngine`,
+not just a modeling-fidelity gap.** The first run produced a result that looked like a dramatic
+cross-engine disagreement: EWMA and Adaptive both showed `max_share=1.000` in the real engine —
+100% of all 300 requests landing on a single target — but repeating the run several times (fresh
+process each time) showed the *specific* locked target changing from run to run (sometimes the
+fastest 15ms edge, sometimes the slowest 60ms one), which is inconsistent with "the real engine
+correctly found a genuinely dominant target" and consistent instead with "the decision is arbitrary."
+
+**Mechanism, confirmed by direct code inspection and an ablation, not assumed:**
+
+- `internal/replay.RunWorld` (the virtual engine) explicitly bridges every dispatch/completion to the
+  policy's own trackers via `Instrumentation.OnDispatch`/`OnComplete` (`world.go:198,203`).
+- `internal/engine.RealEngine.run` built the selector via `selector, _ := policy.New(...)` — **the
+  `Instrumentation` return value was discarded**. `policy.New` (for `least-connections`, `ewma`,
+  `p2c-load`, and `adaptive`) always constructs its OWN fresh `LoadTracker`/`LatencyTracker` internally
+  (`internal/replay/policies.go`). `proxy.ReverseProxy` separately maintains its OWN, DIFFERENT pair of
+  trackers (`internal/proxy/proxy.go`'s `p.loadTracker`/`p.latencyTracker`, updated correctly on every
+  real dispatch/completion at `proxy.go:186-187,300`). These are two different objects. Nothing wired
+  them together, so the selector's own tracker — the one it actually reads from — never received a
+  single real observation for the ENTIRE duration of any `RealEngine`-driven experiment. Every decision
+  after cold start was a tie among identical neutral scores, decided once by a fixed, essentially
+  arbitrary tie-break (alphabetical URL sort for Adaptive; `available` iteration order for EWMA), and
+  then repeated identically for all 300 requests — hence exactly 100% concentration, onto whichever
+  target the tie-break happened to favor (itself dependent on Go's randomized map iteration over
+  `RealExperimentConfig.Edges`, explaining the run-to-run variation in which target won).
+- **Ablation, to rule out an alternative hypothesis**: before concluding this, cache affinity (a real,
+  documented Adaptive signal, weight 0.1) was considered as a competing explanation — the workload's
+  `HotColdKeys(0.5)` traffic has a hot key that could plausibly self-reinforce onto one target. Rerunning
+  with every request given a fully distinct key (`uniqueKeyTrafficParams`, so `scoreCache` is always 0
+  for every target on every request) still produced `max_share=1.000` for both EWMA and Adaptive,
+  ruling cache affinity out as the (or even a necessary) cause and confirming the frozen-tracker
+  explanation directly (`cmd/experiment-011f`'s ablation block; see the JSON artifact's `real-ablation-
+  unique-keys` entries).
+
+**This is not a modeling-fidelity limitation like Program A's — it is a wiring bug** (this project's
+own stated Stage 10 goal, "the same policy code runs correctly in both engines," was silently violated
+for every dynamic policy run through `RealEngine`). It means every prior `RealEngine`-driven result for
+`least-connections`, `ewma`, `p2c-load`, or `adaptive` (through this project's history) reflects
+cold-start tie-break behavior, not the policy's intended live-signal logic.
+
+**Fix applied** (`internal/engine/real.go`): the real engine's `proxy.Config` now sets
+`ExposeDebugHeaders: true`, and the dispatch loop reads the `X-Selected-Edge` response header (already
+existing, purpose-built observability infrastructure — `internal/httpx`'s `HeaderSelectedEdge`) to
+learn which target served each real request, then calls the previously-discarded `instr.OnDispatch`/
+`OnComplete` to feed that observation back into the policy's own tracker. This restores the **latency**
+signal correctly and completely: it is a genuine, real-time, per-request observation, semantically
+identical to what the virtual engine's own bridge does. **The load (in-flight count) signal is
+deliberately NOT restored the same way and remains a disclosed, open limitation**: `OnDispatch`/
+`OnComplete` are only knowable after a response returns in this architecture, so calling both back-to-
+back post-hoc would net to zero without ever reflecting genuine concurrent in-flight state — worse
+than clearly disclosing the gap. Fixing load tracking properly requires either changing
+`PolicySpec.New`'s contract to accept externally-owned trackers or `proxy.Config` to accept
+pre-built ones (`proxy.ReverseProxy` already exposes `LoadTracker()`/`LatencyTracker()` accessors and
+`SetSelector`, suggesting this was anticipated but never finished for real-engine use) — scoped as a
+follow-up, not attempted here, since it is a genuine cross-package contract change, not a local fix.
+
+**Result after the fix** (`cmd/experiment-011f`, rerun 3x, all consistent):
+
+| Policy | Virtual p50 | Real p50 (post-fix) | Virtual max_share | Real max_share (post-fix) |
+|---|---:|---:|---:|---:|
+| round-robin | 30.00ms | 30.4-30.7ms | 0.337 | 0.333 |
+| ewma | 15.00ms | 15.5-15.6ms | 0.973 | **0.973** |
+| adaptive | 15.00ms | 15.5-15.6ms | 0.503 | **1.000** |
+
+**H4 is confirmed for EWMA, and precisely NOT (yet) confirmed for Adaptive, for a specific, now-known
+reason.** EWMA's real-engine behavior now closely tracks its virtual-engine behavior on both metrics
+(max_share 0.973 in both; p50 within 0.6ms) — the ranking agrees (EWMA has the lowest p50 in both
+engines), directly supporting H4. Adaptive's ranking direction now agrees too (lowest p50 tied with
+EWMA in both engines, correctly identifying the fast target — a real improvement from before the fix,
+when Adaptive's real p50 was essentially a coin flip across the three targets), but its concentration
+degree does not (0.503 virtual vs 1.000 real) — precisely because Adaptive weighs Load equally with
+Latency (`DefaultAdaptiveWeights`: 0.4/0.4), and Load remains uninstrumented in the real engine. With a
+correct latency signal but a permanently-idle-looking load signal, Adaptive correctly finds the fast
+target (matching virtual's direction) but has no real-engine mechanism telling it to spread away from
+that target once found (unlike the virtual engine, where Load is correctly tracked and does exactly
+that). This is a clean, mechanistically-explained partial validation, not an unexplained discrepancy.
+
+**What Would Falsify This**:
+
+| Claim | Falsifier |
+|---|---|
+| The original 100%-lock-in was caused by `RealEngine` never feeding real observations to the policy's tracker, not by a real property of the scenario | If reverting the `real.go` fix and rerunning still shows the SAME target winning every time across many fresh processes (would mean something other than tracker-freezing determines the outcome) |
+| Fixing only the latency signal (not load) explains Adaptive's remaining virtual/real concentration gap | If Adaptive's real max_share stayed at 1.000 even after ALSO wiring load tracking (a follow-up not attempted here) — would mean load isn't the (or the only) remaining cause |
+| Cache affinity is not the cause of the original lock-in | Already tested directly via the unique-key ablation; confirmed not the cause |
+
+**Consequence for Program A's Section 7 finding**: Program A's virtual-only conclusion — "EWMA wins on
+mean latency under heterogeneity because it concentrates load without penalty in a queueing-free model"
+— is now independently corroborated on the real engine for EWMA specifically (post-fix), which is
+evidence the *ranking* (not the *absolute numbers*, and not the *degree of concentration* for every
+policy) transfers. It is not evidence that Adaptive's virtual-engine balancing behavior would actually
+protect real infrastructure the way Section 7 speculated — that specific claim remains unverified,
+pending the load-tracking follow-up noted above.
+
+## 11. Regression Coverage Added
+
+`TestRealEngine_Run_EWMAPrefersFastRealTarget` (`internal/engine/real_test.go`) — a genuine discovery
+warranting a regression test per this stage's own charter (a confirmed bug, not a speculative addition).
+Two real edges with a large, deliberate service-time gap (2ms vs 100ms); asserts the real engine's
+aggregate p50 lands well below the slow target's fixed delay and that one target's share is decisively
+majority — both would fail intermittently (roughly coin-flip, across repeated runs) under the pre-fix
+frozen-tracker behavior and pass consistently once real observations reach the policy's tracker. Run 5x
+fresh (`-count=1`) during development with no failures.
+
 ---
 
 *(Negative results, adversarial findings (Program B), recovery/adaptation dynamics (Program C),
-distribution-shift findings (Program D), mechanistic attribution (Program E), virtual-vs-real
-validation (Program F), reproducibility verification (Program G), statistical methods, limitations,
-unresolved questions, and claims-supported/not-supported summaries are appended below as each program
-actually executes.)*
+distribution-shift findings (Program D), mechanistic attribution (Program E), reproducibility
+verification (Program G), statistical methods, limitations, unresolved questions, and claims-
+supported/not-supported summaries are appended below as each remaining program actually executes.)*

@@ -1,0 +1,113 @@
+{
+  "experiment": "011-F-virtual-vs-real",
+  "timestamp": "2026-09-06T00:53:59Z",
+  "results": [
+    {
+      "engine": "virtual",
+      "policy": "round-robin",
+      "completed": 297,
+      "max_share": 0.3367003367003367,
+      "shares_by_target": {
+        "edge-a": 100,
+        "edge-b": 99,
+        "edge-c": 98
+      },
+      "p50_ms": 30,
+      "p99_ms": 60,
+      "mean_ms": 34.84848484848485
+    },
+    {
+      "engine": "virtual",
+      "policy": "ewma",
+      "completed": 299,
+      "max_share": 0.9732441471571907,
+      "shares_by_target": {
+        "edge-a": 291,
+        "edge-b": 3,
+        "edge-c": 5
+      },
+      "p50_ms": 15,
+      "p99_ms": 60,
+      "mean_ms": 15.903010033444817
+    },
+    {
+      "engine": "virtual",
+      "policy": "adaptive",
+      "completed": 298,
+      "max_share": 0.5033557046979866,
+      "shares_by_target": {
+        "edge-a": 150,
+        "edge-b": 99,
+        "edge-c": 49
+      },
+      "p50_ms": 15,
+      "p99_ms": 60,
+      "mean_ms": 27.38255033557047
+    },
+    {
+      "engine": "real",
+      "policy": "round-robin",
+      "completed": 300,
+      "max_share": 0.3333333333333333,
+      "shares_by_target": {
+        "http://127.0.0.1:60255": 100,
+        "http://127.0.0.1:60256": 100,
+        "http://127.0.0.1:60257": 100
+      },
+      "p50_ms": 30.443879,
+      "p99_ms": 61.3762
+    },
+    {
+      "engine": "real",
+      "policy": "ewma",
+      "completed": 300,
+      "max_share": 0.9733333333333334,
+      "shares_by_target": {
+        "http://127.0.0.1:56148": 292,
+        "http://127.0.0.1:56149": 3,
+        "http://127.0.0.1:56150": 5
+      },
+      "p50_ms": 15.595525,
+      "p99_ms": 60.883554
+    },
+    {
+      "engine": "real",
+      "policy": "adaptive",
+      "completed": 300,
+      "max_share": 1,
+      "shares_by_target": {
+        "http://127.0.0.1:56497": 300,
+        "http://127.0.0.1:56498": 0,
+        "http://127.0.0.1:56499": 0
+      },
+      "p50_ms": 15.595525,
+      "p99_ms": 16.634126
+    },
+    {
+      "engine": "real-ablation-unique-keys",
+      "policy": "ewma",
+      "completed": 300,
+      "max_share": 0.9733333333333334,
+      "shares_by_target": {
+        "http://127.0.0.1:58041": 292,
+        "http://127.0.0.1:58042": 3,
+        "http://127.0.0.1:58043": 5
+      },
+      "p50_ms": 15.595525,
+      "p99_ms": 60.883554
+    },
+    {
+      "engine": "real-ablation-unique-keys",
+      "policy": "adaptive",
+      "completed": 300,
+      "max_share": 1,
+      "shares_by_target": {
+        "http://127.0.0.1:58386": 300,
+        "http://127.0.0.1:58387": 0,
+        "http://127.0.0.1:58388": 0
+      },
+      "p50_ms": 15.595525,
+      "p99_ms": 16.50061
+    }
+  ]
+}

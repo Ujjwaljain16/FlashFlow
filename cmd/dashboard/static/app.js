@@ -164,15 +164,31 @@ function renderExplain(policyName) {
   if (!pr) { container.innerHTML = ''; return; }
   const m = pr.metrics;
 
+  // m.concentrated comes straight from internal/report.Metrics -- the
+  // SAME boolean Classify() itself gates on, computed once in Go rather
+  // than this file re-deriving it from a hardcoded threshold that could
+  // silently drift from the Go source of truth. A real bug shipped here
+  // (and in the CLI's own RenderExplanation) before this field existed:
+  // this narrative used to say "Traffic concentrated" and "the policy
+  // diverted new traffic away" unconditionally whenever congestion was
+  // found, even for policies (round-robin, least-connections in some
+  // runs) Classify itself says never concentrated -- directly
+  // contradicting the classification printed one line below.
   let steps = [];
   if (!m.congestion_found) {
     steps.push(`${policyLabel(pr.policy)}'s bottleneck target (${m.bottleneck}) never exceeded its own capacity.`);
   } else {
-    steps.push(`Traffic concentrated on <strong>${m.bottleneck}</strong>.`);
+    if (m.concentrated) {
+      steps.push(`Traffic concentrated on <strong>${m.bottleneck}</strong> (${m.concentration_ratio.toFixed(1)}x its fair share).`);
+    } else {
+      steps.push(`${m.bottleneck} received only <strong>${m.concentration_ratio.toFixed(1)}x</strong> its fair share -- traffic was never meaningfully concentrated there.`);
+    }
     steps.push(`${m.bottleneck} crossed capacity at <span class="step-time">${fmtSeconds(m.first_congestion_ms)}</span>.`);
     if (m.diversion_found) {
-      steps.push(`${m.committed_work} additional requests were committed before diversion.`);
-      steps.push(`The policy diverted new traffic away at <span class="step-time">${fmtSeconds(m.first_diversion_ms)}</span>.`);
+      steps.push(`${m.committed_work} additional requests were committed to ${m.bottleneck} before its own dispatch share dropped.`);
+      steps.push(m.concentrated
+        ? `That drop reflects a real reactive correction: the policy diverted new traffic away at <span class="step-time">${fmtSeconds(m.first_diversion_ms)}</span>.`
+        : `Because ${m.bottleneck} was never meaningfully concentrated, this is not a reactive correction -- its share simply moved within an already near-even split.`);
     } else {
       steps.push(`The policy never diverted new traffic away from ${m.bottleneck} at all.`);
     }
@@ -181,7 +197,7 @@ function renderExplain(policyName) {
     steps.push(m.drained
       ? `The queue eventually drained at <span class="step-time">${fmtSeconds(m.drain_at_ms)}</span>.`
       : `The queue never drained within the observed horizon.`);
-    steps.push(`Result classified as ${classBadge(pr.classification)}.`);
+    steps.push(`Result classified as ${classBadge(pr.classification)}. <span class="hint">${pr.reason}</span>`);
   }
 
   const counterfactualRows = controlReport.policies

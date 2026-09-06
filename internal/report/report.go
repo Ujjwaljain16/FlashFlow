@@ -71,13 +71,20 @@ const (
 // run. Every field is computed from data internal/backlog already
 // exposes; nothing here is a new measurement.
 type Metrics struct {
-	MeanMs                float64 `json:"mean_ms"` // whole-run outcome, not a backlog/mechanism quantity, but the headline number every comparison view needs alongside the mechanism classification
-	P99Ms                 float64 `json:"p99_ms"`
-	Bottleneck            string  `json:"bottleneck"`
-	Capacity              int     `json:"capacity"`
-	PeakDepth             int     `json:"peak_depth"`
-	PeakDepthAtMs         float64 `json:"peak_depth_at_ms"`
-	ConcentrationRatio    float64 `json:"concentration_ratio"` // bottleneck's own completed share, divided by 1/targetCount (fair share)
+	MeanMs             float64 `json:"mean_ms"` // whole-run outcome, not a backlog/mechanism quantity, but the headline number every comparison view needs alongside the mechanism classification
+	P99Ms              float64 `json:"p99_ms"`
+	Bottleneck         string  `json:"bottleneck"`
+	Capacity           int     `json:"capacity"`
+	PeakDepth          int     `json:"peak_depth"`
+	PeakDepthAtMs      float64 `json:"peak_depth_at_ms"`
+	ConcentrationRatio float64 `json:"concentration_ratio"` // bottleneck's own completed share, divided by 1/targetCount (fair share)
+	// Concentrated is ConcentrationRatio >= concentrationFairShareMultiple,
+	// computed once here so Classify, the CLI's rendered narrative, and
+	// the dashboard's own JS narrative all read the SAME boolean instead
+	// of each re-deriving it (or, worse, hardcoding the 1.2 threshold a
+	// second time in JS, where it could silently drift from this
+	// package's own value).
+	Concentrated          bool    `json:"concentrated"`
 	CongestionFound       bool    `json:"congestion_found"`
 	FirstCongestionMs     float64 `json:"first_congestion_ms"`
 	DiversionFound        bool    `json:"diversion_found"`
@@ -156,6 +163,7 @@ func AnalyzeTarget(wr *replay.WorldResult, targets []replay.TargetProfile, capac
 	// concentration would have missed this episode entirely; episode-
 	// windowed concentration correctly captures it.
 	m.ConcentrationRatio = concentrationRatioInWindow(wr.Records, bottleneck, len(targets), onset, endMs)
+	m.Concentrated = m.ConcentrationRatio >= concentrationFairShareMultiple
 	return m
 }
 

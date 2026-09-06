@@ -166,16 +166,40 @@ func (sr ScenarioReport) RenderExplanation(policy string) string {
 		return b.String()
 	}
 
+	// concentrated mirrors Classify's own gate exactly (not a
+	// re-derivation that could drift out of sync with it) -- the
+	// narrative must never claim "concentrated" or "diverted" (both
+	// implying an active policy reaction) for a policy Classify itself
+	// says never concentrated. A real bug shipped here: for round-robin
+	// (CHRONIC_COLLAPSE, 1.1x fair share) and least-connections (STABLE
+	// in this scenario), this text used to unconditionally print
+	// "Traffic concentrated on X" and "The policy diverted new traffic
+	// away," directly contradicting the classification one line below.
+	// DiversionFound alone doesn't imply a reaction: it just means the
+	// bottleneck's own dispatch share dropped below a threshold at some
+	// point after congestion, which happens mechanically for a
+	// load-blind policy's ordinary cycling too, not only for a policy
+	// that actually corrected its behavior.
+	concentrated := pr.Metrics.ConcentrationRatio >= concentrationFairShareMultiple
+
 	step := 1
 	numbered := func(format string, args ...any) {
 		fmt.Fprintf(&b, "%d. %s\n", step, fmt.Sprintf(format, args...))
 		step++
 	}
-	numbered("Traffic concentrated on %s.", pr.Metrics.Bottleneck)
+	if concentrated {
+		numbered("Traffic concentrated on %s (%.1fx its fair share).", pr.Metrics.Bottleneck, pr.Metrics.ConcentrationRatio)
+	} else {
+		numbered("%s received only %.1fx its fair share -- traffic was never meaningfully concentrated there.", pr.Metrics.Bottleneck, pr.Metrics.ConcentrationRatio)
+	}
 	numbered("%s crossed capacity at %s.", pr.Metrics.Bottleneck, formatSeconds(pr.Metrics.FirstCongestionMs))
 	if pr.Metrics.DiversionFound {
-		numbered("%d additional requests were committed before diversion.", pr.Metrics.CommittedWork)
-		numbered("The policy diverted new traffic away at %s.", formatSeconds(pr.Metrics.FirstDiversionMs))
+		numbered("%d additional requests were committed to %s before its own dispatch share dropped.", pr.Metrics.CommittedWork, pr.Metrics.Bottleneck)
+		if concentrated {
+			numbered("That drop reflects a real reactive correction: the policy diverted new traffic away at %s.", formatSeconds(pr.Metrics.FirstDiversionMs))
+		} else {
+			numbered("Because %s was never meaningfully concentrated, this is not a reactive correction -- its share simply moved within an already near-even split.", pr.Metrics.Bottleneck)
+		}
 	} else {
 		numbered("The policy never diverted new traffic away from %s at all.", pr.Metrics.Bottleneck)
 	}
@@ -187,6 +211,7 @@ func (sr ScenarioReport) RenderExplanation(policy string) string {
 		numbered("The queue never drained within the observed horizon.")
 	}
 	numbered("Result classified as %s (%s).", string(pr.Classification), ClassificationSubtitle(pr.Classification))
+	fmt.Fprintf(&b, "   %s\n", pr.Reason)
 
 	fmt.Fprintln(&b)
 	fmt.Fprintln(&b, "Most likely mechanism:")

@@ -566,7 +566,36 @@ to overclaim**:
   significant figures from `UtilizationFromWorld` alone) and Section 12's Adaptive balancing numbers,
   now backed by an independent L measurement rather than resting on `UtilizationFromWorld` alone.
 
+## 18. Statistical Robustness Check (Program A's Flagship Claim)
+
+**Experiment**: `cmd/experiment-011h`, artifact `experiments/011-research-validation/results/011H-statistical-robustness.json`.
+Every number in Programs A-F rests on **one seed per configuration** — necessary to keep the regime map
+(162 runs) tractable, but exactly the "no single-run strong claims" risk this stage's own discipline
+warns against. This experiment strengthens the single most load-bearing claim (Section 7: EWMA beats
+Adaptive on mean latency under severe heterogeneity) with actual replication and effect-size reporting.
+
+**Method, chosen for the actual question being asked**: the question is "is EWMA's advantage a real,
+direction-consistent effect, or could it be noise" — a location-difference-with-effect-size question,
+not a significance-test-by-habit one. Reran the severe/constant/none scenario across 12 independent
+traffic seeds (`JitterFraction: 0.3` deliberately added — Program A's own constant-pattern default has
+*zero* jitter, so varying its seed alone would silently produce byte-identical arrivals and prove
+nothing about robustness). Used `internal/statistics.CliffsDelta` (a distribution-free effect size) and
+`BootstrapDiffCI` (an uncertainty interval on the mean difference), both existing project tools, chosen
+per-question rather than applied by default.
+
+**Result**: EWMA had the lower mean latency in **12 of 12** seeds (15.90ms every time — invariant to
+jitter, because once EWMA locks onto edge-a via its cold-start rule, service time is fixed regardless
+of arrival timing, per Section 7/14's no-queueing finding). Adaptive's mean varied 26.12-27.13ms across
+seeds. Cliff's Delta = **1.000 ("large")** — the maximum possible effect size, meaning EWMA beat
+Adaptive in literally every paired comparison. The bootstrap 95% CI on (Adaptive mean − EWMA mean) is
+**[10.55ms, 10.89ms]**, entirely positive and excluding zero by a wide margin.
+
+**This is not single-run noise.** Program A's flagship finding — EWMA's mean-latency advantage over
+Adaptive under severe heterogeneity — is a robust, seed-independent, direction-consistent effect. (This
+checks *seed* robustness only, per Program D's own terminology distinction — it says nothing about
+*distribution* generalization beyond what Program D already established.)
+
 ---
 
-*(Statistical methods, limitations, unresolved questions, and claims-supported/not-supported summaries
-are appended below to close out Stage 11.)*
+*(Limitations, unresolved questions, and claims-supported/not-supported summaries are appended below to
+close out Stage 11.)*

@@ -41,6 +41,48 @@ func BenchmarkRunWorld_RoundRobinPolicy(b *testing.B) {
 	b.ReportMetric(float64(b.N*300)/b.Elapsed().Seconds(), "virtual-requests/sec")
 }
 
+// BenchmarkRunWorld_AdaptivePolicy_Contention is Stage 12's own required
+// cost measurement (docs/StageArtifacts/Stage12.md §29): the identical
+// scenario/policy as BenchmarkRunWorld_AdaptivePolicy above, with
+// Capacity=1 enabled on every target -- directly comparable via `go test
+// -bench` output, showing exactly what the new finite-capacity queueing
+// machinery costs relative to the flat model it's layered on top of.
+func BenchmarkRunWorld_AdaptivePolicy_Contention(b *testing.B) {
+	scenario := benchScenarioWithCapacity(300, 1)
+	spec := AdaptivePolicy()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if _, err := RunWorld(scenario, spec); err != nil {
+			b.Fatal(err)
+		}
+	}
+	b.StopTimer()
+	b.ReportMetric(float64(b.N*300)/b.Elapsed().Seconds(), "virtual-requests/sec")
+}
+
+func BenchmarkRunWorld_RoundRobinPolicy_Contention(b *testing.B) {
+	scenario := benchScenarioWithCapacity(300, 1)
+	spec := RoundRobinPolicy()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if _, err := RunWorld(scenario, spec); err != nil {
+			b.Fatal(err)
+		}
+	}
+	b.StopTimer()
+	b.ReportMetric(float64(b.N*300)/b.Elapsed().Seconds(), "virtual-requests/sec")
+}
+
+func benchScenarioWithCapacity(requests, capacity int) Scenario {
+	s := benchScenario(requests)
+	for i := range s.Targets {
+		s.Targets[i].Capacity = capacity
+	}
+	return s
+}
+
 func benchScenario(requests int) Scenario {
 	const spacing = 5 * time.Millisecond
 	arrivals := make([]Arrival, requests)

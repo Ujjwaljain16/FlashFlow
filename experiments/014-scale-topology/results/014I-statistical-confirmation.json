@@ -1,0 +1,70 @@
+{
+  "experiment": "014-I-statistical-confirmation-n8-boundary",
+  "timestamp": "2026-09-06T19:42:46Z",
+  "seed_results": [
+    {
+      "seed": 14700,
+      "rr_mean_ms": 170.47174212034392,
+      "ewma_mean_ms": 305.68021533923303,
+      "adaptive_mean_ms": 29.522546419098145
+    },
+    {
+      "seed": 14701,
+      "rr_mean_ms": 169.84211174785105,
+      "ewma_mean_ms": 316.9697024539879,
+      "adaptive_mean_ms": 30.317460317460316
+    },
+    {
+      "seed": 14702,
+      "rr_mean_ms": 170.63811461318053,
+      "ewma_mean_ms": 296.29208734939766,
+      "adaptive_mean_ms": 29.920424403183024
+    },
+    {
+      "seed": 14703,
+      "rr_mean_ms": 170.53806303724926,
+      "ewma_mean_ms": 296.88675830815697,
+      "adaptive_mean_ms": 30.19788918205805
+    },
+    {
+      "seed": 14704,
+      "rr_mean_ms": 170.98763610315189,
+      "ewma_mean_ms": 306.00276246334334,
+      "adaptive_mean_ms": 29.363395225464192
+    },
+    {
+      "seed": 14705,
+      "rr_mean_ms": 170.6446618911175,
+      "ewma_mean_ms": 281.7942189349111,
+      "adaptive_mean_ms": 30.03968253968254
+    },
+    {
+      "seed": 14706,
+      "rr_mean_ms": 170.80889684813752,
+      "ewma_mean_ms": 305.6679469026549,
+      "adaptive_mean_ms": 29.28759894459103
+    },
+    {
+      "seed": 14707,
+      "rr_mean_ms": 170.54309455587392,
+      "ewma_mean_ms": 281.07354242424236,
+      "adaptive_mean_ms": 30
+    },
+    {
+      "seed": 14708,
+      "rr_mean_ms": 170.7197220630373,
+      "ewma_mean_ms": 304.66865982404687,
+      "adaptive_mean_ms": 30.238095238095237
+    },
+    {
+      "seed": 14709,
+      "rr_mean_ms": 170.88178223495703,
+      "ewma_mean_ms": 280.9879880597014,
+      "adaptive_mean_ms": 30.07915567282322
+    }
+  ],
+  "adaptive_vs_ewma_cliffs_delta": 1,
+  "adaptive_vs_ewma_wins": 10,
+  "rr_vs_ewma_cliffs_delta": 1,
+  "rr_vs_ewma_wins": 10
+}

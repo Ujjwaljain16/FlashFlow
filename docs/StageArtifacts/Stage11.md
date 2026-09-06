@@ -423,8 +423,46 @@ time-varying per-target latency and/or a real queueing model would be a substant
 correctly out of scope for Stage 11 itself, but is now an evidence-backed candidate for a future
 stage's actual design goal, not a speculative "nice to have."
 
+## 15. Program D Results — Distribution Shift
+
+**Experiment**: `cmd/experiment-011d`, artifact `experiments/011-research-validation/results/011D-distribution-shift.json`.
+"Development" is one of Program A's own moderate-heterogeneity/constant/no-failure configurations.
+"Evaluation-shifted" changes **five** generating parameters at once relative to development —
+heterogeneity severity (2x spread → 6x spread), workload shape (constant → flash crowd), key skew
+(50% hot → 85% hot), intensity (flat 75req/s → 30-150req/s spike), and adds a failure timed during the
+flash-crowd peak (none → during-transition) — not merely a disjoint traffic seed. This directly avoids
+the same-distribution mistake Stage 10's own audit found in Stage 8's Holdout set (`Stage10.md`'s own
+callout, referenced in Section 3's H5).
+
+**Result**:
+
+| Policy | Dev mean | Dev margin behind best | Shifted mean | Shifted margin behind best |
+|---|---:|---:|---:|---:|
+| round-robin | 29.97ms | 47.1% | 37.06ms | 112.2% |
+| ewma | 20.37ms | 0.0% (wins both) | 17.47ms | 0.0% (wins both) |
+| adaptive | 27.46ms | 34.8% | 22.20ms | **27.1%** |
+
+**H5 answered directly, not assumed: Adaptive's disadvantage relative to the best policy (EWMA)
+narrowed under genuine distribution shift** (34.8% → 27.1%), rather than widening or reversing. The
+mechanism is visible in `max_share`: EWMA's own concentration dropped from 0.977 (development) to
+0.647 (shifted), while Adaptive's rose slightly (0.502 → 0.620) — under the flash-crowd's transient
+dynamics plus a mid-run failure, EWMA can no longer lock onto a single target as completely as it does
+under pure constant load (the interim failure forces at least one real redistribution, and the
+flash-crowd's own arrival-rate swings change which target looks momentarily best more often than a
+flat-rate stream does). EWMA's own advantage partially erodes under this specific kind of shift, which
+narrows — without eliminating — the gap to Adaptive. Round-robin, having no adaptive mechanism at all,
+got measurably worse in relative terms (47.1% → 112.2% behind best), the expected direction for a
+policy with zero responsiveness to worsening conditions.
+
+**Scope of this claim, stated precisely**: this demonstrates *a* genuine distribution shift narrows
+Adaptive's disadvantage in *this* direction, for *this* specific combination of changed factors — it is
+not evidence that distribution shift always favors Adaptive, nor a general claim about "robustness."
+Only one shifted distribution was tested; Section 16 below inventories this as an explicit limitation
+requiring more shifted distributions (varying which factors change, and by how much) before a general
+claim about Adaptive's shift-robustness would be warranted.
+
 ---
 
-*(Distribution-shift findings (Program D), mechanistic attribution (Program E), reproducibility
-verification (Program G), statistical methods, limitations, unresolved questions, and claims-
-supported/not-supported summaries are appended below as each remaining program actually executes.)*
+*(Mechanistic attribution (Program E), reproducibility verification (Program G), statistical methods,
+limitations, unresolved questions, and claims-supported/not-supported summaries are appended below as
+each remaining program actually executes.)*

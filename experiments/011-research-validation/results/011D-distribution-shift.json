@@ -1,0 +1,48 @@
+{
+  "experiment": "011-D-distribution-shift",
+  "timestamp": "2026-09-06T01:04:52Z",
+  "results": [
+    {
+      "distribution": "development",
+      "policy": "round-robin",
+      "mean_ms": 29.966442953020135,
+      "p99_ms": 40,
+      "max_share": 0.33557046979865773
+    },
+    {
+      "distribution": "development",
+      "policy": "ewma",
+      "mean_ms": 20.367892976588628,
+      "p99_ms": 40,
+      "max_share": 0.9765886287625418
+    },
+    {
+      "distribution": "development",
+      "policy": "adaptive",
+      "mean_ms": 27.45819397993311,
+      "p99_ms": 40,
+      "max_share": 0.5016722408026756
+    },
+    {
+      "distribution": "evaluation-shifted",
+      "policy": "round-robin",
+      "mean_ms": 37.05685618729097,
+      "p99_ms": 60,
+      "max_share": 0.391304347826087
+    },
+    {
+      "distribution": "evaluation-shifted",
+      "policy": "ewma",
+      "mean_ms": 17.466666666666665,
+      "p99_ms": 60,
+      "max_share": 0.6466666666666666
+    },
+    {
+      "distribution": "evaluation-shifted",
+      "policy": "adaptive",
+      "mean_ms": 22.2,
+      "p99_ms": 60,
+      "max_share": 0.62
+    }
+  ]
+}

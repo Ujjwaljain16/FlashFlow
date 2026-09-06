@@ -55,7 +55,34 @@ func meanLatency(wr *replay.WorldResult) float64 {
 	return m
 }
 
-func runNearBoundaryConfirmation() {
+// nearBoundaryResult and defaultVsTunedResult persist exactly the
+// numbers Part 1/Part 2 already compute and print -- an independent
+// audit found this experiment's committed JSON was a "see stdout"
+// placeholder with none of its own headline numbers (10/10 seeds,
+// Cliff's Delta=1.000, tuned config 24.26ms) actually persisted,
+// unverifiable from the repo alone. These types close that gap without
+// changing what the experiment computes or how it's printed.
+type nearBoundaryResult struct {
+	Capacity        int       `json:"capacity"`
+	RequestCount    int       `json:"request_count"`
+	SeedCount       int       `json:"seed_count"`
+	EwmaMeansMs     []float64 `json:"ewma_means_ms"`
+	AdaptiveMeans   []float64 `json:"adaptive_means_ms"`
+	AdaptiveWins    int       `json:"adaptive_wins"`
+	CliffsDelta     float64   `json:"cliffs_delta"`
+	CliffsMagnitude string    `json:"cliffs_magnitude"`
+	DiffCILowerMs   float64   `json:"diff_ci_lower_ms"`
+	DiffCIUpperMs   float64   `json:"diff_ci_upper_ms"`
+}
+
+type defaultVsTunedResult struct {
+	EwmaMeanMs    float64 `json:"ewma_mean_ms"`
+	DefaultMeanMs float64 `json:"adaptive_default_mean_ms"`
+	TunedMeanMs   float64 `json:"adaptive_tuned_mean_ms"`
+	BothBeatEwma  bool    `json:"both_beat_ewma"`
+}
+
+func runNearBoundaryConfirmation() nearBoundaryResult {
 	fmt.Println("\n=== Part 1: Near-Boundary Statistical Confirmation ===")
 	fmt.Println("(Capacity=2, Requests=600 -- the near-boundary point experiment-013c found at offered_rho~0.89,")
 	fmt.Println(" not deep inside the already-obvious Capacity=1 collapse)")
@@ -109,9 +136,16 @@ func runNearBoundaryConfirmation() {
 	}
 	fmt.Printf("\nAdaptive faster in %d/10 seeds at this near-boundary point.\n", adaptiveWins)
 	fmt.Printf("Cliff's Delta: %.3f (%s). Bootstrap 95%% CI on (ewma-adaptive): [%.2f, %.2f]ms.\n", delta.Delta, delta.Magnitude, diffCI.Lower, diffCI.Upper)
+
+	return nearBoundaryResult{
+		Capacity: capacity, RequestCount: requestCount, SeedCount: len(ewmaMeans),
+		EwmaMeansMs: ewmaMeans, AdaptiveMeans: adaptiveMeans, AdaptiveWins: adaptiveWins,
+		CliffsDelta: delta.Delta, CliffsMagnitude: delta.Magnitude,
+		DiffCILowerMs: diffCI.Lower, DiffCIUpperMs: diffCI.Upper,
+	}
 }
 
-func runDefaultVsTuned() {
+func runDefaultVsTuned() defaultVsTunedResult {
 	fmt.Println("\n=== Part 2: Default vs Stage-8-Tuned Adaptive at the Flagship Boundary ===")
 	const horizon = 4 * time.Second
 	const capacity = 1
@@ -147,7 +181,8 @@ func runDefaultVsTuned() {
 	fmt.Printf("ewma:              %8.2fms\n", ewmaMean)
 	fmt.Printf("adaptive-default:  %8.2fms\n", defaultMean)
 	fmt.Printf("adaptive-tuned:    %8.2fms\n", tunedMean)
-	if defaultMean < ewmaMean && tunedMean < ewmaMean {
+	bothBeatEwma := defaultMean < ewmaMean && tunedMean < ewmaMean
+	if bothBeatEwma {
 		fmt.Println("\nBOTH default and Stage-8-tuned Adaptive beat EWMA at this boundary -- the reversal is")
 		fmt.Println("structural to Adaptive's design (load-aware balancing), not an artifact of one specific")
 		fmt.Println("hand-chosen weight configuration.")
@@ -155,6 +190,8 @@ func runDefaultVsTuned() {
 		fmt.Println("\nDefault and tuned Adaptive do NOT both beat EWMA here -- the reversal depends on")
 		fmt.Println("configuration, not purely on Adaptive's structural design.")
 	}
+
+	return defaultVsTunedResult{EwmaMeanMs: ewmaMean, DefaultMeanMs: defaultMean, TunedMeanMs: tunedMean, BothBeatEwma: bothBeatEwma}
 }
 
 func main() {
@@ -165,16 +202,24 @@ func main() {
 	fmt.Println(" Experiment 013-J: Statistical Confirmation + Default vs Tuned")
 	fmt.Println("=================================================================")
 
-	runNearBoundaryConfirmation()
-	runDefaultVsTuned()
+	part1 := runNearBoundaryConfirmation()
+	part2 := runDefaultVsTuned()
 
 	out := struct {
-		Experiment string `json:"experiment"`
-		Timestamp  string `json:"timestamp"`
-		Note       string `json:"note"`
-	}{Experiment: "013-J-statistical-confirmation-and-tuned-config", Timestamp: time.Now().UTC().Format(time.RFC3339),
-		Note: "see stdout for full numeric results; this experiment's primary output is console-printed analysis, not a large structured artifact"}
-	b, _ := json.MarshalIndent(out, "", "  ")
-	os.WriteFile(filepath.Join(outDirName, "013J-statistical-confirmation.json"), b, 0644)
+		Experiment     string               `json:"experiment"`
+		Timestamp      string               `json:"timestamp"`
+		NearBoundary   nearBoundaryResult   `json:"near_boundary_confirmation"`
+		DefaultVsTuned defaultVsTunedResult `json:"default_vs_tuned"`
+	}{
+		Experiment: "013-J-statistical-confirmation-and-tuned-config", Timestamp: time.Now().UTC().Format(time.RFC3339),
+		NearBoundary: part1, DefaultVsTuned: part2,
+	}
+	b, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		log.Fatalf("marshaling results: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(outDirName, "013J-statistical-confirmation.json"), b, 0644); err != nil {
+		log.Fatalf("writing results: %v", err)
+	}
 	fmt.Println("\nExperiment 013-J complete.")
 }

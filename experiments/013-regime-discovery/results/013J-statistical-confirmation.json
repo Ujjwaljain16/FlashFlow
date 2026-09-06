@@ -1,5 +1,44 @@
 {
   "experiment": "013-J-statistical-confirmation-and-tuned-config",
-  "timestamp": "2026-09-06T18:44:26Z",
-  "note": "see stdout for full numeric results; this experiment's primary output is console-printed analysis, not a large structured artifact"
+  "timestamp": "2026-09-06T23:56:48Z",
+  "near_boundary_confirmation": {
+    "capacity": 2,
+    "request_count": 600,
+    "seed_count": 10,
+    "ewma_means_ms": [
+      102.78345551601433,
+      101.9936399286988,
+      103.65262099644133,
+      101.83008406304731,
+      101.18242832167824,
+      101.31851052631575,
+      102.15717112299467,
+      101.87706939501778,
+      102.5436434937612,
+      101.65113811188813
+    ],
+    "adaptive_means_ms": [
+      27.37023657718121,
+      27.261939597315436,
+      27.329208053691275,
+      27.32334731543624,
+      27.192588926174494,
+      27.369468907563025,
+      27.133171140939595,
+      27.2838355704698,
+      27.070199329983254,
+      27.30701845637584
+    ],
+    "adaptive_wins": 10,
+    "cliffs_delta": 1,
+    "cliffs_magnitude": "large",
+    "diff_ci_lower_ms": 74.42598541947206,
+    "diff_ci_upper_ms": 75.29615865321608
+  },
+  "default_vs_tuned": {
+    "ewma_mean_ms": 131.05601056338014,
+    "adaptive_default_mean_ms": 27.93059395973152,
+    "adaptive_tuned_mean_ms": 24.25594630872484,
+    "both_beat_ewma": true
+  }
 }

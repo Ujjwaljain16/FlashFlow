@@ -1,0 +1,113 @@
+{
+  "stage": "011-research-validation",
+  "description": "Machine-readable index tracing every Stage 11 finding to its experiment ID, command, config, seed(s), engine, and artifact. Regenerate any row with the listed command against the listed git commit.",
+  "engines": {
+    "virtual": "internal/engine.VirtualEngine (internal/replay.RunWorld)",
+    "real": "internal/engine.RealEngine (internal/topology + internal/proxy, real net/http)"
+  },
+  "programs": [
+    {
+      "id": "011-A",
+      "name": "Policy Regime Map",
+      "command": "go run -buildvcs=true ./cmd/experiment-011a",
+      "engine": "virtual",
+      "root_seeds": "1000*topologyIndex + 100*workloadIndex + 10*failureIndex + 1, for 27 configs",
+      "artifact": "experiments/011-research-validation/results/011A-policy-regime-map.json",
+      "doc_section": "Stage11.md #7",
+      "key_finding": "RR ties exactly under homogeneous load; EWMA wins 18/27 heterogeneous configs on mean latency via unconstrained load concentration (no queueing penalty in the virtual model); Adaptive wins 0/27 on this metric."
+    },
+    {
+      "id": "011-B",
+      "name": "Adversarial Adaptive Testing",
+      "command": "go run -buildvcs=true ./cmd/experiment-011b",
+      "engine": "virtual",
+      "root_seeds": "3011 (B1 cache-affinity deception), 3012 (B2 correlated failure)",
+      "artifact": "experiments/011-research-validation/results/011B-adversarial-adaptive.json",
+      "doc_section": "Stage11.md #12",
+      "key_finding": "B1: Adaptive's cache-affinity signal causes a 0%-post-recovery-return lock-in, confirmed causally by zeroing the weight (restores to 54%). B2: correlated failure did NOT make Adaptive lose (negative result, reported honestly)."
+    },
+    {
+      "id": "011-C",
+      "name": "Recovery and Adaptation Dynamics",
+      "command": "go run -buildvcs=true ./cmd/experiment-011c",
+      "engine": "virtual",
+      "root_seeds": "3013",
+      "artifact": "experiments/011-research-validation/results/011C-recovery-dynamics.json",
+      "doc_section": "Stage11.md #13",
+      "key_finding": "transition_p99 == steady_state_p99 for every policy (no-queueing model can't express adaptation cost via percentiles); per-phase means show real dynamics, including a signal-scarcity convergence when only one target is available, reproducing Program B's B2 mechanism independently."
+    },
+    {
+      "id": "011-D",
+      "name": "Distribution Shift",
+      "command": "go run -buildvcs=true ./cmd/experiment-011d",
+      "engine": "virtual",
+      "root_seeds": "4001 (development), 4002 (evaluation-shifted)",
+      "artifact": "experiments/011-research-validation/results/011D-distribution-shift.json",
+      "doc_section": "Stage11.md #15",
+      "key_finding": "Adaptive's disadvantage behind the best policy narrowed under a 5-factor genuine distribution shift (34.8% -> 27.1%), traced to EWMA's own concentration advantage eroding under flash-crowd + mid-run-failure dynamics."
+    },
+    {
+      "id": "011-E",
+      "name": "Mechanistic Attribution",
+      "command": "go run -buildvcs=true ./cmd/experiment-011e",
+      "engine": "virtual",
+      "root_seeds": "1001 (matches 011-A's severe/constant/none)",
+      "artifact": "experiments/011-research-validation/results/011E-mechanistic-attribution.json",
+      "doc_section": "Stage11.md #17",
+      "key_finding": "Independently-measured L (event-timeline integration) matches Lambda*W to ~0 relative error for all 6 target/policy pairs -- confirms attribution bookkeeping consistency, explicitly NOT evidence of real queueing dynamics (the model has none)."
+    },
+    {
+      "id": "011-F",
+      "name": "Virtual vs Real Validation",
+      "command": "go run -buildvcs=true ./cmd/experiment-011f",
+      "engine": "virtual and real",
+      "root_seeds": "2011",
+      "artifact": "experiments/011-research-validation/results/011F-virtual-vs-real.json",
+      "doc_section": "Stage11.md #10",
+      "key_finding": "Discovered and fixed a real defect: RealEngine discarded policy.New's Instrumentation, so dynamic policies (least-connections/ewma/p2c-load/adaptive) selected blind for the whole run in the real engine. Fixed the latency signal via existing ExposeDebugHeaders infra. Post-fix, EWMA's real behavior closely matches virtual (H4 confirmed for EWMA); Adaptive's ranking direction agrees but concentration diverges (load signal still unfixed).",
+      "related_code_change": "internal/engine/real.go (fix), internal/engine/real_test.go (regression: TestRealEngine_Run_EWMAPrefersFastRealTarget)"
+    },
+    {
+      "id": "011-G",
+      "name": "Seed and Reproducibility Attack",
+      "command": "go run -buildvcs=true ./cmd/experiment-011g",
+      "engine": "virtual",
+      "root_seeds": "5001 (G1 repeat-run), {Global:0,Traffic:100,Topology:200,Failure:300,Policy:400} baseline +/- one axis at a time (G2, G3)",
+      "artifact": "experiments/011-research-validation/results/011G-reproducibility-attack.json",
+      "doc_section": "Stage11.md #16",
+      "key_finding": "G1: 3x identical repeat runs byte-identical. G2: discovered Topology seed leaks into Failure selection under internal/tuning.DefaultScenarioSpace.Generate (target-count-dependent RNG range), a previously-untested invariant. G3: Policy-seed isolation confirmed, policy-dependent (only p2c-load consumes it).",
+      "related_code_change": "internal/tuning/scenario_test.go (regression: TestGenerate_TopologySeedCanLeakIntoFailureSelection)"
+    },
+    {
+      "id": "011-H",
+      "name": "Statistical Robustness Check",
+      "command": "go run -buildvcs=true ./cmd/experiment-011h",
+      "engine": "virtual",
+      "root_seeds": "9000-9011 (12 traffic seeds, JitterFraction=0.3)",
+      "artifact": "experiments/011-research-validation/results/011H-statistical-robustness.json",
+      "doc_section": "Stage11.md #18",
+      "key_finding": "EWMA beats Adaptive in 12/12 seeds on the flagship severe/constant/none scenario; Cliff's Delta=1.000 (large); bootstrap 95% CI on the mean difference [10.55, 10.89]ms, excludes zero. Not single-run noise."
+    },
+    {
+      "id": "011-verify-tuned-config",
+      "name": "Stage 8 Tuned-Config Reconciliation (ad hoc verification, not a standalone command)",
+      "command": "see docs/StageArtifacts/Stage11.md Section 19 for the exact AdaptiveConfig used",
+      "engine": "virtual",
+      "root_seeds": "1001",
+      "artifact": "no separate JSON artifact -- numbers quoted directly in Stage11.md #19",
+      "doc_section": "Stage11.md #19",
+      "key_finding": "Stage 8's tuned AdaptiveConfig narrows but does not close the gap to EWMA (27.38ms default -> 22.45ms tuned -> still worse than EWMA's 15.90ms) on this scenario -- resolves the apparent tension with Stage 8's 62.5-70% win rate as a metric/scenario-distribution difference, not a contradiction."
+    }
+  ],
+  "git_commits": [
+    "070ecae stage11: add systematic research matrix (Program A)",
+    "d1d72f8 stage11: add virtual-real validation (Program F), fix real-engine tracker wiring bug",
+    "39c58fa stage11: add adversarial adaptive scenarios (Program B)",
+    "1a3a0c7 stage11: add recovery/adaptation dynamics (Program C)",
+    "597903d stage11: add distribution-shift experiments (Program D)",
+    "0a3c51b stage11: add reproducibility checks (Program G), discover topology/failure seed leak",
+    "61eb9a7 stage11: add mechanistic attribution (Program E)",
+    "9fc1a26 stage11: add statistical robustness check for the flagship claim",
+    "53e9d16 stage11: reconcile findings with Stage 8's 62.5-70% win-rate claim"
+  ]
+}

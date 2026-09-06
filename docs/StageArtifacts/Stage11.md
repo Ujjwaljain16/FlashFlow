@@ -638,7 +638,116 @@ latency (Program A's metric) — the two can and do disagree about which policy 
 number is wrong, they are answering different questions. This is now a documented, evidence-based
 caveat rather than an implicit ambiguity.
 
+## 20. Limitations
+
+1. **No queueing/contention model** (Sections 7, 13, 14, 17): `internal/replay.TargetProfile.ServiceTime`
+   is fixed and independent of concurrent load. This structurally prevents the virtual engine from
+   expressing "adaptation cost," "overload risk," or any latency consequence of load concentration —
+   a documented Stage 5 design choice whose research consequences Stage 11 is the first to trace
+   across three independent programs (A, C, E).
+2. **No time-varying per-target latency**: `TargetProfile.ServiceTime` cannot change mid-`Scenario`.
+   This made H2 (a genuine latency-oscillation/staleness attack) untestable as originally specified
+   (Section 12), and forced Program C's "capacity changes" phase to be expressed via compounding
+   failure instead of a true capacity change (Section 13).
+3. **RealEngine's load (in-flight count) signal remains uninstrumented** (Section 10): the Program F
+   fix restored the latency signal only; least-connections/p2c-load/adaptive's load-based behavior in
+   the real engine is still not validated against the virtual engine's own (correctly-instrumented)
+   load tracking. This is the single most concrete, scoped, high-value follow-up this stage identifies.
+4. **Topology/Failure seed axes are not fully independent** under `internal/tuning.DefaultScenarioSpace`
+   (Section 16) — a real, now-documented and regression-tested reproducibility hazard affecting any
+   claim that depends on holding Topology fixed while varying Failure (or vice versa) via that
+   generator specifically. Does not affect any claim in this document (Programs A-D used literal,
+   non-generated topologies).
+5. **Single shifted distribution tested** (Section 15): Program D demonstrates ONE genuine distribution
+   shift narrows Adaptive's disadvantage; this is not evidence of general distribution-shift robustness,
+   only that this specific combination of changed factors produced this specific directional result.
+6. **Statistical robustness checked for one claim only** (Section 18): Program A's flagship
+   severe/constant/none finding was validated across 12 seeds; every other individual regime-map cell,
+   adversarial scenario, and recovery-phase result in Programs A-D still rests on a single seed. The
+   regime-level PATTERN (RR ties under homogeneity, EWMA wins under heterogeneity) is corroborated by
+   its own internal consistency across 27 configurations and by the dedicated robustness check, but
+   individual cell-level numbers have not each been independently bootstrapped.
+7. **Program B's B2 (correlated failure) scenario is a single negative result**, not a systematic
+   search — it does not establish that no correlated-failure scenario can make Adaptive lose, only that
+   this particular one didn't.
+8. **`internal/attribution`'s Little's Law check (Section 17) validates bookkeeping consistency, not
+   queueing behavior** — restated here because it is easy to misread "Little's Law holds" as evidence
+   of realistic queueing dynamics, which it explicitly is not, given Limitation 1.
+
+## 21. Unresolved Questions (Earned by This Stage's Evidence)
+
+- Does fixing RealEngine's load-tracking gap (Limitation 3) bring Adaptive's real-engine concentration
+  in line with its virtual-engine behavior, the way the latency fix did for EWMA? (Section 10's own
+  stated follow-up.)
+- Does the Topology/Failure seed leak (Limitation 4) actually change any of Stage 8's own reported
+  tuning numbers, or does it only affect scenarios that happen to draw different `n`? Not checked here.
+- Would a genuinely time-varying latency mechanism (Limitation 2), if built, let H2 be tested as
+  originally specified, and would Adaptive's `StaleAfter` mechanism behave as designed under it?
+- Does Adaptive's disadvantage under heterogeneity (Sections 7, 19) persist, narrow, or reverse under
+  OTHER kinds of distribution shift beyond the one combination Program D tested (e.g. shifting only
+  failure timing, or only key skew, in isolation, to see which single factor drives the narrowing
+  Program D observed)?
+- Is B1's cache-affinity lock-in (Section 12) still present, and to what degree, under Stage 8's TUNED
+  `AdaptiveConfig` (`Cache=0.051`, lower than the default's 0.1) rather than the default weights B1
+  actually tested?
+
+## 22. Claims Supported by Evidence
+
+- H1 (Round Robin ties/competitive under homogeneous load): **confirmed exactly** (Section 7).
+- EWMA beats Adaptive on mean latency under heterogeneous, no-failure, constant-load conditions, and
+  this is a robust, seed-independent, large effect (Sections 7, 18), mechanistically explained by
+  unconstrained load concentration in a model with no queueing penalty (Section 7), and this specific
+  finding is NOT resolved by using Stage 8's own tuned config instead of the default (Section 19).
+- H3 (cache-affinity deception can make Adaptive lose to a simpler policy): **confirmed causally**, not
+  just observationally — zeroing the cache weight directly restores most of the lost performance
+  (Section 12).
+- H4 (virtual engine preserves policy ranking) is **confirmed for EWMA** specifically, once a real,
+  confirmed RealEngine defect was fixed (Section 10) — not confirmed by the engine "just working," but
+  by finding and fixing what was actually broken.
+- H5 (distribution shift changes Adaptive's relative disadvantage) is answered directionally: it
+  **narrowed** under the one shift tested (Section 15), not widened or reversed.
+- The virtual engine's L/Lambda/W attribution bookkeeping is internally consistent (Section 17).
+- `internal/engine.RealEngine` had a real, severe defect (discarded `Instrumentation`) causing every
+  dynamic policy to select blind for the entire duration of any real-engine experiment; fixed for the
+  latency signal, confirmed via a non-flaky regression test (Section 10).
+- `internal/tuning.ScenarioSpace.Generate`'s Topology and Failure seed axes are not fully independent,
+  a previously-untested invariant, now confirmed via direct mechanism isolation and regression-tested
+  (Section 16).
+
+## 23. Claims NOT Supported by Evidence (Explicitly)
+
+- That Adaptive is a worse policy than EWMA in general — Section 19 shows this is regime- and
+  metric-specific (raw mean latency, heterogeneous no-failure load, default config), not a general
+  ranking; Stage 8's own composite-utility, broad-distribution win rate stands uncontradicted.
+- That the virtual engine preserves conclusions for every policy, not just EWMA — Adaptive's real-vs-
+  virtual concentration degree still diverges (Section 10), for a specific, disclosed, unfixed reason.
+- That Adaptive is robust to distribution shift in general — only one shift, in one direction, was
+  tested (Section 15, Limitation 5).
+- That H2 (staleness/oscillation) was tested at all — it was explicitly declined as untestable with
+  current infrastructure (Section 12), not tested-and-passed.
+- That B2's negative result generalizes to "Adaptive is never vulnerable to correlated failure" — one
+  untested hypothesis failing to manifest is not evidence no such scenario exists (Section 12).
+- That Little's Law "confirms queueing behavior" in this system — it confirms bookkeeping consistency
+  only, given the model has no queueing to confirm (Section 17, Limitation 8).
+
 ---
 
-*(Limitations, unresolved questions, and claims-supported/not-supported summaries are appended below to
-close out Stage 11.)*
+## Stage 11 Verdict
+
+**PASS WITH LIMITATIONS.**
+
+Every one of the six research questions received a credible, evidence-backed answer or an explicit,
+honestly-stated "not testable with current infrastructure" — none were left silently unaddressed. The
+central research thesis was demonstrably advanced: Adaptive DOES have identified, mechanistically-
+explained failure regimes (Section 12's cache-affinity trap, confirmed causally), it DOES have
+identified win regimes relative to a naive baseline in a broad-distribution composite sense (Stage 8,
+reconciled in Section 19), and its virtual-to-real fidelity is now partially validated with a real,
+fixed defect along the way rather than an untested assumption (Section 10). Two platform-capability
+gaps (no queueing model, no time-varying latency) were discovered to be far more consequential to this
+project's own research questions than previously documented, spanning three independent programs
+(Sections 7, 13, 14). The "limitations" in the verdict are real and named precisely (Section 20) rather
+than papered over: RealEngine's load signal remains unfixed, only one distribution shift was tested,
+and most individual regime-map cells still rest on a single seed. This is not a "PASS" because the
+platform is complete — it is a "PASS WITH LIMITATIONS" because Stage 11 did what it was asked to do:
+determine, with evidence, what FlashFlow actually knows about the systems it studies, including where
+it does not yet know enough.

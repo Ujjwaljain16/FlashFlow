@@ -1,0 +1,34 @@
+{
+  "experiment": "013-G-h2-smoothing-alpha-intervention",
+  "timestamp": "2026-09-06T18:36:44Z",
+  "results": [
+    {
+      "alpha": 0.05,
+      "overall_mean_ms": 46.644295302013425,
+      "swap_window_mean_ms": 97.5,
+      "swap_window_share_to_degraded_pct": 70,
+      "requests_to_first_correct_post_swap_decision": 14
+    },
+    {
+      "alpha": 0.2,
+      "overall_mean_ms": 30.13377926421405,
+      "swap_window_mean_ms": 90.76923076923077,
+      "swap_window_share_to_degraded_pct": 63.333333333333336,
+      "requests_to_first_correct_post_swap_decision": 14
+    },
+    {
+      "alpha": 0.5,
+      "overall_mean_ms": 31.610738255033556,
+      "swap_window_mean_ms": 80,
+      "swap_window_share_to_degraded_pct": 50,
+      "requests_to_first_correct_post_swap_decision": 14
+    },
+    {
+      "alpha": 0.9,
+      "overall_mean_ms": 30.201342281879196,
+      "swap_window_mean_ms": 77.74193548387096,
+      "swap_window_share_to_degraded_pct": 46.666666666666664,
+      "requests_to_first_correct_post_swap_decision": 14
+    }
+  ]
+}

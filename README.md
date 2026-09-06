@@ -60,6 +60,7 @@ FlashFlow is built learning-first — not architecture-first.
 | **9** | Post-Stage-8 adversarial audit remediation — every finding fixed or honestly disclosed; no new capability shipped | ✅ Complete |
 | **10** | Traffic generator, SWR cache, declarative YAML chaos engine, experiment manifest/provenance, a generalized queueing-attribution engine, HdrHistogram+Prometheus telemetry, LHS/Bayesian tuner tiers, a formal `ExperimentEngine` interface | ✅ Complete — see `docs/StageArtifacts/Stage10.md` |
 | **11** | Research validation: an 8-program experimental sweep (162+ runs) mapping policy regime boundaries, attacking Adaptive adversarially, testing distribution shift, and validating virtual-vs-real agreement — using Stage 10's platform, not extending it | ✅ Complete — **PASS WITH LIMITATIONS**, see `docs/StageArtifacts/Stage11.md` |
+| **12** | Model fidelity: real-engine load instrumentation, genuine SeedTree axis independence, time-varying target service time, and a minimal finite-capacity contention model — built to close exactly four gaps Stage 11 proved consequential, then re-ran Stage 11's own findings under the corrected model | ✅ Complete — **PASS**, see `docs/StageArtifacts/Stage12.md` |
 
 A note on Stage 10's own numbers: widening `Scenario.Seed` into a hierarchical `SeedTree` (needed
 for genuine independent-axis seed control) changed the actual Development/Holdout scenario content,
@@ -73,6 +74,18 @@ A note on Stage 11's own numbers: Stage 8's "Adaptive wins 62.5-70% of scenarios
 different things (a composite utility score over a broad random scenario distribution, vs. raw mean
 latency over a systematically constructed regime sweep). See `docs/StageArtifacts/Stage11.md` §19
 before citing either number against the other.
+
+**A note on Stage 12's own numbers — Stage 11's "EWMA wins" finding was model-dependent, and now we
+know exactly where**: `internal/replay.RunWorld` has two modes now. The **flat model** (every
+`TargetProfile`'s `Capacity` left at its zero value, `ServiceTimeSchedule` empty) is byte-for-byte the
+same model every stage through Stage 11 used — EWMA beats Adaptive on raw mean latency under
+heterogeneous load in this mode, exactly as Stage 11 reported. The **contention-enabled model**
+(`Capacity > 0` on any target) adds deterministic FIFO queueing; under it, that same finding **reverses
+sharply** at the specific capacity level where EWMA's own concentration strategy pushes a target's
+utilization past the queueing-stability boundary (ρ=1), and **fully recovers** one capacity level more
+forgiving. Neither number is wrong — they describe different models, and Stage 12 exists specifically to
+say precisely where they diverge and why. See `docs/StageArtifacts/Stage12.md` §7.1 before citing
+either "EWMA wins" or "Adaptive wins" without stating which model produced it.
 
 ---
 
@@ -212,6 +225,39 @@ narratively: [`docs/learning/011-stage11-research-validation.md`](docs/learning/
 Machine-readable experiment index (command/seed/artifact per finding):
 [`experiments/011-research-validation/INDEX.json`](experiments/011-research-validation/INDEX.json).
 
+## Stage 12 Findings — Model Fidelity and Experimental Control
+
+Stage 11 answered FlashFlow's research question but flagged four platform gaps as consequential enough
+to revisit. Stage 12 built the minimum mechanism to close each one, then re-ran Stage 11's own findings
+under the corrected model:
+
+- **Stage 11's flagship "EWMA beats Adaptive" finding was model-dependent, and now we know exactly
+  where it breaks**: `internal/replay.TargetProfile` gained an opt-in `Capacity` field (deterministic
+  FIFO queueing when set, byte-identical to the old flat model when left at zero). Under a finite
+  capacity that pushes EWMA's own concentration past the queueing-stability boundary (ρ=1), its mean
+  latency explodes 8x and **Adaptive wins decisively** — a reversal confirmed robust across 12
+  independent seeds (Cliff's Delta 1.000). One capacity level more forgiving, EWMA's dominance is fully
+  restored. Not "Adaptive is better now" — a precise, mechanistically-explained regime boundary.
+- **H2 (a staleness/oscillation attack) was tested for the first time**, via a new
+  `TargetProfile.ServiceTimeSchedule` (discrete, scheduled service-time changes). EWMA gets completely
+  and permanently stuck routing to a target after it degrades (100% of decisions during the swap
+  window); Adaptive lags less severely (63%) but for a different reason than hypothesized — varying
+  `StaleAfter` across three orders of magnitude made no difference.
+- **A second real bug found and fixed**: `internal/engine.RealEngine` still read a disconnected,
+  never-updated load tracker even after Stage 11's partial latency fix. Fixed by sharing the proxy's own
+  genuinely-concurrent tracker with the selector — Adaptive's real-engine behavior now matches its
+  virtual behavior closely (max_share 0.500 vs 0.503, was 1.000 before the fix).
+- **The Topology/Failure SeedTree leak (Stage 11 §16) is now structurally fixed**, confirmed via a
+  mandatory historical-impact check: rerunning Stage 8's entire tuning pipeline under the corrected
+  generator found the *same* winning configuration with only small numerical drift — the qualitative
+  conclusion is unchanged.
+
+Full findings, the claim-reconciliation table, and the final verdict (**PASS**):
+[`docs/StageArtifacts/Stage12.md`](docs/StageArtifacts/Stage12.md). Design plan (written first):
+[`docs/StageArtifacts/Stage12-Plan.md`](docs/StageArtifacts/Stage12-Plan.md). What changed in our
+understanding, narratively:
+[`docs/learning/012-stage12-model-fidelity-and-control.md`](docs/learning/012-stage12-model-fidelity-and-control.md).
+
 ## Running Stage 10 Features
 
 ```bash
@@ -253,6 +299,24 @@ go run -buildvcs=true ./cmd/experiment-011h   # statistical robustness check (12
 Every result traces back to its exact command/seed/artifact via
 [`experiments/011-research-validation/INDEX.json`](experiments/011-research-validation/INDEX.json).
 
+## Running Stage 12 Research
+
+```bash
+go run -buildvcs=true ./cmd/experiment-012a   # Program A's flagship finding rebuilt under contention (0/1/2/3 capacity sweep)
+go run -buildvcs=true ./cmd/experiment-012b   # H2: staleness/oscillation attack, tested for the first time
+go run -buildvcs=true ./cmd/experiment-012c   # B1 cache-affinity trap re-run under contention
+go run -buildvcs=true ./cmd/experiment-012d   # attribution re-evaluated with genuine wait-time decomposition
+go run -buildvcs=true ./cmd/experiment-012e   # statistical robustness of the contention-reversal finding
+go run -buildvcs=true ./cmd/experiment-012f   # recovery dynamics re-run under contention
+
+# Contention model benchmark (flat vs finite-capacity throughput cost)
+go test ./internal/replay/... -bench BenchmarkRunWorld -run '^$'
+
+# Track C/D validation suites (analytically hand-computed expected values)
+go test ./internal/replay/... -run TestContention -v
+go test ./internal/replay/... -run TestServiceTimeSchedule -v
+```
+
 ## Specifications
 
 - [PRD v3.1](prd.md) — Product requirements and build sequence authority
@@ -276,6 +340,7 @@ Every result traces back to its exact command/seed/artifact via
 | [008](experiments/008-tuning-validation/) | Tuning & Final Validation | ✅ Complete |
 | [010-A](experiments/010-stage10-features/) | Tuner Comparison (Random Search vs LHS vs Bayesian Optimization) | ✅ Complete |
 | [011](experiments/011-research-validation/) | Research Validation (Programs A-H: regime map, adversarial testing, distribution shift, mechanistic attribution, virtual-vs-real, reproducibility) | ✅ Complete — see [`INDEX.json`](experiments/011-research-validation/INDEX.json) |
+| [012](experiments/012-model-fidelity/) | Model Fidelity (contention model, time-varying service time, real-engine load fix, seed-isolation fix — Stage 11's flagship finding re-tested and reversed under a specific, identified regime) | ✅ Complete — see [`Stage12.md`](docs/StageArtifacts/Stage12.md) |
 
 ---
 

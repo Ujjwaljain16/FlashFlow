@@ -1,0 +1,204 @@
+{
+  "experiment": "014-F-full-policy-set-and-falsification",
+  "timestamp": "2026-09-06T19:34:45Z",
+  "results": [
+    {
+      "level": "below_boundary",
+      "requests": 150,
+      "policy": "round-robin",
+      "classification": "load-blind",
+      "mean_ms": 66.6891891891892,
+      "p99_ms": 120,
+      "top1_share": 0.12837837837837837,
+      "offered_rho_max": 0.54,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "below_boundary",
+      "requests": 150,
+      "policy": "weighted-round-robin",
+      "classification": "static-capacity-aware",
+      "mean_ms": 43.682432432432435,
+      "p99_ms": 120,
+      "top1_share": 0.3716216216216216,
+      "offered_rho_max": 0.21,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "below_boundary",
+      "requests": 150,
+      "policy": "least-connections",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 15,
+      "p99_ms": 15,
+      "top1_share": 1,
+      "offered_rho_max": 0.5625,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "below_boundary",
+      "requests": 150,
+      "policy": "ewma",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 39.42948993288591,
+      "p99_ms": 371.2000000000006,
+      "top1_share": 0.8456375838926175,
+      "offered_rho_max": 0.47625,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "below_boundary",
+      "requests": 150,
+      "policy": "p2c-load",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 65.99097972972973,
+      "p99_ms": 139.43298000000004,
+      "top1_share": 0.16216216216216217,
+      "offered_rho_max": 0.525,
+      "wait_share_pct_at_max_rho_target": 4.924482874969262
+    },
+    {
+      "level": "below_boundary",
+      "requests": 150,
+      "policy": "adaptive",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 15,
+      "p99_ms": 15,
+      "top1_share": 1,
+      "offered_rho_max": 0.5625,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "policy": "round-robin",
+      "classification": "load-blind",
+      "mean_ms": 170.4773667621776,
+      "p99_ms": 1111.0081999999993,
+      "top1_share": 0.13753581661891118,
+      "offered_rho_max": 1.41,
+      "wait_share_pct_at_max_rho_target": 82.30511375300473
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "policy": "weighted-round-robin",
+      "classification": "static-capacity-aware",
+      "mean_ms": 43.674608465608465,
+      "p99_ms": 120,
+      "top1_share": 0.373015873015873,
+      "offered_rho_max": 0.54,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "policy": "least-connections",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 27.976190476190474,
+      "p99_ms": 60,
+      "top1_share": 0.5026455026455027,
+      "offered_rho_max": 0.7162499999999999,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "policy": "ewma",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 307.3198294117646,
+      "p99_ms": 1313.9910200000004,
+      "top1_share": 0.49117647058823527,
+      "offered_rho_max": 0.7162499999999999,
+      "wait_share_pct_at_max_rho_target": 87.49283771485108
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "policy": "p2c-load",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 85.14005630026816,
+      "p99_ms": 300.3465999999994,
+      "top1_share": 0.18498659517426275,
+      "offered_rho_max": 0.945,
+      "wait_share_pct_at_max_rho_target": 39.358541554846994
+    },
+    {
+      "level": "near_boundary",
+      "requests": 381,
+      "policy": "adaptive",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 29.88126649076517,
+      "p99_ms": 60,
+      "top1_share": 0.5013192612137203,
+      "offered_rho_max": 0.945,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "policy": "round-robin",
+      "classification": "load-blind",
+      "mean_ms": 376.798367032967,
+      "p99_ms": 1940.6999999999991,
+      "top1_share": 0.16483516483516483,
+      "offered_rho_max": 2.25,
+      "wait_share_pct_at_max_rho_target": 89.59537271542564
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "policy": "weighted-round-robin",
+      "classification": "static-capacity-aware",
+      "mean_ms": 44.204510961214176,
+      "p99_ms": 120,
+      "top1_share": 0.37436762225969644,
+      "offered_rho_max": 0.8362499999999999,
+      "wait_share_pct_at_max_rho_target": 3.894938986273528
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "policy": "least-connections",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 44.82599831649829,
+      "p99_ms": 120,
+      "top1_share": 0.3602693602693603,
+      "offered_rho_max": 0.945,
+      "wait_share_pct_at_max_rho_target": 0
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "policy": "ewma",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 589.3876242937855,
+      "p99_ms": 1832.5330199999992,
+      "top1_share": 0.3728813559322034,
+      "offered_rho_max": 3.13125,
+      "wait_share_pct_at_max_rho_target": 83.99486743140756
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "policy": "p2c-load",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 186.93330427046212,
+      "p99_ms": 761.1329999999997,
+      "top1_share": 0.24199288256227758,
+      "offered_rho_max": 1.18125,
+      "wait_share_pct_at_max_rho_target": 75.73728994285128
+    },
+    {
+      "level": "above_boundary",
+      "requests": 600,
+      "policy": "adaptive",
+      "classification": "dynamic-load-aware",
+      "mean_ms": 45.537776470588234,
+      "p99_ms": 120,
+      "top1_share": 0.3563025210084034,
+      "offered_rho_max": 0.8999999999999999,
+      "wait_share_pct_at_max_rho_target": 2.245628276008854
+    }
+  ]
+}

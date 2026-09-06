@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -163,11 +164,14 @@ func (s *OriginServer) Start() error {
 	s.listener = ln
 	s.addrPort = ln.Addr().String()
 	s.server = &http.Server{
-		Handler: s.Handler(),
+		Handler:           s.Handler(),
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
 	go func() {
-		_ = s.server.Serve(ln)
+		if err := s.server.Serve(ln); err != nil && err != http.ErrServerClosed {
+			log.Printf("origin: Serve exited unexpectedly: %v", err)
+		}
 	}()
 
 	return nil

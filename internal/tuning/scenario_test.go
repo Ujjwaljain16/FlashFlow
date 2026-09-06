@@ -99,7 +99,7 @@ func TestGenerateFromRoot_EquivalentToGenerateDeriveSeeds(t *testing.T) {
 			t.Fatalf("root %d: GenerateFromRoot and Generate(DeriveSeeds(...)) produced different-shaped scenarios", root)
 		}
 		for i := range a.Targets {
-			if a.Targets[i] != b.Targets[i] {
+			if !reflect.DeepEqual(a.Targets[i], b.Targets[i]) {
 				t.Fatalf("root %d: target %d differs: %+v vs %+v", root, i, a.Targets[i], b.Targets[i])
 			}
 		}
@@ -220,7 +220,7 @@ func TestGenerate_TrafficSeedIndependentOfTopologyAndFailure(t *testing.T) {
 		t.Fatalf("expected identical target count with only Traffic varied, got %d vs %d", len(a.Targets), len(b.Targets))
 	}
 	for i := range a.Targets {
-		if a.Targets[i] != b.Targets[i] {
+		if !reflect.DeepEqual(a.Targets[i], b.Targets[i]) {
 			t.Fatalf("target %d differs despite only Traffic seed changing: %+v vs %+v", i, a.Targets[i], b.Targets[i])
 		}
 	}
@@ -275,7 +275,7 @@ func TestGenerate_IndependentAxisControl(t *testing.T) {
 		t.Fatalf("expected identical target count with only Failure varied, got %d vs %d", len(a.Targets), len(b.Targets))
 	}
 	for i := range a.Targets {
-		if a.Targets[i] != b.Targets[i] {
+		if !reflect.DeepEqual(a.Targets[i], b.Targets[i]) {
 			t.Fatalf("target %d differs despite only Failure seed changing: %+v vs %+v", i, a.Targets[i], b.Targets[i])
 		}
 	}

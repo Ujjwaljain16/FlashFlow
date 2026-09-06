@@ -20,10 +20,12 @@ import (
 // function, each freely restatable without a compiler-checked link
 // between them.
 const (
-	eventHealthProbe      = "health_probe"
-	eventRequestRejected  = "request_rejected"
-	eventRequestRouted    = "request_routed"
-	eventRequestCompleted = "request_completed"
+	eventHealthProbe        = "health_probe"
+	eventRequestRejected    = "request_rejected"
+	eventRequestRouted      = "request_routed"
+	eventRequestQueued      = "request_queued"
+	eventRequestCompleted   = "request_completed"
+	eventServiceTimeChanged = "service_time_changed"
 )
 
 // Instrumentation feeds a World's dispatch/completion events into
@@ -180,6 +182,7 @@ func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 	}
 
 	serviceTimes := scenario.serviceTimes()
+	capacities := scenario.capacities()
 	var records []SelectionRecord
 	var completions []CompletionRecord
 	completedByTarget := make(map[string]int)
@@ -189,6 +192,75 @@ func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 	// arrivals each hit a scheduling error, only the last one's message
 	// survived, with no visibility into how many were actually affected.
 	var scheduleErrs []error
+
+	// Track D (docs/StageArtifacts/Stage12.md): a minimal, deterministic
+	// finite-capacity model. queuedRequest.dispatchTime is the ROUTER's
+	// decision time (when selector.SelectTarget ran), not when service
+	// actually begins -- CompletionRecord.Latency is always completion
+	// time minus THIS timestamp, so it transparently includes wait time
+	// whenever a request had to queue. states is plain, non-shared,
+	// per-RunWorld-call state (a Go map local to this closure) -- no
+	// locks needed, since the virtual engine is single-threaded by
+	// construction; nothing here survives past this one RunWorld call.
+	type queuedRequest struct {
+		key          string
+		dispatchTime clock.VirtualTime
+	}
+	type targetState struct {
+		busy  int
+		queue []queuedRequest
+	}
+	states := make(map[string]*targetState, len(allTargets))
+	for _, t := range allTargets {
+		states[t] = &targetState{}
+	}
+
+	// beginService is declared via var so it can call itself once a slot
+	// frees up and the next queued request (if any) starts service --
+	// recursion depth is bounded by however many requests are queued at
+	// one target, never unbounded in practice at experiment scale.
+	var beginService func(target, key string, dispatchTime, serviceStart clock.VirtualTime)
+	beginService = func(target, key string, dispatchTime, serviceStart clock.VirtualTime) {
+		svc := serviceTimes[target] // read at SERVICE-BEGIN time, not dispatch time -- Track C changes apply to requests that begin service after the change, never retroactively to ones already in service
+		if _, err := e.Schedule(serviceStart.Add(svc), func() {
+			completionTime := e.Now()
+			latency := completionTime.Sub(dispatchTime)
+			instr.OnComplete(target, latency)
+			completedByTarget[target]++
+			completions = append(completions, CompletionRecord{VirtualTimeMs: msF(completionTime), Target: target, Latency: latency})
+			e.Record(eventRequestCompleted, key, map[string]any{"target": target})
+
+			st := states[target]
+			st.busy--
+			if len(st.queue) > 0 {
+				next := st.queue[0]
+				st.queue = st.queue[1:]
+				st.busy++
+				beginService(target, next.key, next.dispatchTime, e.Now())
+			}
+		}); err != nil {
+			scheduleErrs = append(scheduleErrs, fmt.Errorf("replay: scheduling completion for key %q, target %q: %w", key, target, err))
+		}
+	}
+
+	// Track C: every scheduled ServiceTimeChange, for every target, is
+	// registered BEFORE any arrival is scheduled below -- so a change
+	// timestamped at t=0 always precedes a t=0 arrival under vtime's own
+	// (timestamp, insertion-sequence) tie-break, rather than depending on
+	// loop/slice interleaving. Iterated in scenario.Targets order, then
+	// ServiceTimeSchedule order -- both slices, so fully deterministic
+	// regardless of how many changes exist.
+	for _, target := range scenario.Targets {
+		for _, change := range target.ServiceTimeSchedule {
+			target, change := target, change
+			if _, err := e.Schedule(change.At, func() {
+				serviceTimes[target.Name] = change.NewServiceTime
+				e.Record(eventServiceTimeChanged, target.Name, map[string]any{"new_service_time_ns": int64(change.NewServiceTime)})
+			}); err != nil {
+				return WorldResult{}, fmt.Errorf("replay: scheduling service-time change for %q: %w", target.Name, err)
+			}
+		}
+	}
 
 	for _, arrival := range scenario.Arrivals {
 		arrival := arrival
@@ -220,15 +292,25 @@ func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 			e.Record(eventRequestRouted, arrival.Key, map[string]any{"target": target})
 			instr.OnDispatch(target)
 
-			svc := serviceTimes[target]
-			if _, err := e.Schedule(now.Add(svc), func() {
-				latency := e.Now().Sub(now)
-				instr.OnComplete(target, latency)
-				completedByTarget[target]++
-				completions = append(completions, CompletionRecord{VirtualTimeMs: msF(e.Now()), Target: target, Latency: latency})
-				e.Record(eventRequestCompleted, arrival.Key, map[string]any{"target": target})
-			}); err != nil {
-				scheduleErrs = append(scheduleErrs, fmt.Errorf("replay: scheduling completion for key %q, target %q: %w", arrival.Key, target, err))
+			st := states[target]
+			capacity := capacities[target]
+			if capacity <= 0 || st.busy < capacity {
+				// Unlimited capacity (the pre-Stage-12 default) or a free
+				// slot: begin service immediately, byte-identical to the
+				// original flat-model code path.
+				st.busy++
+				beginService(target, arrival.Key, now, now)
+			} else {
+				// No free slot: queue. FIFO -- appended at the back,
+				// popped from the front in beginService's own completion
+				// callback above. Failure state is deliberately NOT
+				// checked again here: a request already dispatched to a
+				// target is unaffected by that target later failing,
+				// matching the existing precedent that FailureWindow only
+				// gates NEW routing eligibility (the `available` filter
+				// above), never already-committed work.
+				st.queue = append(st.queue, queuedRequest{key: arrival.Key, dispatchTime: now})
+				e.Record(eventRequestQueued, arrival.Key, map[string]any{"target": target, "queue_depth": len(st.queue)})
 			}
 		})
 		if err != nil {

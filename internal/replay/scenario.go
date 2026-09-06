@@ -24,12 +24,48 @@ import (
 	"flashflow/internal/clock"
 )
 
+// ServiceTimeChange is one scheduled, discrete change to a target's
+// ServiceTime -- Stage 12 Track C's answer to Stage 11's disclosed gap
+// (docs/StageArtifacts/Stage11.md §12: H2, a latency-oscillation/
+// staleness attack, could not be tested because ServiceTime was fixed
+// for an entire Scenario). A fixed, small, deterministic list of
+// point-changes, not a continuous function or general scheduling DSL --
+// exactly what an H2-style experiment needs (a target that is fast, then
+// slow, then fast again) and nothing more.
+type ServiceTimeChange struct {
+	At             clock.VirtualTime
+	NewServiceTime time.Duration
+}
+
 // TargetProfile is exogenous "physics": how long a target takes to serve
 // a request. This is a property of the world, fixed regardless of which
 // policy routes to it -- not a routing decision.
+//
+// Capacity and ServiceTimeSchedule are both Stage 12 additions with
+// backward-compatible zero values: Capacity <= 0 means infinite (the
+// pre-Stage-12 flat model, preserved exactly -- see world.go's dispatch
+// logic), and an empty ServiceTimeSchedule means ServiceTime never
+// changes (also the pre-Stage-12 behavior). Every Scenario literal
+// written before Stage 12 is therefore completely unaffected by these
+// fields' existence.
 type TargetProfile struct {
 	Name        string
 	ServiceTime time.Duration
+	// Capacity is the number of requests this target can serve
+	// concurrently before additional arrivals must wait (Stage 12 Track
+	// D, docs/StageArtifacts/Stage12.md). <= 0 means unlimited/infinite
+	// capacity -- the original flat model, where a request's completion
+	// is scheduled unconditionally at dispatch time plus ServiceTime,
+	// with no queueing of any kind.
+	Capacity int
+	// ServiceTimeSchedule lists discrete, scheduled changes to this
+	// target's ServiceTime over the course of one Scenario (Stage 12
+	// Track C). Order within the slice does not need to be
+	// chronological -- RunWorld schedules each entry as its own vtime
+	// event, and vtime's own (timestamp, insertion-sequence) tie-break
+	// resolves same-timestamp ordering deterministically regardless of
+	// slice order.
+	ServiceTimeSchedule []ServiceTimeChange
 }
 
 // Arrival is one exogenous request arrival: when it happens and which
@@ -142,6 +178,14 @@ func (s Scenario) serviceTimes() map[string]time.Duration {
 	m := make(map[string]time.Duration, len(s.Targets))
 	for _, t := range s.Targets {
 		m[t.Name] = t.ServiceTime
+	}
+	return m
+}
+
+func (s Scenario) capacities() map[string]int {
+	m := make(map[string]int, len(s.Targets))
+	for _, t := range s.Targets {
+		m[t.Name] = t.Capacity
 	}
 	return m
 }

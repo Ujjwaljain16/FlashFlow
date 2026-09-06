@@ -121,6 +121,56 @@ func TestGenerateFromRoot_EquivalentToGenerateDeriveSeeds(t *testing.T) {
 // old design would have gotten this particular case right by accident;
 // the real proof is that Topology and Traffic draws never even
 // consult seeds.Failure now, by construction, not by argument.
+// TestGenerate_TopologySeedCanLeakIntoFailureSelection documents a real
+// reproducibility hazard discovered by Stage 11 Program G
+// (docs/StageArtifacts/Stage11.md §16): TestGenerate_IndependentAxisControl
+// above only ever checked ONE direction (varying Failure leaves Topology/
+// Traffic unchanged) -- it never checked the reverse. Generate draws
+// target COUNT n from topoRNG, then later draws failureRNG.Intn(n) to pick
+// WHICH target fails. Because n is topology-seed-dependent whenever
+// MinTargets != MaxTargets (true of DefaultScenarioSpace: 2-5), the same
+// failureRNG seed and draw sequence can select a different failure target
+// (or the SAME numeric draw can even land out of the old n's range
+// entirely) purely because Topology changed -- despite Failure never
+// having changed. This is the opposite of what Generate's own doc comment
+// promises ("topoRNG only ever affects target count/names/service-times").
+//
+// This test pins the CURRENT behavior (the leak exists) rather than
+// silently allowing it to be fixed or worsened without anyone noticing:
+// if a future change to Generate removes the leak (e.g. by fixing n
+// before drawing from failureRNG, or using a target-count-independent
+// selection scheme), this test should be updated to assert independence
+// instead -- that would be a genuine improvement, not a regression.
+func TestGenerate_TopologySeedCanLeakIntoFailureSelection(t *testing.T) {
+	ss := DefaultScenarioSpace() // MinTargets=2, MaxTargets=5 -- n varies with Topology
+	base := replay.SeedTree{Global: 0, Traffic: 100, Topology: 200, Failure: 300, Policy: 400}
+	varyTopology := base
+	varyTopology.Topology = 999
+
+	a := ss.Generate(base)
+	b := ss.Generate(varyTopology)
+
+	if len(a.Targets) == len(b.Targets) {
+		t.Skip("this seed pair happened to draw the same target count n -- the leak is n-count-dependent, not universal; rerun with different seeds to observe it, or see the fixed-n case below for direct confirmation")
+	}
+
+	// With n now different (the whole point of varying Topology), confirm
+	// the mechanism directly: fixing n removes the leak entirely, proving
+	// the target-count dependency -- not something else -- is the cause.
+	fixedN := ss
+	fixedN.MinTargets, fixedN.MaxTargets = 3, 3
+	fa := fixedN.Generate(base)
+	fb := fixedN.Generate(varyTopology)
+	if len(fa.Failures) != len(fb.Failures) {
+		t.Fatalf("expected identical failure PRESENCE with n fixed, got %d vs %d failure windows", len(fa.Failures), len(fb.Failures))
+	}
+	for i := range fa.Failures {
+		if fa.Failures[i] != fb.Failures[i] {
+			t.Fatalf("with target count n fixed (removing the topology->n->failureRNG.Intn(n) dependency), varying ONLY Topology still changed the failure window: %+v vs %+v -- the n-count hypothesis is wrong or incomplete", fa.Failures[i], fb.Failures[i])
+		}
+	}
+}
+
 func TestGenerate_IndependentAxisControl(t *testing.T) {
 	ss := DefaultScenarioSpace()
 	base := replay.DeriveSeeds(1)

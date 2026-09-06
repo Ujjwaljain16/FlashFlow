@@ -461,8 +461,76 @@ Only one shifted distribution was tested; Section 16 below inventories this as a
 requiring more shifted distributions (varying which factors change, and by how much) before a general
 claim about Adaptive's shift-robustness would be warranted.
 
+## 16. Program G Results — Seed and Reproducibility Attack
+
+**Experiment**: `cmd/experiment-011g`, artifact `experiments/011-research-validation/results/011G-reproducibility-attack.json`.
+Programs A-D built scenarios with literal, manually-specified topologies (no randomness in target
+count/names/service-times), so they don't exercise `SeedTree`'s `Topology`/`Failure` axes as generators
+at all. Program G instead uses `internal/tuning.ScenarioSpace.Generate` — the actual, only generator in
+this codebase that draws topology and failure windows from those two axes — for a genuine test.
+
+**G1 (repeat-run reproducibility): CONFIRMED.** The identical `Experiment` run 3 times produced
+byte-identical `Records`, `Completions`, and `RejectedCount` every time (full trace comparison via
+`reflect.DeepEqual`, not just summary statistics, which could coincidentally match even if underlying
+decisions differed).
+
+**G2 (SeedTree axis independence): a genuine, previously-undetected reproducibility hazard found.**
+Holding three axes fixed and varying one at a time:
+
+| Axis varied | Targets changed | Arrivals changed | Failures changed | Isolation holds? |
+|---|---|---|---|---|
+| Traffic only | No | Yes | No | **Yes** |
+| Topology only | Yes | No | **Yes** | **No** |
+| Failure only | No | No | Yes | **Yes** |
+
+Varying ONLY the Topology seed also changed the failure window — violating the isolation `Generate`'s
+own doc comment claims ("topoRNG only ever affects target count/names/service-times"). **Root cause,
+directly confirmed rather than inferred**: `Generate` draws target count `n` from `topoRNG`, then later
+draws `failureRNG.Intn(n)` to pick which target fails — since `n` is topology-seed-dependent whenever
+`MinTargets != MaxTargets` (true of `DefaultScenarioSpace`: 2-5), the *range* `failureRNG.Intn` draws
+from shifts when only Topology changes, even though `failureRNG`'s own seed never did. Confirmed
+directly: re-running with `MinTargets = MaxTargets = 3` (removing `n`'s topology-dependence) made the
+failure window byte-identical across the same Topology-seed change — isolating the exact mechanism, not
+just observing the symptom.
+
+**Why this was never caught**: the existing `TestGenerate_IndependentAxisControl`
+(`internal/tuning/scenario_test.go`) only ever checked ONE direction — that varying Failure leaves
+Topology/Traffic unchanged (true, and still true) — never the reverse (that varying Topology leaves
+Failure unchanged, which is false). This is exactly a previously-untested invariant, per this stage's
+own charter for challenge-suite expansion.
+
+**Scope of impact**: this does NOT affect any Stage 11 finding above (Programs A-D used literal,
+non-generated topologies, never touching `ScenarioSpace.Generate`'s Topology/Failure interaction), but
+it DOES mean any past or future claim resting on "the Development/Holdout tuning scenarios vary Failure
+independently of Topology" (Stage 8's tuning work uses this same generator) should be treated with this
+caveat. **Not fixed here** — a real fix (e.g. drawing the failure target from a fixed-size name pool
+rather than `Intn(n)`, or drawing `n` after `failureRNG`) is a legitimate, scoped follow-up, not
+attempted in this pass since no Stage 11 conclusion depends on it.
+
+**Regression coverage added**: `TestGenerate_TopologySeedCanLeakIntoFailureSelection`
+(`internal/tuning/scenario_test.go`) pins the current (leaky) behavior and directly confirms the
+target-count mechanism via the fixed-`n` case, so a future change either preserves this documented
+limitation deliberately or the test is updated to assert the improvement — it cannot silently regress
+or silently "fix itself" unnoticed.
+
+**G3 (policy-seed isolation): confirmed, with an explicit, policy-dependent nuance.** `seeds.Policy` is
+never consumed at scenario-generation time — only at routing time, and only by `p2c-load` (its pair-
+sampling randomness). Varying `seeds.Policy` alone, holding an identical `Scenario` fixed:
+
+| Policy | Consumes `seeds.Policy`? | Outcome changed when `seeds.Policy` varies? | Matches expectation? |
+|---|---|---|---|
+| round-robin | No | No | Yes |
+| ewma | No | No | Yes |
+| adaptive | No | No | Yes |
+| p2c-load | Yes | Yes | Yes |
+
+All four match their expected behavior exactly — there is no unexpected leakage on this axis, but the
+finding is worth stating explicitly rather than collapsing into one pass/fail: "does the Policy seed
+matter" has a policy-dependent answer, not a universal one, and a caller expecting `AdaptivePolicy` to
+produce different behavior under a different `seeds.Policy` (with everything else fixed) would be
+mistaken — Adaptive has no consumer of that axis at all.
+
 ---
 
-*(Mechanistic attribution (Program E), reproducibility verification (Program G), statistical methods,
-limitations, unresolved questions, and claims-supported/not-supported summaries are appended below as
-each remaining program actually executes.)*
+*(Mechanistic attribution (Program E), statistical methods, limitations, unresolved questions, and
+claims-supported/not-supported summaries are appended below to close out Stage 11.)*

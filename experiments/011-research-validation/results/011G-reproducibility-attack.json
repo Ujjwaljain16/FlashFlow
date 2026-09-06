@@ -1,0 +1,33 @@
+{
+  "experiment": "011-G-reproducibility-attack",
+  "timestamp": "2026-09-06T01:07:56Z",
+  "repeat_run_reproducible": true,
+  "axis_independence": [
+    {
+      "axis": "Traffic",
+      "targets_changed": false,
+      "arrivals_changed": true,
+      "failures_changed": false,
+      "expected_to_change": "arrivals only",
+      "isolation_holds": true
+    },
+    {
+      "axis": "Topology",
+      "targets_changed": true,
+      "arrivals_changed": false,
+      "failures_changed": true,
+      "expected_to_change": "targets only",
+      "isolation_holds": false
+    },
+    {
+      "axis": "Failure",
+      "targets_changed": false,
+      "arrivals_changed": false,
+      "failures_changed": true,
+      "expected_to_change": "failures only",
+      "isolation_holds": true
+    }
+  ],
+  "policy_seed_isolation_holds": true,
+  "policy_seed_note": "[round-robin: consumes seeds.Policy=false, outcome changed=false, matches expectation=true ewma: consumes seeds.Policy=false, outcome changed=false, matches expectation=true adaptive: consumes seeds.Policy=false, outcome changed=false, matches expectation=true p2c-load: consumes seeds.Policy=true, outcome changed=true, matches expectation=true]"
+}

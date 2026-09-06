@@ -1,0 +1,78 @@
+{
+  "experiment": "013-F-failure-as-capacity-removal",
+  "timestamp": "2026-09-06T18:31:37Z",
+  "results": [
+    {
+      "scenario": "no_failure",
+      "policy": "round-robin",
+      "mean_ms": 34.84848484848485,
+      "max_share": 0.3367003367003367
+    },
+    {
+      "scenario": "no_failure",
+      "policy": "ewma",
+      "mean_ms": 16.360083612040135,
+      "max_share": 0.9732441471571907
+    },
+    {
+      "scenario": "no_failure",
+      "policy": "adaptive",
+      "mean_ms": 27.38255033557047,
+      "max_share": 0.5033557046979866
+    },
+    {
+      "scenario": "single_failure_mid_run",
+      "policy": "round-robin",
+      "mean_ms": 45.37032323232324,
+      "max_share": 0.38047138047138046
+    },
+    {
+      "scenario": "single_failure_mid_run",
+      "policy": "ewma",
+      "mean_ms": 16.360083612040135,
+      "max_share": 0.9732441471571907
+    },
+    {
+      "scenario": "single_failure_mid_run",
+      "policy": "adaptive",
+      "mean_ms": 27.564090301003347,
+      "max_share": 0.5585284280936454
+    },
+    {
+      "scenario": "failure_of_slowest_target",
+      "policy": "round-robin",
+      "mean_ms": 31.666666666666668,
+      "max_share": 0.38047138047138046
+    },
+    {
+      "scenario": "failure_of_slowest_target",
+      "policy": "ewma",
+      "mean_ms": 16.360083612040135,
+      "max_share": 0.9732441471571907
+    },
+    {
+      "scenario": "failure_of_slowest_target",
+      "policy": "adaptive",
+      "mean_ms": 26.174496644295303,
+      "max_share": 0.5033557046979866
+    },
+    {
+      "scenario": "failure_of_fastest_target",
+      "policy": "round-robin",
+      "mean_ms": 47.28951515151516,
+      "max_share": 0.3771043771043771
+    },
+    {
+      "scenario": "failure_of_fastest_target",
+      "policy": "ewma",
+      "mean_ms": 32.86502341137124,
+      "max_share": 0.7224080267558528
+    },
+    {
+      "scenario": "failure_of_fastest_target",
+      "policy": "adaptive",
+      "mean_ms": 30.87539393939391,
+      "max_share": 0.41414141414141414
+    }
+  ]
+}

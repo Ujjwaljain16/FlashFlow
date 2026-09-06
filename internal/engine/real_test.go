@@ -104,6 +104,79 @@ func TestRealEngine_Replay_UsesAlternatePolicy(t *testing.T) {
 	}
 }
 
+// TestRealEngine_Run_LeastConnectionsAvoidsBusyRealTarget is the Stage 12
+// Track A regression test (docs/StageArtifacts/Stage12.md): before this
+// stage, RealEngine built its selector with policy.New's own fresh, never-
+// updated LoadTracker, entirely disconnected from proxy.ReverseProxy's own
+// internally-maintained one (which correctly increments/decrements at
+// genuine dispatch/completion boundaries, proven directly at the proxy
+// level by TestProxy_P2C_EndToEnd_AvoidsBusyEdge). LeastConnectionsPolicy
+// specifically -- which has NO other signal besides load -- would have
+// seen every target permanently at load 0 and behaved identically to
+// Round Robin. This test proves the fix: a genuinely slow, artificially
+// busy edge should receive measurably LESS traffic than an idle fast edge
+// once LeastConnections can see real concurrent in-flight counts.
+func TestRealEngine_Run_LeastConnectionsAvoidsBusyRealTarget(t *testing.T) {
+	r := NewRealEngine()
+	exp := Experiment{
+		ID: "least-connections-real-load-test",
+		Scenario: replay.Scenario{
+			Targets: []replay.TargetProfile{
+				{Name: "edge-slow", ServiceTime: 150 * time.Millisecond},
+				{Name: "edge-fast", ServiceTime: 0},
+			},
+			Seeds: replay.DeriveSeeds(11),
+		},
+		Policy: replay.LeastConnectionsPolicy(),
+		Real: &RealExperimentConfig{
+			Edges: map[string]time.Duration{
+				"edge-slow": 150 * time.Millisecond,
+				"edge-fast": 0,
+			},
+			// 40 requests over 200ms (~5ms apart) fire well within the slow
+			// edge's own 150ms service window, guaranteeing genuine overlap
+			// for a load-aware selector to actually observe and react to.
+			TrafficPattern: traffic.Constant,
+			TrafficParams:  traffic.Params{Requests: 40, Horizon: 200 * time.Millisecond, BaseRate: 200},
+		},
+	}
+
+	result, err := r.Run(exp)
+	if err != nil {
+		t.Fatalf("Run failed: %v", err)
+	}
+	total := 0
+	minCount, maxCount := -1, 0
+	for _, n := range result.Real.Metrics.RequestsTotal {
+		total += int(n)
+		if int(n) > maxCount {
+			maxCount = int(n)
+		}
+		if minCount == -1 || int(n) < minCount {
+			minCount = int(n)
+		}
+	}
+	if total == 0 {
+		t.Fatal("expected at least some completed requests")
+	}
+	// RequestsTotal is keyed by the real edge's URL, not its Scenario name,
+	// so which map entry is which edge isn't directly recoverable here --
+	// but with exactly 2 edges and a large service-time gap, the larger
+	// count MUST belong to the fast edge (the slow edge, kept busy for
+	// 150ms per request, cannot physically complete as many in 200ms).
+	fastCount, slowCount := maxCount, minCount
+	if fastCount <= slowCount {
+		t.Fatalf("expected the idle fast edge to receive more traffic than the artificially busy slow edge once LeastConnections sees real concurrent load, got counts %v (max=%d, min=%d)",
+			result.Real.Metrics.RequestsTotal, fastCount, slowCount)
+	}
+	// Not just "more" -- a real, substantial majority is expected given a
+	// 150ms-vs-0ms service time gap and genuine overlapping load.
+	if float64(fastCount)/float64(total) < 0.7 {
+		t.Errorf("expected the fast edge's share to be a strong majority (>=70%%) given the large service-time gap, got %.2f (counts=%v)",
+			float64(fastCount)/float64(total), result.Real.Metrics.RequestsTotal)
+	}
+}
+
 // TestRealEngine_Run_EWMAPrefersFastRealTarget is a regression test for a
 // real, confirmed Stage 11 finding (docs/StageArtifacts/Stage11.md §10):
 // before real.go bridged policy.New's Instrumentation to real per-request

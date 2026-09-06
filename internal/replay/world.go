@@ -42,6 +42,27 @@ type NoInstrumentation struct{}
 func (NoInstrumentation) OnDispatch(string)                {}
 func (NoInstrumentation) OnComplete(string, time.Duration) {}
 
+// Trackers optionally supplies externally-owned LoadTracker/LatencyTracker
+// instances for PolicySpec.New to use instead of constructing its own.
+// The zero value (both fields nil) means "construct fresh" -- RunWorld's
+// own call always passes the zero value, so virtual-engine behavior and
+// determinism are completely unaffected by this type's existence.
+//
+// This exists for exactly one reason (Stage 12 Track A,
+// docs/StageArtifacts/Stage12.md): internal/engine.RealEngine needs the
+// selector to read from the SAME *proxy.LoadTracker/*proxy.LatencyTracker
+// instances proxy.ReverseProxy.ServeHTTP itself increments/decrements/
+// observes at genuine dispatch/completion boundaries (ServeHTTP already
+// does this correctly, at proxy.go's own p.loadTracker.Increment/Decrement
+// and p.latencyTracker.Observe call sites) -- without this, a selector
+// built via policy.New reads from a totally disconnected, always-cold
+// tracker pair, the exact defect Stage 11 Program F found and partially
+// fixed for latency only (Stage11.md §10).
+type Trackers struct {
+	Load    *proxy.LoadTracker
+	Latency *proxy.LatencyTracker
+}
+
 // PolicySpec describes one routing policy under test. New is called
 // exactly once per RunWorld call, and must construct a completely fresh
 // selector and fresh trackers every time -- never reuse or share one
@@ -55,10 +76,12 @@ func (NoInstrumentation) OnComplete(string, time.Duration) {}
 // needs to know it ahead of time (WeightedRoundRobinPolicy's static
 // capacity weights) -- every other policy ignores the parameter
 // entirely, the same as they already ignore clk or seeds when they don't
-// need them.
+// need them. tr optionally supplies externally-owned trackers (see
+// Trackers's own doc comment); every policy that constructs a tracker at
+// all must use tr's non-nil fields instead of constructing its own.
 type PolicySpec struct {
 	Name string
-	New  func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation)
+	New  func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation)
 }
 
 // SelectionRecord is one endogenous decision a World made in response to
@@ -118,7 +141,7 @@ type WorldResult struct {
 // leaving it as an unchecked design intent.
 func RunWorld(scenario Scenario, spec PolicySpec) (WorldResult, error) {
 	e := vtime.NewEngine(0)
-	selector, instr := spec.New(e.Clock(), scenario.Seeds, scenario.Targets)
+	selector, instr := spec.New(e.Clock(), scenario.Seeds, scenario.Targets, Trackers{})
 
 	allTargets := scenario.TargetNames()
 	var registry *health.Registry

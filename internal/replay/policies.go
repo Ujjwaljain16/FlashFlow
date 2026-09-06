@@ -41,7 +41,7 @@ func (t trackerInstrumentation) OnComplete(target string, latency time.Duration)
 func RoundRobinPolicy() PolicySpec {
 	return PolicySpec{
 		Name: "round-robin",
-		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation) {
 			return proxy.NewRoundRobinSelector(), NoInstrumentation{}
 		},
 	}
@@ -63,7 +63,7 @@ func RoundRobinPolicy() PolicySpec {
 func WeightedRoundRobinPolicy() PolicySpec {
 	return PolicySpec{
 		Name: "weighted-round-robin",
-		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation) {
 			const scale = 1000.0
 			weights := make(proxy.TargetWeights, len(targets))
 			for _, t := range targets {
@@ -86,8 +86,11 @@ func WeightedRoundRobinPolicy() PolicySpec {
 func LeastConnectionsPolicy() PolicySpec {
 	return PolicySpec{
 		Name: "least-connections",
-		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
-			load := proxy.NewLoadTracker()
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation) {
+			load := tr.Load
+			if load == nil {
+				load = proxy.NewLoadTracker()
+			}
 			return proxy.NewLeastConnectionsSelector(load), trackerInstrumentation{load: load}
 		},
 	}
@@ -97,8 +100,11 @@ func LeastConnectionsPolicy() PolicySpec {
 func EWMAPolicy() PolicySpec {
 	return PolicySpec{
 		Name: "ewma",
-		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
-			lat := proxy.NewLatencyTracker(0.2)
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation) {
+			lat := tr.Latency
+			if lat == nil {
+				lat = proxy.NewLatencyTracker(0.2)
+			}
 			return proxy.NewEWMASelector(lat), trackerInstrumentation{lat: lat}
 		},
 	}
@@ -110,8 +116,11 @@ func EWMAPolicy() PolicySpec {
 func P2CLoadPolicy() PolicySpec {
 	return PolicySpec{
 		Name: "p2c-load",
-		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
-			load := proxy.NewLoadTracker()
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation) {
+			load := tr.Load
+			if load == nil {
+				load = proxy.NewLoadTracker()
+			}
 			rng := rand.New(rand.NewSource(seeds.Policy))
 			return proxy.NewP2CSelector(proxy.ScorerFromLoad(load), rng), trackerInstrumentation{load: load}
 		},
@@ -135,9 +144,15 @@ func AdaptivePolicy() PolicySpec {
 func AdaptivePolicyWithConfig(cfg proxy.AdaptiveConfig) PolicySpec {
 	return PolicySpec{
 		Name: "adaptive",
-		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
-			load := proxy.NewLoadTracker()
-			lat := proxy.NewLatencyTracker(0.2)
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation) {
+			load := tr.Load
+			if load == nil {
+				load = proxy.NewLoadTracker()
+			}
+			lat := tr.Latency
+			if lat == nil {
+				lat = proxy.NewLatencyTracker(0.2)
+			}
 			sel := proxy.NewAdaptiveSelector(load, lat, nil, nil, clk, cfg)
 			return sel, trackerInstrumentation{load: load, lat: lat}
 		},

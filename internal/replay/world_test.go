@@ -233,7 +233,7 @@ func TestRunWorld_MultipleSchedulingFailures_AllReportedAndPartialResultsKept(t 
 	}
 	spec := PolicySpec{
 		Name: "erroring-test-selector",
-		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile) (proxy.TargetSelector, Instrumentation) {
+		New: func(clk clock.Clock, seeds SeedTree, targets []TargetProfile, tr Trackers) (proxy.TargetSelector, Instrumentation) {
 			return &erroringSelector{failKeys: map[string]bool{"/fail-a": true, "/fail-b": true}}, NoInstrumentation{}
 		},
 	}

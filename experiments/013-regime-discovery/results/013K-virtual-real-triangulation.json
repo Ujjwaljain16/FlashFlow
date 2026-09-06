@@ -1,0 +1,48 @@
+{
+  "experiment": "013-K-virtual-real-triangulation",
+  "timestamp": "2026-09-06T18:46:42Z",
+  "cells": [
+    {
+      "level": "low",
+      "request_count": 40,
+      "policy": "ewma",
+      "p50_ms": 15.848931,
+      "max_share": 0.95
+    },
+    {
+      "level": "low",
+      "request_count": 40,
+      "policy": "adaptive",
+      "p50_ms": 15.721717,
+      "max_share": 1
+    },
+    {
+      "level": "medium",
+      "request_count": 150,
+      "policy": "ewma",
+      "p50_ms": 15.848931,
+      "max_share": 0.9666666666666667
+    },
+    {
+      "level": "medium",
+      "request_count": 150,
+      "policy": "adaptive",
+      "p50_ms": 15.848931,
+      "max_share": 1
+    },
+    {
+      "level": "high",
+      "request_count": 400,
+      "policy": "ewma",
+      "p50_ms": 15.595525,
+      "max_share": 0.9725
+    },
+    {
+      "level": "high",
+      "request_count": 400,
+      "policy": "adaptive",
+      "p50_ms": 17.041193,
+      "max_share": 0.5025
+    }
+  ]
+}

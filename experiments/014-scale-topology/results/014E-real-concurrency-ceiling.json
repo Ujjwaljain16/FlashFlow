@@ -1,0 +1,88 @@
+{
+  "experiment": "014-E-real-concurrency-ceiling",
+  "timestamp": "2026-09-06T19:31:46Z",
+  "validation": [
+    {
+      "configured_ceiling": 1,
+      "observed_max_concurrency": 1,
+      "constrained_correctly": true
+    },
+    {
+      "configured_ceiling": 2,
+      "observed_max_concurrency": 2,
+      "constrained_correctly": true
+    },
+    {
+      "configured_ceiling": 4,
+      "observed_max_concurrency": 4,
+      "constrained_correctly": true
+    },
+    {
+      "configured_ceiling": 0,
+      "observed_max_concurrency": 20,
+      "constrained_correctly": true
+    }
+  ],
+  "cells": [
+    {
+      "level": "below_ceiling",
+      "max_conns_per_host": 1,
+      "requests": 30,
+      "policy": "ewma",
+      "p50_ms": 15.977175,
+      "p99_ms": 62.373483,
+      "max_share": 0.9333333333333333,
+      "errors_or_incomplete": 0
+    },
+    {
+      "level": "below_ceiling",
+      "max_conns_per_host": 1,
+      "requests": 30,
+      "policy": "adaptive",
+      "p50_ms": 15.977175,
+      "p99_ms": 17.31809,
+      "max_share": 1,
+      "errors_or_incomplete": 0
+    },
+    {
+      "level": "near_ceiling",
+      "max_conns_per_host": 1,
+      "requests": 75,
+      "policy": "ewma",
+      "p50_ms": 16.106456,
+      "p99_ms": 70.957776,
+      "max_share": 0.96,
+      "errors_or_incomplete": 0
+    },
+    {
+      "level": "near_ceiling",
+      "max_conns_per_host": 1,
+      "requests": 75,
+      "policy": "adaptive",
+      "p50_ms": 31.441264,
+      "p99_ms": 32.210687,
+      "max_share": 1,
+      "errors_or_incomplete": 0
+    },
+    {
+      "level": "above_ceiling",
+      "max_conns_per_host": 1,
+      "requests": 400,
+      "policy": "ewma",
+      "p50_ms": 367.2823,
+      "p99_ms": 2914.070134,
+      "max_share": 0.505,
+      "errors_or_incomplete": 0
+    },
+    {
+      "level": "above_ceiling",
+      "max_conns_per_host": 1,
+      "requests": 400,
+      "policy": "adaptive",
+      "p50_ms": 30.443879,
+      "p99_ms": 102.801629,
+      "max_share": 0.5425,
+      "errors_or_incomplete": 0
+    }
+  ]
+}

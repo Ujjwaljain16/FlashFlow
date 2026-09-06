@@ -59,6 +59,7 @@ FlashFlow is built learning-first — not architecture-first.
 | **8** | Auto-Tuner (Random Search v1), Live Dashboard | ✅ Complete |
 | **9** | Post-Stage-8 adversarial audit remediation — every finding fixed or honestly disclosed; no new capability shipped | ✅ Complete |
 | **10** | Traffic generator, SWR cache, declarative YAML chaos engine, experiment manifest/provenance, a generalized queueing-attribution engine, HdrHistogram+Prometheus telemetry, LHS/Bayesian tuner tiers, a formal `ExperimentEngine` interface | ✅ Complete — see `docs/StageArtifacts/Stage10.md` |
+| **11** | Research validation: an 8-program experimental sweep (162+ runs) mapping policy regime boundaries, attacking Adaptive adversarially, testing distribution shift, and validating virtual-vs-real agreement — using Stage 10's platform, not extending it | ✅ Complete — **PASS WITH LIMITATIONS**, see `docs/StageArtifacts/Stage11.md` |
 
 A note on Stage 10's own numbers: widening `Scenario.Seed` into a hierarchical `SeedTree` (needed
 for genuine independent-axis seed control) changed the actual Development/Holdout scenario content,
@@ -66,6 +67,12 @@ so Stage 8's originally-reported specific tuning numbers no longer reproduce exa
 current code — the search/validation methodology itself is unaffected and was re-verified end to
 end. See `docs/StageArtifacts/Stage10.md`'s own callout for the full explanation before citing any
 Stage 8 number against a fresh run.
+
+A note on Stage 11's own numbers: Stage 8's "Adaptive wins 62.5-70% of scenarios" and Stage 11's
+"Adaptive wins 0/27 regime-map configurations on mean latency" are **not contradictory** — they measure
+different things (a composite utility score over a broad random scenario distribution, vs. raw mean
+latency over a systematically constructed regime sweep). See `docs/StageArtifacts/Stage11.md` §19
+before citing either number against the other.
 
 ---
 
@@ -174,6 +181,37 @@ Full recording script, on-screen captions, claims audit, and a secondary (real-e
 telemetry) demo: [`docs/demo/Stage10Demo.md`](docs/demo/Stage10Demo.md). Independent adversarial
 validation of every Stage 10 capability: [`docs/StageArtifacts/Stage10DemoValidation.md`](docs/StageArtifacts/Stage10DemoValidation.md).
 
+## Stage 11 Research Findings
+
+Stage 10 built the platform; Stage 11 used it to actually answer FlashFlow's central question — under
+what conditions does each routing policy, especially Adaptive, help? An 8-program experimental sweep
+(`cmd/experiment-011a` through `011h`, 162+ controlled runs) found:
+
+- **Adaptive is not universally better, and that's a regime finding, not a contradiction of Stage 8**:
+  it wins 0 of 27 regime-map configurations on raw mean latency under heterogeneous load (EWMA wins 18,
+  Round Robin the remaining 9 homogeneous ties), because the virtual engine has no queueing model and
+  therefore can't penalize EWMA's unconstrained load concentration — while Adaptive deliberately keeps
+  utilization balanced. This doesn't contradict Stage 8's 62.5-70% composite-utility win rate; the two
+  measure different things (see README's own callout above and `Stage11.md` §19).
+- **A real, causally-confirmed adversarial finding**: Adaptive's cache-affinity signal can trap it on a
+  stale routing decision permanently — a hot key's affinity target crashes, recovers, and Adaptive never
+  routes back to it (0% of post-recovery decisions), confirmed by zeroing the cache weight and watching
+  the return rate jump to 54%.
+- **A real bug, found and fixed**: `internal/engine.RealEngine` discarded the per-policy `Instrumentation`
+  hook, so EWMA/Least-Connections/P2C/Adaptive selected blind (frozen cold-start signals) for the entire
+  duration of any real-engine experiment. Fixed via existing debug-header infrastructure; verified via a
+  non-flaky regression test. No prior experiment in this project's history was affected (none previously
+  called `RealEngine` for a dynamic policy).
+- **A second real bug, found and regression-tested**: `internal/tuning`'s Topology and Failure SeedTree
+  axes are not fully independent in one direction, a previously-untested invariant.
+
+Full research plan, all 8 programs' results, mechanism explanations, a What-Would-Falsify-This table per
+major claim, limitations, and the final verdict (**PASS WITH LIMITATIONS**):
+[`docs/StageArtifacts/Stage11.md`](docs/StageArtifacts/Stage11.md). What changed in our understanding,
+narratively: [`docs/learning/011-stage11-research-validation.md`](docs/learning/011-stage11-research-validation.md).
+Machine-readable experiment index (command/seed/artifact per finding):
+[`experiments/011-research-validation/INDEX.json`](experiments/011-research-validation/INDEX.json).
+
 ## Running Stage 10 Features
 
 ```bash
@@ -199,6 +237,22 @@ go test ./internal/cache/... -run SWR -v
 go test ./internal/challenge/... -run Metamorphic -v
 ```
 
+## Running Stage 11 Research
+
+```bash
+go run -buildvcs=true ./cmd/experiment-011a   # Program A: policy regime map (162 runs)
+go run -buildvcs=true ./cmd/experiment-011b   # Program B: adversarial adaptive scenarios
+go run -buildvcs=true ./cmd/experiment-011c   # Program C: recovery/adaptation dynamics
+go run -buildvcs=true ./cmd/experiment-011d   # Program D: distribution shift
+go run -buildvcs=true ./cmd/experiment-011e   # Program E: mechanistic attribution
+go run -buildvcs=true ./cmd/experiment-011f   # Program F: virtual-vs-real validation
+go run -buildvcs=true ./cmd/experiment-011g   # Program G: seed/reproducibility attack
+go run -buildvcs=true ./cmd/experiment-011h   # statistical robustness check (12-seed replication)
+```
+
+Every result traces back to its exact command/seed/artifact via
+[`experiments/011-research-validation/INDEX.json`](experiments/011-research-validation/INDEX.json).
+
 ## Specifications
 
 - [PRD v3.1](prd.md) — Product requirements and build sequence authority
@@ -221,6 +275,7 @@ go test ./internal/challenge/... -run Metamorphic -v
 | [007](experiments/007-adaptive-replay/) | Adaptive Routing & Replay | ✅ Complete |
 | [008](experiments/008-tuning-validation/) | Tuning & Final Validation | ✅ Complete |
 | [010-A](experiments/010-stage10-features/) | Tuner Comparison (Random Search vs LHS vs Bayesian Optimization) | ✅ Complete |
+| [011](experiments/011-research-validation/) | Research Validation (Programs A-H: regime map, adversarial testing, distribution shift, mechanistic attribution, virtual-vs-real, reproducibility) | ✅ Complete — see [`INDEX.json`](experiments/011-research-validation/INDEX.json) |
 
 ---
 

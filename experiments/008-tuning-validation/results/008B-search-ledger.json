@@ -19,19 +19,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 46.892,
+      "utility": 0.673515423765288,
+      "runtime_ms": 38.421,
       "cache_hit": false
     },
     {
@@ -50,19 +50,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 58.207,
+      "utility": 0.673515423765288,
+      "runtime_ms": 37.655,
       "cache_hit": false
     },
     {
@@ -81,19 +81,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 52.961,
+      "utility": 0.673515423765288,
+      "runtime_ms": 37.668,
       "cache_hit": false
     },
     {
@@ -112,19 +112,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 78.31570350000318,
-        "P50LatencyMs": 66.262,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 77.83570100000375,
+        "P50LatencyMs": 65.388,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5888333333333333
+        "MeanMaxShare": 0.5835833333333335
       },
       "scores": {
-        "LatencyScore": 0.560803103917307,
+        "LatencyScore": 0.5623167869987922,
         "RejectScore": 1,
-        "FairnessScore": 0.4111666666666667
+        "FairnessScore": 0.41641666666666655
       },
-      "utility": 0.6775985290170509,
-      "runtime_ms": 48.61,
+      "utility": 0.679031738865942,
+      "runtime_ms": 37.625,
       "cache_hit": false
     },
     {
@@ -143,19 +143,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 88.33159708333359,
-        "P50LatencyMs": 85.023,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 88.21851116666801,
+        "P50LatencyMs": 83.66999999999999,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.656
+        "MeanMaxShare": 0.6504166666666669
       },
       "scores": {
-        "LatencyScore": 0.5309783464309054,
+        "LatencyScore": 0.5312973701691314,
         "RejectScore": 1,
-        "FairnessScore": 0.344
+        "FairnessScore": 0.34958333333333313
       },
-      "utility": 0.6529870078585431,
-      "runtime_ms": 55.567,
+      "utility": 0.6537367554348121,
+      "runtime_ms": 36.404,
       "cache_hit": false
     },
     {
@@ -174,19 +174,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 81.07152891666787,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.54691133333532,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5920833333333333
+        "MeanMaxShare": 0.5845833333333332
       },
       "scores": {
-        "LatencyScore": 0.5522679385229119,
+        "LatencyScore": 0.5538726708837166,
         "RejectScore": 1,
-        "FairnessScore": 0.4079166666666667
+        "FairnessScore": 0.41541666666666677
       },
-      "utility": 0.6721524297804138,
-      "runtime_ms": 56.077,
+      "utility": 0.6738652691968966,
+      "runtime_ms": 34.904,
       "cache_hit": false
     },
     {
@@ -205,19 +205,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 59.075,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 36.421,
       "cache_hit": false
     },
     {
@@ -236,19 +236,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 65.68808200000478,
-        "P50LatencyMs": 50.385,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 63.956894583338425,
+        "P50LatencyMs": 49.594,
+        "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6292500000000001
+        "MeanMaxShare": 0.63275
       },
       "scores": {
-        "LatencyScore": 0.6035437117317655,
+        "LatencyScore": 0.6099164067124394,
         "RejectScore": 1,
-        "FairnessScore": 0.3707499999999999
+        "FairnessScore": 0.36724999999999997
       },
-      "utility": 0.6992012270390593,
-      "runtime_ms": 59.32,
+      "utility": 0.7026748440274636,
+      "runtime_ms": 38.758,
       "cache_hit": false
     },
     {
@@ -267,19 +267,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.553,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 38.774,
       "cache_hit": false
     },
     {
@@ -298,19 +298,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 47.66,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 36.352,
       "cache_hit": false
     },
     {
@@ -329,19 +329,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 49.26300133333815,
-        "P50LatencyMs": 40.631,
-        "P99LatencyMs": 156.29,
+        "MeanLatencyMs": 47.86787325000168,
+        "P50LatencyMs": 35.528,
+        "P99LatencyMs": 153.606,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8284166666666668
+        "MeanMaxShare": 0.8396666666666668
       },
       "scores": {
-        "LatencyScore": 0.6699583895990227,
+        "LatencyScore": 0.6762794229881768,
         "RejectScore": 1,
-        "FairnessScore": 0.1715833333333332
+        "FairnessScore": 0.16033333333333322
       },
-      "utility": 0.7191333670927468,
-      "runtime_ms": 55.478,
+      "utility": 0.7218009871262394,
+      "runtime_ms": 34.637,
       "cache_hit": false
     },
     {
@@ -360,19 +360,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 48.594,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 40.105,
       "cache_hit": false
     },
     {
@@ -391,19 +391,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.219,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 38.733,
       "cache_hit": false
     },
     {
@@ -422,19 +422,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 49.016,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 41.808,
       "cache_hit": false
     },
     {
@@ -453,19 +453,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.522,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 38.143,
       "cache_hit": false
     },
     {
@@ -484,19 +484,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.7,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 37.056,
       "cache_hit": false
     },
     {
@@ -515,19 +515,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 73.84640283333586,
+        "MeanLatencyMs": 72.99323041666956,
         "P50LatencyMs": 60.288,
-        "P99LatencyMs": 192.837,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6223333333333333
+        "MeanMaxShare": 0.622
       },
       "scores": {
-        "LatencyScore": 0.5752204150917555,
+        "LatencyScore": 0.578057301774995,
         "RejectScore": 1,
-        "FairnessScore": 0.3776666666666667
+        "FairnessScore": 0.378
       },
-      "utility": 0.68289891572172,
-      "runtime_ms": 50.974,
+      "utility": 0.6846343810649971,
+      "runtime_ms": 39.478,
       "cache_hit": false
     },
     {
@@ -546,19 +546,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 50.138,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 37.008,
       "cache_hit": false
     },
     {
@@ -577,19 +577,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.77574458333379,
-        "P50LatencyMs": 75.853,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 86.80812200000175,
+        "P50LatencyMs": 73.929,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6576666666666667
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.5325501449715758,
+        "LatencyScore": 0.5353086307457181,
         "RejectScore": 1,
-        "FairnessScore": 0.34233333333333327
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6537634203162788,
-      "runtime_ms": 40.606,
+      "utility": 0.6556935117807642,
+      "runtime_ms": 36.704,
       "cache_hit": false
     },
     {
@@ -608,19 +608,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.5,
+      "utility": 0.673515423765288,
+      "runtime_ms": 34.21,
       "cache_hit": false
     },
     {
@@ -639,19 +639,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 53.490196333339256,
-        "P50LatencyMs": 46.39,
-        "P99LatencyMs": 170.28169000000042,
+        "MeanLatencyMs": 52.489367333336986,
+        "P50LatencyMs": 43.195,
+        "P99LatencyMs": 172.132,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8000000000000002
+        "MeanMaxShare": 0.8025833333333334
       },
       "scores": {
-        "LatencyScore": 0.6515074082179622,
+        "LatencyScore": 0.6557834277153445,
         "RejectScore": 1,
-        "FairnessScore": 0.19999999999999984
+        "FairnessScore": 0.19741666666666657
       },
-      "utility": 0.7109044449307773,
-      "runtime_ms": 55.103,
+      "utility": 0.7132117232958733,
+      "runtime_ms": 40.599,
       "cache_hit": false
     },
     {
@@ -670,19 +670,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 52.396,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 36.129,
       "cache_hit": false
     },
     {
@@ -701,19 +701,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 45.218,
+      "utility": 0.673515423765288,
+      "runtime_ms": 39.311,
       "cache_hit": false
     },
     {
@@ -732,19 +732,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.645,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 35.86,
       "cache_hit": false
     },
     {
@@ -763,19 +763,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 51.07004241667125,
-        "P50LatencyMs": 45.668,
-        "P99LatencyMs": 161.185,
+        "MeanLatencyMs": 49.95941283333702,
+        "P50LatencyMs": 40.631,
+        "P99LatencyMs": 157.545,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7946666666666666
+        "MeanMaxShare": 0.7999166666666666
       },
       "scores": {
-        "LatencyScore": 0.6619446079467345,
+        "LatencyScore": 0.6668471028966934,
         "RejectScore": 1,
-        "FairnessScore": 0.20533333333333337
+        "FairnessScore": 0.2000833333333334
       },
-      "utility": 0.7177000981013739,
-      "runtime_ms": 55.447,
+      "utility": 0.7201165950713493,
+      "runtime_ms": 36.591,
       "cache_hit": false
     },
     {
@@ -794,19 +794,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 78.24887208333625,
-        "P50LatencyMs": 67.184,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 76.73160450000373,
+        "P50LatencyMs": 60.661,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6849166666666666
+        "MeanMaxShare": 0.6855
       },
       "scores": {
-        "LatencyScore": 0.5610133676091216,
+        "LatencyScore": 0.5658297523123426,
         "RejectScore": 1,
-        "FairnessScore": 0.3150833333333334
+        "FairnessScore": 0.3145
       },
-      "utility": 0.6681163538988063,
-      "runtime_ms": 55.15,
+      "utility": 0.6709478513874054,
+      "runtime_ms": 37.493,
       "cache_hit": false
     },
     {
@@ -825,19 +825,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 49.015,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 35.789,
       "cache_hit": false
     },
     {
@@ -856,19 +856,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 71.60544500000353,
-        "P50LatencyMs": 56.6,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 70.45917750000362,
+        "P50LatencyMs": 51.964,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6259999999999999
+        "MeanMaxShare": 0.6329166666666667
       },
       "scores": {
-        "LatencyScore": 0.5827320922130295,
+        "LatencyScore": 0.5866507246287627,
         "RejectScore": 1,
-        "FairnessScore": 0.3740000000000001
+        "FairnessScore": 0.3670833333333333
       },
-      "utility": 0.6870392553278176,
-      "runtime_ms": 55.535,
+      "utility": 0.6886987681105909,
+      "runtime_ms": 35.913,
       "cache_hit": false
     },
     {
@@ -887,19 +887,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 55.433583750005795,
-        "P50LatencyMs": 46.539,
-        "P99LatencyMs": 179.467,
+        "MeanLatencyMs": 54.654693583338116,
+        "P50LatencyMs": 46.39,
+        "P99LatencyMs": 178.2156400000003,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7457500000000001
+        "MeanMaxShare": 0.7454166666666668
       },
       "scores": {
-        "LatencyScore": 0.6433616055641918,
+        "LatencyScore": 0.6466017789890963,
         "RejectScore": 1,
-        "FairnessScore": 0.25424999999999986
+        "FairnessScore": 0.25458333333333316
       },
-      "utility": 0.7114419633385151,
-      "runtime_ms": 50.662,
+      "utility": 0.7134194007267911,
+      "runtime_ms": 37.225,
       "cache_hit": false
     },
     {
@@ -918,19 +918,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.53293900000146,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.53902166666884,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5975
+        "MeanMaxShare": 0.5864166666666667
       },
       "scores": {
-        "LatencyScore": 0.5539155378177231,
+        "LatencyScore": 0.5538968754612568,
         "RejectScore": 1,
-        "FairnessScore": 0.40249999999999997
+        "FairnessScore": 0.4135833333333333
       },
-      "utility": 0.6725993226906338,
-      "runtime_ms": 55.464,
+      "utility": 0.6736964586100873,
+      "runtime_ms": 34.935,
       "cache_hit": false
     },
     {
@@ -949,19 +949,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 60.502,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 36.01,
       "cache_hit": false
     },
     {
@@ -980,19 +980,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 55.978595166673706,
-        "P50LatencyMs": 47.019,
+        "MeanLatencyMs": 53.5782970833387,
+        "P50LatencyMs": 46.539,
         "P99LatencyMs": 163.799,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8481666666666665
+        "MeanMaxShare": 0.8634166666666667
       },
       "scores": {
-        "LatencyScore": 0.641113608525216,
+        "LatencyScore": 0.651133668618134,
         "RejectScore": 1,
-        "FairnessScore": 0.1518333333333335
+        "FairnessScore": 0.13658333333333328
       },
-      "utility": 0.699851498448463,
-      "runtime_ms": 46.056,
+      "utility": 0.7043385345042137,
+      "runtime_ms": 34.84,
       "cache_hit": false
     },
     {
@@ -1011,19 +1011,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 91.43933883333274,
-        "P50LatencyMs": 93.32,
+        "MeanLatencyMs": 91.52855641666741,
+        "P50LatencyMs": 87.094,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6304166666666667
+        "MeanMaxShare": 0.6238333333333335
       },
       "scores": {
-        "LatencyScore": 0.5223586782602717,
+        "LatencyScore": 0.5221153538193624,
         "RejectScore": 1,
-        "FairnessScore": 0.36958333333333326
+        "FairnessScore": 0.37616666666666654
       },
-      "utility": 0.6503735402894963,
-      "runtime_ms": 50.775,
+      "utility": 0.6508858789582841,
+      "runtime_ms": 36.703,
       "cache_hit": false
     },
     {
@@ -1042,19 +1042,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 58.695,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 38.289,
       "cache_hit": false
     },
     {
@@ -1073,19 +1073,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 52.85,
+      "utility": 0.673515423765288,
+      "runtime_ms": 39.06,
       "cache_hit": false
     },
     {
@@ -1104,19 +1104,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 50.126,
+      "utility": 0.673515423765288,
+      "runtime_ms": 38.463,
       "cache_hit": false
     },
     {
@@ -1135,19 +1135,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 60.517,
+      "utility": 0.673515423765288,
+      "runtime_ms": 37.275,
       "cache_hit": false
     },
     {
@@ -1166,19 +1166,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 53.564,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 36.621,
       "cache_hit": false
     },
     {
@@ -1197,19 +1197,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.12851283333595,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 78.76841825000336,
+        "P50LatencyMs": 67.639,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5951666666666665
+        "MeanMaxShare": 0.5980833333333332
       },
       "scores": {
-        "LatencyScore": 0.5551591939945959,
+        "LatencyScore": 0.5593829210937717,
         "RejectScore": 1,
-        "FairnessScore": 0.4048333333333335
+        "FairnessScore": 0.4019166666666668
       },
-      "utility": 0.6735788497300909,
-      "runtime_ms": 50.93,
+      "utility": 0.6758214193229297,
+      "runtime_ms": 37.724,
       "cache_hit": false
     },
     {
@@ -1228,19 +1228,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 57.648,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 35.525,
       "cache_hit": false
     },
     {
@@ -1259,19 +1259,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 53.458,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 36.174,
       "cache_hit": false
     },
     {
@@ -1290,19 +1290,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 78.12546400000154,
-        "P50LatencyMs": 68.121,
+        "MeanLatencyMs": 77.6561415833357,
+        "P50LatencyMs": 66.262,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6160833333333333
+        "MeanMaxShare": 0.6046666666666666
       },
       "scores": {
-        "LatencyScore": 0.5614020463688401,
+        "LatencyScore": 0.5628851280274574,
         "RejectScore": 1,
-        "FairnessScore": 0.3839166666666667
+        "FairnessScore": 0.3953333333333334
       },
-      "utility": 0.6752328944879707,
-      "runtime_ms": 55.523,
+      "utility": 0.6772644101498076,
+      "runtime_ms": 38.986,
       "cache_hit": false
     },
     {
@@ -1321,19 +1321,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 53.031254750004514,
-        "P50LatencyMs": 46.343,
-        "P99LatencyMs": 163.378,
+        "MeanLatencyMs": 51.846348166670154,
+        "P50LatencyMs": 40.631,
+        "P99LatencyMs": 162.23455000000027,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7829999999999999
+        "MeanMaxShare": 0.7896666666666667
       },
       "scores": {
-        "LatencyScore": 0.6534612825553994,
+        "LatencyScore": 0.6585604540863744,
         "RejectScore": 1,
-        "FairnessScore": 0.21700000000000008
+        "FairnessScore": 0.21033333333333326
       },
-      "utility": 0.7137767695332397,
-      "runtime_ms": 55.219,
+      "utility": 0.716169605785158,
+      "runtime_ms": 33.15,
       "cache_hit": false
     },
     {
@@ -1352,19 +1352,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 62.2372656666711,
-        "P50LatencyMs": 47.601,
-        "P99LatencyMs": 192.837,
+        "MeanLatencyMs": 59.8630907500051,
+        "P50LatencyMs": 46.991,
+        "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6689166666666667
+        "MeanMaxShare": 0.6838333333333334
       },
       "scores": {
-        "LatencyScore": 0.6163811969406441,
+        "LatencyScore": 0.6255352597703783,
         "RejectScore": 1,
-        "FairnessScore": 0.3310833333333333
+        "FairnessScore": 0.3161666666666666
       },
-      "utility": 0.7029370514977198,
-      "runtime_ms": 55.96,
+      "utility": 0.7069378225288936,
+      "runtime_ms": 38.644,
       "cache_hit": false
     },
     {
@@ -1383,19 +1383,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.88643900000292,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 78.70410875000363,
+        "P50LatencyMs": 66.262,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.70775
+        "MeanMaxShare": 0.7013333333333334
       },
       "scores": {
-        "LatencyScore": 0.5559062737352779,
+        "LatencyScore": 0.5595842238853838,
         "RejectScore": 1,
-        "FairnessScore": 0.29225
+        "FairnessScore": 0.29866666666666664
       },
-      "utility": 0.6627687642411668,
-      "runtime_ms": 62.519,
+      "utility": 0.6656172009978969,
+      "runtime_ms": 38.277,
       "cache_hit": false
     },
     {
@@ -1414,19 +1414,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 88.09794358333357,
-        "P50LatencyMs": 85.023,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 88.21851116666801,
+        "P50LatencyMs": 83.66999999999999,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6548333333333334
+        "MeanMaxShare": 0.6504166666666669
       },
       "scores": {
-        "LatencyScore": 0.5316379227489891,
+        "LatencyScore": 0.5312973701691314,
         "RejectScore": 1,
-        "FairnessScore": 0.3451666666666666
+        "FairnessScore": 0.34958333333333313
       },
-      "utility": 0.6534994203160601,
-      "runtime_ms": 48.625,
+      "utility": 0.6537367554348121,
+      "runtime_ms": 33.783,
       "cache_hit": false
     },
     {
@@ -1445,19 +1445,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 62.429,
+      "utility": 0.673515423765288,
+      "runtime_ms": 37.207,
       "cache_hit": false
     },
     {
@@ -1476,19 +1476,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 56.078,
+      "utility": 0.673515423765288,
+      "runtime_ms": 38.141,
       "cache_hit": false
     },
     {
@@ -1507,19 +1507,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.12276425000027,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.08110183333504,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6618333333333334
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.5344085226658886,
+        "LatencyScore": 0.5345275338878803,
         "RejectScore": 1,
-        "FairnessScore": 0.3381666666666666
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6544617802661998,
-      "runtime_ms": 48.108,
+      "utility": 0.6552248536660615,
+      "runtime_ms": 34.125,
       "cache_hit": false
     },
     {
@@ -1538,19 +1538,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 88.58240783333433,
-        "P50LatencyMs": 85.023,
+        "MeanLatencyMs": 88.89298375000212,
+        "P50LatencyMs": 82.317,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6464166666666668
+        "MeanMaxShare": 0.6381666666666668
       },
       "scores": {
-        "LatencyScore": 0.5302721560771362,
+        "LatencyScore": 0.5294002880083093,
         "RejectScore": 1,
-        "FairnessScore": 0.35358333333333325
+        "FairnessScore": 0.36183333333333323
       },
-      "utility": 0.6535216269796151,
-      "runtime_ms": 67.898,
+      "utility": 0.653823506138319,
+      "runtime_ms": 36.85,
       "cache_hit": false
     },
     {
@@ -1569,19 +1569,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 76.56281933333548,
-        "P50LatencyMs": 67.184,
+        "MeanLatencyMs": 75.53148125000287,
+        "P50LatencyMs": 60.661,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6311666666666665
+        "MeanMaxShare": 0.6251666666666666
       },
       "scores": {
-        "LatencyScore": 0.5663706570702667,
+        "LatencyScore": 0.5696983771109057,
         "RejectScore": 1,
-        "FairnessScore": 0.36883333333333346
+        "FairnessScore": 0.37483333333333335
       },
-      "utility": 0.6767057275754933,
-      "runtime_ms": 64.18,
+      "utility": 0.6793023595998766,
+      "runtime_ms": 38.431,
       "cache_hit": false
     },
     {
@@ -1600,19 +1600,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.419,
+      "utility": 0.673515423765288,
+      "runtime_ms": 31.503,
       "cache_hit": false
     },
     {
@@ -1631,19 +1631,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.683,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 41.183,
       "cache_hit": false
     },
     {
@@ -1662,19 +1662,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.329542833338735,
+        "MeanLatencyMs": 52.70007983333631,
         "P50LatencyMs": 46.39,
-        "P99LatencyMs": 183.641,
+        "P99LatencyMs": 163.799,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.82075
+        "MeanMaxShare": 0.8386666666666667
       },
       "scores": {
-        "LatencyScore": 0.6479640784525003,
+        "LatencyScore": 0.6548785050351281,
         "RejectScore": 1,
-        "FairnessScore": 0.17925000000000002
+        "FairnessScore": 0.16133333333333333
       },
-      "utility": 0.7067034470715001,
-      "runtime_ms": 48.498,
+      "utility": 0.7090604363544102,
+      "runtime_ms": 34.143,
       "cache_hit": false
     },
     {
@@ -1693,19 +1693,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 56.666,
+      "utility": 0.673515423765288,
+      "runtime_ms": 37.515,
       "cache_hit": false
     },
     {
@@ -1724,19 +1724,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 59.534613333341255,
-        "P50LatencyMs": 46.539,
-        "P99LatencyMs": 181.769,
+        "MeanLatencyMs": 56.958814250007386,
+        "P50LatencyMs": 46.39,
+        "P99LatencyMs": 163.799,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8111666666666668
+        "MeanMaxShare": 0.8344166666666668
       },
       "scores": {
-        "LatencyScore": 0.6268232198053094,
+        "LatencyScore": 0.6371098079316388,
         "RejectScore": 1,
-        "FairnessScore": 0.1888333333333332
+        "FairnessScore": 0.1655833333333332
       },
-      "utility": 0.6949772652165189,
-      "runtime_ms": 54.404,
+      "utility": 0.6988242180923167,
+      "runtime_ms": 36.223,
       "cache_hit": false
     },
     {
@@ -1755,19 +1755,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 63.510146000006806,
-        "P50LatencyMs": 47.019,
+        "MeanLatencyMs": 60.0620616666733,
+        "P50LatencyMs": 46.539,
         "P99LatencyMs": 180.558,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.795
+        "MeanMaxShare": 0.8221666666666667
       },
       "scores": {
-        "LatencyScore": 0.6115828433056126,
+        "LatencyScore": 0.6247576656125322,
         "RejectScore": 1,
-        "FairnessScore": 0.20499999999999996
+        "FairnessScore": 0.1778333333333333
       },
-      "utility": 0.6874497059833675,
-      "runtime_ms": 52.354,
+      "utility": 0.6926379327008526,
+      "runtime_ms": 35.613,
       "cache_hit": false
     },
     {
@@ -1786,19 +1786,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 63.67687333333735,
-        "P50LatencyMs": 51.964,
-        "P99LatencyMs": 192.837,
+        "MeanLatencyMs": 60.671761916671194,
+        "P50LatencyMs": 47.946,
+        "P99LatencyMs": 188.192,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6523333333333333
+        "MeanMaxShare": 0.66725
       },
       "scores": {
-        "LatencyScore": 0.610959862340138,
+        "LatencyScore": 0.6223869011398702,
         "RejectScore": 1,
-        "FairnessScore": 0.3476666666666667
+        "FairnessScore": 0.33275
       },
-      "utility": 0.7013425840707495,
-      "runtime_ms": 58.742,
+      "utility": 0.706707140683922,
+      "runtime_ms": 36.276,
       "cache_hit": false
     },
     {
@@ -1817,19 +1817,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.78744016666806,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.79352283333544,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5961666666666667
+        "MeanMaxShare": 0.5850833333333333
       },
       "scores": {
-        "LatencyScore": 0.5531357704263633,
+        "LatencyScore": 0.5531171605754097,
         "RejectScore": 1,
-        "FairnessScore": 0.40383333333333327
+        "FairnessScore": 0.4149166666666667
       },
-      "utility": 0.6722647955891513,
-      "runtime_ms": 56.092,
+      "utility": 0.6733619630119125,
+      "runtime_ms": 35.456,
       "cache_hit": false
     },
     {
@@ -1848,19 +1848,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.478,
+      "utility": 0.673515423765288,
+      "runtime_ms": 38.442,
       "cache_hit": false
     },
     {
@@ -1879,19 +1879,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.04,
+      "utility": 0.673515423765288,
+      "runtime_ms": 36.517,
       "cache_hit": false
     },
     {
@@ -1910,19 +1910,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.786,
+      "utility": 0.673515423765288,
+      "runtime_ms": 39.947,
       "cache_hit": false
     },
     {
@@ -1941,19 +1941,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 50.887,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 36.377,
       "cache_hit": false
     },
     {
@@ -1972,19 +1972,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.57535991666991,
-        "P50LatencyMs": 68.845,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 79.27246966667039,
+        "P50LatencyMs": 67.184,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6713333333333333
+        "MeanMaxShare": 0.6794166666666667
       },
       "scores": {
-        "LatencyScore": 0.5568692723010773,
+        "LatencyScore": 0.5578101321744193,
         "RejectScore": 1,
-        "FairnessScore": 0.32866666666666666
+        "FairnessScore": 0.32058333333333333
       },
-      "utility": 0.666988230047313,
-      "runtime_ms": 46.303,
+      "utility": 0.6667444126379849,
+      "runtime_ms": 35.555,
       "cache_hit": false
     },
     {
@@ -2003,19 +2003,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 81.86800250000233,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 81.53684558333632,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.65525
+        "MeanMaxShare": 0.6498333333333334
       },
       "scores": {
-        "LatencyScore": 0.5498493337221246,
+        "LatencyScore": 0.5508523610106136,
         "RejectScore": 1,
-        "FairnessScore": 0.34475
+        "FairnessScore": 0.3501666666666666
       },
-      "utility": 0.6643846002332747,
-      "runtime_ms": 55.286,
+      "utility": 0.6655280832730348,
+      "runtime_ms": 39.094,
       "cache_hit": false
     },
     {
@@ -2034,19 +2034,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 48.626,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 33.857,
       "cache_hit": false
     },
     {
@@ -2065,19 +2065,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 60.639,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 39.189,
       "cache_hit": false
     },
     {
@@ -2096,19 +2096,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 55.60955633333912,
-        "P50LatencyMs": 46.539,
-        "P99LatencyMs": 181.769,
+        "MeanLatencyMs": 54.61350125000472,
+        "P50LatencyMs": 46.39,
+        "P99LatencyMs": 180.558,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7285833333333334
+        "MeanMaxShare": 0.7298333333333333
       },
       "scores": {
-        "LatencyScore": 0.6426340538224076,
+        "LatencyScore": 0.6467740474895749,
         "RejectScore": 1,
-        "FairnessScore": 0.27141666666666664
+        "FairnessScore": 0.27016666666666667
       },
-      "utility": 0.7127220989601111,
-      "runtime_ms": 51.49,
+      "utility": 0.7150810951604116,
+      "runtime_ms": 34.96,
       "cache_hit": false
     },
     {
@@ -2127,19 +2127,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.07166250000604,
-        "P50LatencyMs": 46.39,
+        "MeanLatencyMs": 52.94604050000422,
+        "P50LatencyMs": 45.668,
         "P99LatencyMs": 170.28169000000042,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7788333333333335
+        "MeanMaxShare": 0.7864166666666668
       },
       "scores": {
-        "LatencyScore": 0.6490486204755276,
+        "LatencyScore": 0.6538253600621798,
         "RejectScore": 1,
-        "FairnessScore": 0.2211666666666665
+        "FairnessScore": 0.21358333333333324
       },
-      "utility": 0.7115458389519832,
-      "runtime_ms": 55.587,
+      "utility": 0.7136535493706413,
+      "runtime_ms": 38.755,
       "cache_hit": false
     },
     {
@@ -2158,19 +2158,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 88.5323271666666,
+        "MeanLatencyMs": 90.34836316666737,
         "P50LatencyMs": 85.023,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6512500000000001
+        "MeanMaxShare": 0.6379166666666668
       },
       "scores": {
-        "LatencyScore": 0.5304130145892586,
+        "LatencyScore": 0.5253525606229714,
         "RejectScore": 1,
-        "FairnessScore": 0.3487499999999999
+        "FairnessScore": 0.3620833333333332
       },
-      "utility": 0.6531228087535551,
-      "runtime_ms": 55.592,
+      "utility": 0.6514198697071162,
+      "runtime_ms": 31.254,
       "cache_hit": false
     },
     {
@@ -2189,19 +2189,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 51.523,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 44.068,
       "cache_hit": false
     },
     {
@@ -2220,19 +2220,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 52.043,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 37.868,
       "cache_hit": false
     },
     {
@@ -2251,19 +2251,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.54209108333377,
-        "P50LatencyMs": 75.853,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 86.80812200000175,
+        "P50LatencyMs": 73.929,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6565000000000001
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.5332136344558795,
+        "LatencyScore": 0.5353086307457181,
         "RejectScore": 1,
-        "FairnessScore": 0.3434999999999999
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6542781806735277,
-      "runtime_ms": 52.028,
+      "utility": 0.6556935117807642,
+      "runtime_ms": 33.107,
       "cache_hit": false
     },
     {
@@ -2282,19 +2282,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 51.62,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 36.065,
       "cache_hit": false
     },
     {
@@ -2313,19 +2313,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 81.14455666666815,
+        "MeanLatencyMs": 81.92928533333533,
         "P50LatencyMs": 72.359,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5902499999999999
+        "MeanMaxShare": 0.5765
       },
       "scores": {
-        "LatencyScore": 0.5520452937706226,
+        "LatencyScore": 0.5496641171143916,
         "RejectScore": 1,
-        "FairnessScore": 0.40975000000000006
+        "FairnessScore": 0.4235
       },
-      "utility": 0.6722021762623736,
-      "runtime_ms": 55.493,
+      "utility": 0.6721484702686349,
+      "runtime_ms": 38.586,
       "cache_hit": false
     },
     {
@@ -2344,19 +2344,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 48.628,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 39.895,
       "cache_hit": false
     },
     {
@@ -2375,19 +2375,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 78.4454195833365,
-        "P50LatencyMs": 67.6525,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 77.87839983333711,
+        "P50LatencyMs": 61.821,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6663333333333333
+        "MeanMaxShare": 0.675
       },
       "scores": {
-        "LatencyScore": 0.5603954432313047,
+        "LatencyScore": 0.5621818056250497,
         "RejectScore": 1,
-        "FairnessScore": 0.33366666666666667
+        "FairnessScore": 0.32499999999999996
       },
-      "utility": 0.6696039326054495,
-      "runtime_ms": 52.808,
+      "utility": 0.6698090833750298,
+      "runtime_ms": 33.377,
       "cache_hit": false
     },
     {
@@ -2406,19 +2406,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 53.809109500005725,
-        "P50LatencyMs": 46.343,
-        "P99LatencyMs": 179.467,
+        "MeanLatencyMs": 52.631490666670295,
+        "P50LatencyMs": 45.668,
+        "P99LatencyMs": 178.2156400000003,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8223333333333335
+        "MeanMaxShare": 0.8275000000000002
       },
       "scores": {
-        "LatencyScore": 0.6501565500578903,
+        "LatencyScore": 0.6551727927390065,
         "RejectScore": 1,
-        "FairnessScore": 0.17766666666666653
+        "FairnessScore": 0.17249999999999976
       },
-      "utility": 0.7078605967014009,
-      "runtime_ms": 51.294,
+      "utility": 0.7103536756434039,
+      "runtime_ms": 36.578,
       "cache_hit": false
     },
     {
@@ -2437,19 +2437,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 63.02368833333728,
-        "P50LatencyMs": 47.946,
-        "P99LatencyMs": 192.837,
+        "MeanLatencyMs": 61.29250091667094,
+        "P50LatencyMs": 47.601,
+        "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6545000000000001
+        "MeanMaxShare": 0.6580000000000001
       },
       "scores": {
-        "LatencyScore": 0.6134077876800843,
+        "LatencyScore": 0.6199916265894055,
         "RejectScore": 1,
-        "FairnessScore": 0.3454999999999999
+        "FairnessScore": 0.34199999999999986
       },
-      "utility": 0.7025946726080505,
-      "runtime_ms": 55.598,
+      "utility": 0.7061949759536433,
+      "runtime_ms": 39.315,
       "cache_hit": false
     },
     {
@@ -2468,19 +2468,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 48.885,
+      "utility": 0.673515423765288,
+      "runtime_ms": 56.682,
       "cache_hit": false
     },
     {
@@ -2499,19 +2499,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 48.924,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 54.578,
       "cache_hit": false
     },
     {
@@ -2530,19 +2530,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 61.95,
+      "utility": 0.673515423765288,
+      "runtime_ms": 59.989,
       "cache_hit": false
     },
     {
@@ -2561,19 +2561,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.65888216666926,
-        "P50LatencyMs": 68.845,
+        "MeanLatencyMs": 79.32244250000328,
+        "P50LatencyMs": 67.184,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6617500000000001
+        "MeanMaxShare": 0.6562500000000001
       },
       "scores": {
-        "LatencyScore": 0.5566103873853014,
+        "LatencyScore": 0.5576546839640453,
         "RejectScore": 1,
-        "FairnessScore": 0.33824999999999994
+        "FairnessScore": 0.3437499999999999
       },
-      "utility": 0.6677912324311808,
-      "runtime_ms": 55.7,
+      "utility": 0.6689678103784271,
+      "runtime_ms": 62.817,
       "cache_hit": false
     },
     {
@@ -2592,19 +2592,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.3817547500019,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 79.88703766666914,
+        "P50LatencyMs": 67.639,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6055833333333334
+        "MeanMaxShare": 0.5910833333333334
       },
       "scores": {
-        "LatencyScore": 0.557470296460008,
+        "LatencyScore": 0.555904423671149,
         "RejectScore": 1,
-        "FairnessScore": 0.39441666666666664
+        "FairnessScore": 0.4089166666666666
       },
-      "utility": 0.6739238445426715,
-      "runtime_ms": 48.654,
+      "utility": 0.6744343208693561,
+      "runtime_ms": 58.578,
       "cache_hit": false
     },
     {
@@ -2623,19 +2623,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.12276425000027,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.08110183333504,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6618333333333334
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.5344085226658886,
+        "LatencyScore": 0.5345275338878803,
         "RejectScore": 1,
-        "FairnessScore": 0.3381666666666666
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6544617802661998,
-      "runtime_ms": 55.316,
+      "utility": 0.6552248536660615,
+      "runtime_ms": 59.481,
       "cache_hit": false
     },
     {
@@ -2654,19 +2654,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 53.247,
+      "utility": 0.673515423765288,
+      "runtime_ms": 58.735,
       "cache_hit": false
     },
     {
@@ -2685,19 +2685,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 52.982,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 60.354,
       "cache_hit": false
     },
     {
@@ -2716,19 +2716,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 49.303,
+      "utility": 0.673515423765288,
+      "runtime_ms": 58.46,
       "cache_hit": false
     },
     {
@@ -2747,19 +2747,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 59.69,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 54.427,
       "cache_hit": false
     },
     {
@@ -2778,19 +2778,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 54.081,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 51.602,
       "cache_hit": false
     },
     {
@@ -2809,19 +2809,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 51.542,
+      "utility": 0.673515423765288,
+      "runtime_ms": 62.261,
       "cache_hit": false
     },
     {
@@ -2840,19 +2840,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 78.0539322500031,
-        "P50LatencyMs": 66.262,
+        "MeanLatencyMs": 78.23435158333709,
+        "P50LatencyMs": 66.037,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5924166666666667
+        "MeanMaxShare": 0.5813333333333335
       },
       "scores": {
-        "LatencyScore": 0.5616275851722913,
+        "LatencyScore": 0.5610590725730162,
         "RejectScore": 1,
-        "FairnessScore": 0.4075833333333333
+        "FairnessScore": 0.4186666666666665
       },
-      "utility": 0.677734884436708,
-      "runtime_ms": 61.024,
+      "utility": 0.6785021102104764,
+      "runtime_ms": 57.222,
       "cache_hit": false
     },
     {
@@ -2871,19 +2871,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 66.2955576666705,
-        "P50LatencyMs": 50.385,
-        "P99LatencyMs": 192.837,
+        "MeanLatencyMs": 64.0200978333378,
+        "P50LatencyMs": 47.601,
+        "P99LatencyMs": 188.192,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6558333333333332
+        "MeanMaxShare": 0.6713333333333331
       },
       "scores": {
-        "LatencyScore": 0.6013389738314238,
+        "LatencyScore": 0.609681382470646,
         "RejectScore": 1,
-        "FairnessScore": 0.34416666666666684
+        "FairnessScore": 0.3286666666666669
       },
-      "utility": 0.6952200509655209,
-      "runtime_ms": 48.618,
+      "utility": 0.6986754961490543,
+      "runtime_ms": 54.714,
       "cache_hit": false
     },
     {
@@ -2902,19 +2902,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 78.08422666666861,
-        "P50LatencyMs": 60.808,
+        "MeanLatencyMs": 77.52844650000287,
+        "P50LatencyMs": 60.288,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6566666666666667
+        "MeanMaxShare": 0.6476666666666666
       },
       "scores": {
-        "LatencyScore": 0.5615320450989534,
+        "LatencyScore": 0.5632900077227814,
         "RejectScore": 1,
-        "FairnessScore": 0.34333333333333327
+        "FairnessScore": 0.3523333333333334
       },
-      "utility": 0.6712525603927053,
-      "runtime_ms": 62.435,
+      "utility": 0.6732073379670022,
+      "runtime_ms": 54.448,
       "cache_hit": false
     },
     {
@@ -2933,19 +2933,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 76.38936458333552,
-        "P50LatencyMs": 66.262,
+        "MeanLatencyMs": 75.5567486666693,
+        "P50LatencyMs": 60.661,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6387499999999999
+        "MeanMaxShare": 0.63425
       },
       "scores": {
-        "LatencyScore": 0.5669276049393261,
+        "LatencyScore": 0.5696163819362514,
         "RejectScore": 1,
-        "FairnessScore": 0.36125000000000007
+        "FairnessScore": 0.36575
       },
-      "utility": 0.6762815629635957,
-      "runtime_ms": 50.644,
+      "utility": 0.6783448291617509,
+      "runtime_ms": 56.543,
       "cache_hit": false
     },
     {
@@ -2964,19 +2964,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 53.515,
+      "utility": 0.673515423765288,
+      "runtime_ms": 61.907,
       "cache_hit": false
     },
     {
@@ -2995,19 +2995,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.7045653333347,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.71064800000208,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5963333333333334
+        "MeanMaxShare": 0.58525
       },
       "scores": {
-        "LatencyScore": 0.5533894498765767,
+        "LatencyScore": 0.5533708229522748,
         "RejectScore": 1,
-        "FairnessScore": 0.4036666666666666
+        "FairnessScore": 0.41474999999999995
       },
-      "utility": 0.6724003365926127,
-      "runtime_ms": 55.921,
+      "utility": 0.6734974937713649,
+      "runtime_ms": 62.368,
       "cache_hit": false
     },
     {
@@ -3026,19 +3026,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 76.62864233333612,
-        "P50LatencyMs": 67.184,
+        "MeanLatencyMs": 76.5507199166705,
+        "P50LatencyMs": 66.262,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5826666666666667
+        "MeanMaxShare": 0.5680000000000001
       },
       "scores": {
-        "LatencyScore": 0.5661595915529859,
+        "LatencyScore": 0.5664094717212064,
         "RejectScore": 1,
-        "FairnessScore": 0.41733333333333333
+        "FairnessScore": 0.43199999999999994
       },
-      "utility": 0.6814290882651248,
-      "runtime_ms": 48.285,
+      "utility": 0.6830456830327238,
+      "runtime_ms": 56.978,
       "cache_hit": false
     },
     {
@@ -3057,19 +3057,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.643,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 60.172,
       "cache_hit": false
     },
     {
@@ -3088,19 +3088,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 73.16814608333753,
-        "P50LatencyMs": 61.821,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 73.04229658333732,
+        "P50LatencyMs": 60.808,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5901666666666667
+        "MeanMaxShare": 0.5749166666666669
       },
       "scores": {
-        "LatencyScore": 0.577473411027192,
+        "LatencyScore": 0.5778933935486686,
         "RejectScore": 1,
-        "FairnessScore": 0.40983333333333327
+        "FairnessScore": 0.42508333333333315
       },
-      "utility": 0.6874673799496485,
-      "runtime_ms": 55.432,
+      "utility": 0.6892443694625345,
+      "runtime_ms": 58.398,
       "cache_hit": false
     },
     {
@@ -3119,19 +3119,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.607,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 62.078,
       "cache_hit": false
     },
     {
@@ -3150,19 +3150,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 56.9026620833392,
+        "MeanLatencyMs": 55.76845266667142,
         "P50LatencyMs": 46.39,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7425
+        "MeanMaxShare": 0.7493333333333335
       },
       "scores": {
-        "LatencyScore": 0.6373378161479808,
+        "LatencyScore": 0.6419785154699442,
         "RejectScore": 1,
-        "FairnessScore": 0.25749999999999995
+        "FairnessScore": 0.2506666666666665
       },
-      "utility": 0.7081526896887884,
-      "runtime_ms": 48.782,
+      "utility": 0.7102537759486333,
+      "runtime_ms": 53.077,
       "cache_hit": false
     },
     {
@@ -3181,19 +3181,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 48.937,
+      "utility": 0.673515423765288,
+      "runtime_ms": 66.163,
       "cache_hit": false
     },
     {
@@ -3212,19 +3212,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 62.86,
+      "utility": 0.673515423765288,
+      "runtime_ms": 59.757,
       "cache_hit": false
     },
     {
@@ -3243,19 +3243,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 86.71765050000144,
+        "MeanLatencyMs": 88.26414983333575,
         "P50LatencyMs": 75.853,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6605833333333334
+        "MeanMaxShare": 0.6489166666666668
       },
       "scores": {
-        "LatencyScore": 0.5355680072677393,
+        "LatencyScore": 0.5311685739878081,
         "RejectScore": 1,
-        "FairnessScore": 0.3394166666666666
+        "FairnessScore": 0.3510833333333332
       },
-      "utility": 0.6552824710273103,
-      "runtime_ms": 54.569,
+      "utility": 0.6538094777260182,
+      "runtime_ms": 60.477,
       "cache_hit": false
     },
     {
@@ -3274,19 +3274,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 48.693,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 53.55,
       "cache_hit": false
     },
     {
@@ -3305,19 +3305,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.743,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 55.306,
       "cache_hit": false
     },
     {
@@ -3336,19 +3336,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 83.42016441666824,
-        "P50LatencyMs": 73.738,
+        "MeanLatencyMs": 83.37850200000301,
+        "P50LatencyMs": 72.359,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6818333333333333
+        "MeanMaxShare": 0.6749166666666667
       },
       "scores": {
-        "LatencyScore": 0.5451963273396375,
+        "LatencyScore": 0.5453201924399969,
         "RejectScore": 1,
-        "FairnessScore": 0.3181666666666667
+        "FairnessScore": 0.3250833333333333
       },
-      "utility": 0.6589344630704492,
-      "runtime_ms": 55.375,
+      "utility": 0.6597004487973315,
+      "runtime_ms": 58.848,
       "cache_hit": false
     },
     {
@@ -3367,19 +3367,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 69.34197150000391,
-        "P50LatencyMs": 56.6,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 69.11036325000327,
+        "P50LatencyMs": 55.832,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6252500000000001
+        "MeanMaxShare": 0.6168333333333333
       },
       "scores": {
-        "LatencyScore": 0.5905210569725634,
+        "LatencyScore": 0.5913298160927347,
         "RejectScore": 1,
-        "FairnessScore": 0.3747499999999999
+        "FairnessScore": 0.38316666666666666
       },
-      "utility": 0.6917876341835381,
-      "runtime_ms": 48.489,
+      "utility": 0.6931145563223075,
+      "runtime_ms": 59.558,
       "cache_hit": false
     },
     {
@@ -3398,19 +3398,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 56.587,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 59.744,
       "cache_hit": false
     },
     {
@@ -3429,19 +3429,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 51.499,
+      "utility": 0.673515423765288,
+      "runtime_ms": 61.524,
       "cache_hit": false
     },
     {
@@ -3460,19 +3460,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 56.679200750006345,
-        "P50LatencyMs": 46.539,
-        "P99LatencyMs": 181.769,
+        "MeanLatencyMs": 54.56655616667099,
+        "P50LatencyMs": 46.39,
+        "P99LatencyMs": 162.223,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7077500000000001
+        "MeanMaxShare": 0.7188333333333334
       },
       "scores": {
-        "LatencyScore": 0.6382468095401996,
+        "LatencyScore": 0.6469704862426305,
         "RejectScore": 1,
-        "FairnessScore": 0.2922499999999999
+        "FairnessScore": 0.28116666666666656
       },
-      "utility": 0.7121730857241196,
-      "runtime_ms": 58.375,
+      "utility": 0.716298958412245,
+      "runtime_ms": 57.873,
       "cache_hit": false
     },
     {
@@ -3491,19 +3491,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 75.29694900000196,
-        "P50LatencyMs": 60.661,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 74.6052608333362,
+        "P50LatencyMs": 60.288,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6284166666666665
+        "MeanMaxShare": 0.6309166666666666
       },
       "scores": {
-        "LatencyScore": 0.5704605845706926,
+        "LatencyScore": 0.5727204296292754,
         "RejectScore": 1,
-        "FairnessScore": 0.3715833333333335
+        "FairnessScore": 0.36908333333333343
       },
-      "utility": 0.6794346840757488,
-      "runtime_ms": 55.779,
+      "utility": 0.6805405911108986,
+      "runtime_ms": 60.734,
       "cache_hit": false
     },
     {
@@ -3522,19 +3522,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 59.837,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 51.046,
       "cache_hit": false
     },
     {
@@ -3553,19 +3553,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 65.28920700000425,
-        "P50LatencyMs": 47.601,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 62.909823083338075,
+        "P50LatencyMs": 47.019,
+        "P99LatencyMs": 189.096,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6585833333333333
+        "MeanMaxShare": 0.6762499999999999
       },
       "scores": {
-        "LatencyScore": 0.605000180078288,
+        "LatencyScore": 0.613836526903869,
         "RejectScore": 1,
-        "FairnessScore": 0.3414166666666667
+        "FairnessScore": 0.3237500000000001
       },
-      "utility": 0.6971417747136394,
-      "runtime_ms": 52.786,
+      "utility": 0.7006769161423214,
+      "runtime_ms": 53.142,
       "cache_hit": false
     },
     {
@@ -3584,19 +3584,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.83804858333362,
-        "P50LatencyMs": 82.317,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 87.95861616666805,
+        "P50LatencyMs": 75.853,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6565000000000001
+        "MeanMaxShare": 0.6520833333333335
       },
       "scores": {
-        "LatencyScore": 0.5323735034206096,
+        "LatencyScore": 0.5320320081061208,
         "RejectScore": 1,
-        "FairnessScore": 0.3434999999999999
+        "FairnessScore": 0.34791666666666654
       },
-      "utility": 0.6537741020523657,
-      "runtime_ms": 47.199,
+      "utility": 0.6540108715303391,
+      "runtime_ms": 60.954,
       "cache_hit": false
     },
     {
@@ -3615,19 +3615,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 48.504,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 60.204,
       "cache_hit": false
     },
     {
@@ -3646,19 +3646,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 58.716,
+      "utility": 0.673515423765288,
+      "runtime_ms": 56.052,
       "cache_hit": false
     },
     {
@@ -3677,19 +3677,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.65209758333474,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.65818025000212,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5975000000000001
+        "MeanMaxShare": 0.5864166666666668
       },
       "scores": {
-        "LatencyScore": 0.5535501737192399,
+        "LatencyScore": 0.5535315359737154,
         "RejectScore": 1,
-        "FairnessScore": 0.40249999999999986
+        "FairnessScore": 0.4135833333333332
       },
-      "utility": 0.6723801042315439,
-      "runtime_ms": 56.004,
+      "utility": 0.6734772549175625,
+      "runtime_ms": 58.441,
       "cache_hit": false
     },
     {
@@ -3708,19 +3708,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.7129120833337,
-        "P50LatencyMs": 75.853,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 86.74528950000166,
+        "P50LatencyMs": 73.929,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6576666666666667
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.532728403657207,
+        "LatencyScore": 0.5354887412032907,
         "RejectScore": 1,
-        "FairnessScore": 0.34233333333333327
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6538703755276575,
-      "runtime_ms": 52.549,
+      "utility": 0.6558015780553077,
+      "runtime_ms": 60.05,
       "cache_hit": false
     },
     {
@@ -3739,19 +3739,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 56.924,
+      "utility": 0.673515423765288,
+      "runtime_ms": 59.803,
       "cache_hit": false
     },
     {
@@ -3770,19 +3770,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 53.661,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 50.455,
       "cache_hit": false
     },
     {
@@ -3801,19 +3801,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 81.83546458333568,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 81.03414291666978,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6563333333333333
+        "MeanMaxShare": 0.6435000000000001
       },
       "scores": {
-        "LatencyScore": 0.5499477246044582,
+        "LatencyScore": 0.5523819893246884,
         "RejectScore": 1,
-        "FairnessScore": 0.3436666666666667
+        "FairnessScore": 0.35649999999999993
       },
-      "utility": 0.6643353014293416,
-      "runtime_ms": 59.601,
+      "utility": 0.667079193594813,
+      "runtime_ms": 59.682,
       "cache_hit": false
     },
     {
@@ -3832,19 +3832,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 61.653,
+      "utility": 0.673515423765288,
+      "runtime_ms": 61.138,
       "cache_hit": false
     },
     {
@@ -3863,19 +3863,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 52.43503225000485,
-        "P50LatencyMs": 46.343,
+        "MeanLatencyMs": 51.32092225000376,
+        "P50LatencyMs": 40.631,
         "P99LatencyMs": 163.378,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7975833333333333
+        "MeanMaxShare": 0.8037500000000002
       },
       "scores": {
-        "LatencyScore": 0.6560171800665382,
+        "LatencyScore": 0.6608471486499781,
         "RejectScore": 1,
-        "FairnessScore": 0.2024166666666667
+        "FairnessScore": 0.1962499999999998
       },
-      "utility": 0.7138519747065897,
-      "runtime_ms": 52.142,
+      "utility": 0.7161332891899868,
+      "runtime_ms": 58.359,
       "cache_hit": false
     },
     {
@@ -3894,19 +3894,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.629,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 56.924,
       "cache_hit": false
     },
     {
@@ -3925,19 +3925,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 49.19,
+      "utility": 0.673515423765288,
+      "runtime_ms": 57.043,
       "cache_hit": false
     },
     {
@@ -3956,19 +3956,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 55.349365750005894,
-        "P50LatencyMs": 46.39,
+        "MeanLatencyMs": 54.2832874166714,
+        "P50LatencyMs": 45.668,
         "P99LatencyMs": 180.558,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7753333333333334
+        "MeanMaxShare": 0.7826666666666668
       },
       "scores": {
-        "LatencyScore": 0.6437103847654184,
+        "LatencyScore": 0.648158343488825,
         "RejectScore": 1,
-        "FairnessScore": 0.22466666666666657
+        "FairnessScore": 0.21733333333333316
       },
-      "utility": 0.7086928975259177,
-      "runtime_ms": 58.329,
+      "utility": 0.7106283394266283,
+      "runtime_ms": 58.451,
       "cache_hit": false
     },
     {
@@ -3987,19 +3987,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 68.88520041667053,
+        "MeanLatencyMs": 68.88740816666973,
         "P50LatencyMs": 56.6,
-        "P99LatencyMs": 197.166,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6209166666666668
+        "MeanMaxShare": 0.6053333333333334
       },
       "scores": {
-        "LatencyScore": 0.5921181948050025,
+        "LatencyScore": 0.5921104544473388,
         "RejectScore": 1,
-        "FairnessScore": 0.3790833333333332
+        "FairnessScore": 0.3946666666666666
       },
-      "utility": 0.6931792502163349,
-      "runtime_ms": 52.219,
+      "utility": 0.69473293933507,
+      "runtime_ms": 57.024,
       "cache_hit": false
     },
     {
@@ -4018,19 +4018,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 50.055,
+      "utility": 0.673515423765288,
+      "runtime_ms": 55.632,
       "cache_hit": false
     },
     {
@@ -4049,19 +4049,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 53.62,
+      "utility": 0.673515423765288,
+      "runtime_ms": 62.475,
       "cache_hit": false
     },
     {
@@ -4080,19 +4080,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.0518410000017,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 78.1379135000024,
+        "P50LatencyMs": 66.262,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6093333333333333
+        "MeanMaxShare": 0.6041666666666666
       },
       "scores": {
-        "LatencyScore": 0.5584974688978431,
+        "LatencyScore": 0.5613628117407958,
         "RejectScore": 1,
-        "FairnessScore": 0.3906666666666667
+        "FairnessScore": 0.39583333333333337
       },
-      "utility": 0.6741651480053725,
-      "runtime_ms": 49.633,
+      "utility": 0.6764010203778108,
+      "runtime_ms": 57.462,
       "cache_hit": false
     },
     {
@@ -4111,19 +4111,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 88.5323271666666,
+        "MeanLatencyMs": 89.77460283333421,
         "P50LatencyMs": 85.023,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6512500000000001
+        "MeanMaxShare": 0.6379166666666668
       },
       "scores": {
-        "LatencyScore": 0.5304130145892586,
+        "LatencyScore": 0.5269408999254922,
         "RejectScore": 1,
-        "FairnessScore": 0.3487499999999999
+        "FairnessScore": 0.3620833333333332
       },
-      "utility": 0.6531228087535551,
-      "runtime_ms": 58.431,
+      "utility": 0.6523728732886286,
+      "runtime_ms": 58.626,
       "cache_hit": false
     },
     {
@@ -4142,19 +4142,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 52.087,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 56.104,
       "cache_hit": false
     },
     {
@@ -4173,19 +4173,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 56.16138691667257,
-        "P50LatencyMs": 46.539,
+        "MeanLatencyMs": 55.260993500004744,
+        "P50LatencyMs": 46.39,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7300000000000002
+        "MeanMaxShare": 0.7296666666666669
       },
       "scores": {
-        "LatencyScore": 0.6403631651488841,
+        "LatencyScore": 0.644076775149561,
         "RejectScore": 1,
-        "FairnessScore": 0.2699999999999998
+        "FairnessScore": 0.2703333333333331
       },
-      "utility": 0.7112178990893304,
-      "runtime_ms": 44.994,
+      "utility": 0.71347939842307,
+      "runtime_ms": 55.386,
       "cache_hit": false
     },
     {
@@ -4204,19 +4204,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 69.33516616666905,
-        "P50LatencyMs": 55.832,
-        "P99LatencyMs": 192.837,
+        "MeanLatencyMs": 67.35093925000307,
+        "P50LatencyMs": 50.385,
+        "P99LatencyMs": 189.096,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6391666666666665
+        "MeanMaxShare": 0.6552499999999999
       },
       "scores": {
-        "LatencyScore": 0.5905447891525052,
+        "LatencyScore": 0.5975466910921337,
         "RejectScore": 1,
-        "FairnessScore": 0.36083333333333345
+        "FairnessScore": 0.3447500000000001
       },
-      "utility": 0.6904102068248364,
-      "runtime_ms": 45.184,
+      "utility": 0.6930030146552801,
+      "runtime_ms": 55.888,
       "cache_hit": false
     },
     {
@@ -4235,19 +4235,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.231,
+      "utility": 0.673515423765288,
+      "runtime_ms": 55.073,
       "cache_hit": false
     },
     {
@@ -4266,19 +4266,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 76.52731583333596,
-        "P50LatencyMs": 67.184,
+        "MeanLatencyMs": 76.44939341667035,
+        "P50LatencyMs": 66.262,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5838333333333333
+        "MeanMaxShare": 0.5708333333333334
       },
       "scores": {
-        "LatencyScore": 0.566484566583523,
+        "LatencyScore": 0.5667347337593757,
         "RejectScore": 1,
-        "FairnessScore": 0.4161666666666667
+        "FairnessScore": 0.4291666666666666
       },
-      "utility": 0.6815074066167803,
-      "runtime_ms": 55.826,
+      "utility": 0.682957506922292,
+      "runtime_ms": 63.541,
       "cache_hit": false
     },
     {
@@ -4297,19 +4297,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 59.589,
+      "utility": 0.673515423765288,
+      "runtime_ms": 55.155,
       "cache_hit": false
     },
     {
@@ -4328,19 +4328,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 50.78453625000454,
-        "P50LatencyMs": 40.631,
-        "P99LatencyMs": 162.223,
+        "MeanLatencyMs": 49.32955116666964,
+        "P50LatencyMs": 35.528,
+        "P99LatencyMs": 161.395,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8232500000000001
+        "MeanMaxShare": 0.8412500000000002
       },
       "scores": {
-        "LatencyScore": 0.6631979809534149,
+        "LatencyScore": 0.6696598176230238,
         "RejectScore": 1,
-        "FairnessScore": 0.17674999999999985
+        "FairnessScore": 0.15874999999999984
       },
-      "utility": 0.7155937885720489,
-      "runtime_ms": 52.83,
+      "utility": 0.7176708905738143,
+      "runtime_ms": 68.141,
       "cache_hit": false
     },
     {
@@ -4359,19 +4359,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.13828891667284,
-        "P50LatencyMs": 46.39,
-        "P99LatencyMs": 179.467,
+        "MeanLatencyMs": 53.07575325000429,
+        "P50LatencyMs": 45.668,
+        "P99LatencyMs": 178.2156400000003,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7858333333333335
+        "MeanMaxShare": 0.7914166666666668
       },
       "scores": {
-        "LatencyScore": 0.6487680686144116,
+        "LatencyScore": 0.6532713240135384,
         "RejectScore": 1,
-        "FairnessScore": 0.2141666666666665
+        "FairnessScore": 0.20858333333333323
       },
-      "utility": 0.7106775078353136,
-      "runtime_ms": 54.288,
+      "utility": 0.7128211277414563,
+      "runtime_ms": 57.798,
       "cache_hit": false
     },
     {
@@ -4390,19 +4390,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 48.641,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 54.453,
       "cache_hit": false
     },
     {
@@ -4421,19 +4421,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.586,
+      "utility": 0.673515423765288,
+      "runtime_ms": 56.885,
       "cache_hit": false
     },
     {
@@ -4452,19 +4452,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.528325166672666,
-        "P50LatencyMs": 46.39,
-        "P99LatencyMs": 179.467,
+        "MeanLatencyMs": 53.4235096666713,
+        "P50LatencyMs": 46.343,
+        "P99LatencyMs": 178.2156400000003,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.76875
+        "MeanMaxShare": 0.7760833333333335
       },
       "scores": {
-        "LatencyScore": 0.6471305496396277,
+        "LatencyScore": 0.6517905907462325,
         "RejectScore": 1,
-        "FairnessScore": 0.23124999999999996
+        "FairnessScore": 0.22391666666666654
       },
-      "utility": 0.7114033297837765,
-      "runtime_ms": 53.218,
+      "utility": 0.7134660211144062,
+      "runtime_ms": 57.757,
       "cache_hit": false
     },
     {
@@ -4483,19 +4483,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 44.457,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 54.076,
       "cache_hit": false
     },
     {
@@ -4514,19 +4514,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 60.53061791667307,
-        "P50LatencyMs": 46.539,
-        "P99LatencyMs": 192.837,
+        "MeanLatencyMs": 58.239520000006024,
+        "P50LatencyMs": 46.39,
+        "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7031666666666666
+        "MeanMaxShare": 0.7169166666666665
       },
       "scores": {
-        "LatencyScore": 0.6229341249524573,
+        "LatencyScore": 0.6319533830739388,
         "RejectScore": 1,
-        "FairnessScore": 0.2968333333333334
+        "FairnessScore": 0.28308333333333346
       },
-      "utility": 0.7034438083048076,
-      "runtime_ms": 55.044,
+      "utility": 0.7074803631776967,
+      "runtime_ms": 57.614,
       "cache_hit": false
     },
     {
@@ -4545,19 +4545,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.237514500006085,
-        "P50LatencyMs": 46.39,
+        "MeanLatencyMs": 53.1749788333376,
+        "P50LatencyMs": 45.668,
         "P99LatencyMs": 179.467,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7830833333333336
+        "MeanMaxShare": 0.7886666666666668
       },
       "scores": {
-        "LatencyScore": 0.648350696807916,
+        "LatencyScore": 0.652848139831018,
         "RejectScore": 1,
-        "FairnessScore": 0.21691666666666642
+        "FairnessScore": 0.21133333333333315
       },
-      "utility": 0.7107020847514163,
-      "runtime_ms": 61.703,
+      "utility": 0.7128422172319441,
+      "runtime_ms": 61.615,
       "cache_hit": false
     },
     {
@@ -4576,19 +4576,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 78.45452008333548,
-        "P50LatencyMs": 68.121,
+        "MeanLatencyMs": 78.37659766666945,
+        "P50LatencyMs": 66.262,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5839166666666666
+        "MeanMaxShare": 0.5709166666666666
       },
       "scores": {
-        "LatencyScore": 0.5603668652007332,
+        "LatencyScore": 0.560611657067644,
         "RejectScore": 1,
-        "FairnessScore": 0.41608333333333336
+        "FairnessScore": 0.42908333333333337
       },
-      "utility": 0.6778284524537733,
-      "runtime_ms": 57.7,
+      "utility": 0.6792753275739197,
+      "runtime_ms": 56.896,
       "cache_hit": false
     },
     {
@@ -4607,19 +4607,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 50.979,
+      "utility": 0.673515423765288,
+      "runtime_ms": 59.483,
       "cache_hit": false
     },
     {
@@ -4638,19 +4638,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.31639525000155,
-        "P50LatencyMs": 67.184,
+        "MeanLatencyMs": 78.98523833333547,
+        "P50LatencyMs": 60.661,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6650833333333334
+        "MeanMaxShare": 0.6596666666666667
       },
       "scores": {
-        "LatencyScore": 0.5576734902605016,
+        "LatencyScore": 0.558705292856407,
         "RejectScore": 1,
-        "FairnessScore": 0.33491666666666664
+        "FairnessScore": 0.34033333333333327
       },
-      "utility": 0.6680957608229676,
-      "runtime_ms": 51.749,
+      "utility": 0.6692565090471776,
+      "runtime_ms": 60.044,
       "cache_hit": false
     },
     {
@@ -4669,19 +4669,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.48830691666818,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.49438958333556,
+        "P50LatencyMs": 68.121,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5986666666666668
+        "MeanMaxShare": 0.5875833333333335
       },
       "scores": {
-        "LatencyScore": 0.5540525129207967,
+        "LatencyScore": 0.5540338413334963,
         "RejectScore": 1,
-        "FairnessScore": 0.4013333333333332
+        "FairnessScore": 0.41241666666666654
       },
-      "utility": 0.6725648410858114,
-      "runtime_ms": 41.681,
+      "utility": 0.6736619714667644,
+      "runtime_ms": 57.044,
       "cache_hit": false
     },
     {
@@ -4700,19 +4700,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.78744016666806,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.79352283333544,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5961666666666667
+        "MeanMaxShare": 0.5850833333333333
       },
       "scores": {
-        "LatencyScore": 0.5531357704263633,
+        "LatencyScore": 0.5531171605754097,
         "RejectScore": 1,
-        "FairnessScore": 0.40383333333333327
+        "FairnessScore": 0.4149166666666667
       },
-      "utility": 0.6722647955891513,
-      "runtime_ms": 55.618,
+      "utility": 0.6733619630119125,
+      "runtime_ms": 57.346,
       "cache_hit": false
     },
     {
@@ -4731,19 +4731,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 59.266398000005616,
-        "P50LatencyMs": 47.601,
+        "MeanLatencyMs": 57.679884416671754,
+        "P50LatencyMs": 47.019,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6871666666666668
+        "MeanMaxShare": 0.6952500000000001
       },
       "scores": {
-        "LatencyScore": 0.6278788322945338,
+        "LatencyScore": 0.6341963045568217,
         "RejectScore": 1,
-        "FairnessScore": 0.3128333333333332
+        "FairnessScore": 0.30474999999999985
       },
-      "utility": 0.7080106327100536,
-      "runtime_ms": 45.401,
+      "utility": 0.710992782734093,
+      "runtime_ms": 57.587,
       "cache_hit": false
     },
     {
@@ -4762,19 +4762,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.97450966666682,
+        "MeanLatencyMs": 88.9472486666679,
         "P50LatencyMs": 85.023,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6579166666666667
+        "MeanMaxShare": 0.6462500000000001
       },
       "scores": {
-        "LatencyScore": 0.5319870240775142,
+        "LatencyScore": 0.5292482462997672,
         "RejectScore": 1,
-        "FairnessScore": 0.3420833333333333
+        "FairnessScore": 0.3537499999999999
       },
-      "utility": 0.6534005477798418,
-      "runtime_ms": 51.76,
+      "utility": 0.6529239477798603,
+      "runtime_ms": 62.04,
       "cache_hit": false
     },
     {
@@ -4793,19 +4793,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.07678316667414,
+        "MeanLatencyMs": 51.48406983333807,
         "P50LatencyMs": 46.539,
-        "P99LatencyMs": 157.545,
+        "P99LatencyMs": 142.21108000000004,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8736666666666665
+        "MeanMaxShare": 0.8951666666666664
       },
       "scores": {
-        "LatencyScore": 0.6490270496614923,
+        "LatencyScore": 0.6601354195858313,
         "RejectScore": 1,
-        "FairnessScore": 0.12633333333333352
+        "FairnessScore": 0.10483333333333356
       },
-      "utility": 0.7020495631302287,
-      "runtime_ms": 55.526,
+      "utility": 0.7065645850848321,
+      "runtime_ms": 56.978,
       "cache_hit": false
     },
     {
@@ -4824,19 +4824,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 48.614,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 62.977,
       "cache_hit": false
     },
     {
@@ -4855,19 +4855,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.54209108333377,
-        "P50LatencyMs": 75.853,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 86.80812200000175,
+        "P50LatencyMs": 73.929,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6565000000000001
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.5332136344558795,
+        "LatencyScore": 0.5353086307457181,
         "RejectScore": 1,
-        "FairnessScore": 0.3434999999999999
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6542781806735277,
-      "runtime_ms": 55.578,
+      "utility": 0.6556935117807642,
+      "runtime_ms": 56.866,
       "cache_hit": false
     },
     {
@@ -4886,19 +4886,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.75508991666798,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.64618458333531,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6014999999999999
+        "MeanMaxShare": 0.5855833333333333
       },
       "scores": {
-        "LatencyScore": 0.5563124807556695,
+        "LatencyScore": 0.5535682927965091,
         "RejectScore": 1,
-        "FairnessScore": 0.3985000000000001
+        "FairnessScore": 0.41441666666666666
       },
-      "utility": 0.6736374884534018,
-      "runtime_ms": 50.589,
+      "utility": 0.6735826423445722,
+      "runtime_ms": 54.339,
       "cache_hit": false
     },
     {
@@ -4917,19 +4917,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 79.73090725000135,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.6220019166687,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6020000000000001
+        "MeanMaxShare": 0.5860833333333333
       },
       "scores": {
-        "LatencyScore": 0.5563873322071557,
+        "LatencyScore": 0.5536424075630373,
         "RejectScore": 1,
-        "FairnessScore": 0.3979999999999999
+        "FairnessScore": 0.4139166666666667
       },
-      "utility": 0.6736323993242933,
-      "runtime_ms": 53.136,
+      "utility": 0.673577111204489,
+      "runtime_ms": 61.461,
       "cache_hit": false
     },
     {
@@ -4948,19 +4948,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 46.477,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 57.109,
       "cache_hit": false
     },
     {
@@ -4979,19 +4979,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 52.257,
+      "utility": 0.673515423765288,
+      "runtime_ms": 61.955,
       "cache_hit": false
     },
     {
@@ -5010,19 +5010,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 88.12802216666677,
+        "MeanLatencyMs": 89.10076116666785,
         "P50LatencyMs": 85.023,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.65375
+        "MeanMaxShare": 0.6420833333333335
       },
       "scores": {
-        "LatencyScore": 0.5315529225699709,
+        "LatencyScore": 0.5288186011682043,
         "RejectScore": 1,
-        "FairnessScore": 0.34624999999999995
+        "FairnessScore": 0.35791666666666655
       },
-      "utility": 0.6535567535419825,
-      "runtime_ms": 54.518,
+      "utility": 0.6530828273675893,
+      "runtime_ms": 59.784,
       "cache_hit": false
     },
     {
@@ -5041,19 +5041,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 71.10678141666848,
-        "P50LatencyMs": 56.6,
-        "P99LatencyMs": 192.837,
+        "MeanLatencyMs": 70.09081016666886,
+        "P50LatencyMs": 55.832,
+        "P99LatencyMs": 196.086,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6225833333333333
+        "MeanMaxShare": 0.6280833333333333
       },
       "scores": {
-        "LatencyScore": 0.5844303724963786,
+        "LatencyScore": 0.58792123984836,
         "RejectScore": 1,
-        "FairnessScore": 0.37741666666666673
+        "FairnessScore": 0.3719166666666667
       },
-      "utility": 0.6883998901644938,
-      "runtime_ms": 49.57,
+      "utility": 0.6899444105756826,
+      "runtime_ms": 55.657,
       "cache_hit": false
     },
     {
@@ -5072,19 +5072,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 67.30178075000443,
-        "P50LatencyMs": 47.601,
+        "MeanLatencyMs": 65.45430383333864,
+        "P50LatencyMs": 46.539,
         "P99LatencyMs": 189.096,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7622500000000001
+        "MeanMaxShare": 0.7714166666666668
       },
       "scores": {
-        "LatencyScore": 0.597722269014147,
+        "LatencyScore": 0.6043964870247772,
         "RejectScore": 1,
-        "FairnessScore": 0.2377499999999999
+        "FairnessScore": 0.22858333333333325
       },
-      "utility": 0.6824083614084883,
-      "runtime_ms": 48.969,
+      "utility": 0.6854962255481997,
+      "runtime_ms": 63.933,
       "cache_hit": false
     },
     {
@@ -5103,19 +5103,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 48.757,
+      "utility": 0.673515423765288,
+      "runtime_ms": 61.393,
       "cache_hit": false
     },
     {
@@ -5134,19 +5134,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 48.617,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 58.884,
       "cache_hit": false
     },
     {
@@ -5165,19 +5165,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 81.83546458333568,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 81.50430766666965,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6563333333333333
+        "MeanMaxShare": 0.6509166666666667
       },
       "scores": {
-        "LatencyScore": 0.5499477246044582,
+        "LatencyScore": 0.5509511112190721,
         "RejectScore": 1,
-        "FairnessScore": 0.3436666666666667
+        "FairnessScore": 0.3490833333333333
       },
-      "utility": 0.6643353014293416,
-      "runtime_ms": 48.468,
+      "utility": 0.6654790000647766,
+      "runtime_ms": 60.44,
       "cache_hit": false
     },
     {
@@ -5196,19 +5196,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 57.57,
+      "utility": 0.673515423765288,
+      "runtime_ms": 60.68,
       "cache_hit": false
     },
     {
@@ -5227,19 +5227,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 51.326,
+      "utility": 0.673515423765288,
+      "runtime_ms": 59.849,
       "cache_hit": false
     },
     {
@@ -5258,19 +5258,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 68.87450525000365,
-        "P50LatencyMs": 50.385,
+        "MeanLatencyMs": 66.33713300000382,
+        "P50LatencyMs": 49.594,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7130833333333333
+        "MeanMaxShare": 0.7309166666666668
       },
       "scores": {
-        "LatencyScore": 0.5921556948573079,
+        "LatencyScore": 0.6011886714435417,
         "RejectScore": 1,
-        "FairnessScore": 0.2869166666666667
+        "FairnessScore": 0.26908333333333323
       },
-      "utility": 0.6839850835810514,
-      "runtime_ms": 51.38,
+      "utility": 0.6876215361994583,
+      "runtime_ms": 51.112,
       "cache_hit": false
     },
     {
@@ -5289,19 +5289,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.64371358333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.6497962500021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5978333333333334
+        "MeanMaxShare": 0.5867500000000001
       },
       "scores": {
-        "LatencyScore": 0.5535758649794802,
+        "LatencyScore": 0.5535572255039222,
         "RejectScore": 1,
-        "FairnessScore": 0.40216666666666656
+        "FairnessScore": 0.4132499999999999
       },
-      "utility": 0.6723621856543548,
-      "runtime_ms": 55.985,
+      "utility": 0.6734593353023532,
+      "runtime_ms": 60.166,
       "cache_hit": false
     },
     {
@@ -5320,19 +5320,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 86.84978441666698,
-        "P50LatencyMs": 75.853,
+        "MeanLatencyMs": 86.80812200000175,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6618333333333334
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.5351892714898954,
+        "LatencyScore": 0.5353086307457181,
         "RejectScore": 1,
-        "FairnessScore": 0.3381666666666666
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6549302295606039,
-      "runtime_ms": 54.548,
+      "utility": 0.6556935117807642,
+      "runtime_ms": 57.972,
       "cache_hit": false
     },
     {
@@ -5351,19 +5351,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 55.533,
+      "utility": 0.673515423765288,
+      "runtime_ms": 56.136,
       "cache_hit": false
     },
     {
@@ -5382,19 +5382,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 48.656,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 58.783,
       "cache_hit": false
     },
     {
@@ -5413,19 +5413,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 55.191207250007785,
-        "P50LatencyMs": 46.539,
-        "P99LatencyMs": 161.41483000000045,
+        "MeanLatencyMs": 52.37863016667267,
+        "P50LatencyMs": 46.39,
+        "P99LatencyMs": 142.417,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8493333333333333
+        "MeanMaxShare": 0.8772499999999999
       },
       "scores": {
-        "LatencyScore": 0.6443664030456531,
+        "LatencyScore": 0.656260001094769,
         "RejectScore": 1,
-        "FairnessScore": 0.15066666666666673
+        "FairnessScore": 0.12275000000000014
       },
-      "utility": 0.7016865084940586,
-      "runtime_ms": 42.567,
+      "utility": 0.7060310006568614,
+      "runtime_ms": 59.939,
       "cache_hit": false
     },
     {
@@ -5444,19 +5444,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 52.49659258333768,
-        "P50LatencyMs": 46.343,
-        "P99LatencyMs": 165.546,
+        "MeanLatencyMs": 51.14605791667023,
+        "P50LatencyMs": 40.631,
+        "P99LatencyMs": 163.378,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.8287500000000001
+        "MeanMaxShare": 0.8340833333333334
       },
       "scores": {
-        "LatencyScore": 0.6557523568623418,
+        "LatencyScore": 0.6616116978395292,
         "RejectScore": 1,
-        "FairnessScore": 0.1712499999999999
+        "FairnessScore": 0.1659166666666666
       },
-      "utility": 0.710576414117405,
-      "runtime_ms": 54.61,
+      "utility": 0.7135586853703842,
+      "runtime_ms": 53.621,
       "cache_hit": false
     },
     {
@@ -5475,19 +5475,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 49.082,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 59.396,
       "cache_hit": false
     },
     {
@@ -5506,19 +5506,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 52.902,
+      "utility": 0.673515423765288,
+      "runtime_ms": 58.727,
       "cache_hit": false
     },
     {
@@ -5537,19 +5537,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 57.684,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 59.008,
       "cache_hit": false
     },
     {
@@ -5568,19 +5568,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 69.50184408333553,
-        "P50LatencyMs": 55.832,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 67.17200791666941,
+        "P50LatencyMs": 50.385,
+        "P99LatencyMs": 189.096,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6388333333333333
+        "MeanMaxShare": 0.6562499999999999
       },
       "scores": {
-        "LatencyScore": 0.5899640829325434,
+        "LatencyScore": 0.5981862708130372,
         "RejectScore": 1,
-        "FairnessScore": 0.36116666666666675
+        "FairnessScore": 0.3437500000000001
       },
-      "utility": 0.6900951164261927,
-      "runtime_ms": 56.487,
+      "utility": 0.6932867624878223,
+      "runtime_ms": 59.651,
       "cache_hit": false
     },
     {
@@ -5599,19 +5599,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 58.33868608334003,
-        "P50LatencyMs": 47.019,
+        "MeanLatencyMs": 57.073168250004656,
+        "P50LatencyMs": 46.539,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7125833333333335
+        "MeanMaxShare": 0.7212500000000002
       },
       "scores": {
-        "LatencyScore": 0.6315575964004525,
+        "LatencyScore": 0.636645972791709,
         "RejectScore": 1,
-        "FairnessScore": 0.28741666666666654
+        "FairnessScore": 0.27874999999999983
       },
-      "utility": 0.7076762245069381,
-      "runtime_ms": 57.531,
+      "utility": 0.7098625836750253,
+      "runtime_ms": 64.682,
       "cache_hit": false
     },
     {
@@ -5630,19 +5630,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 59.553,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 58.55,
       "cache_hit": false
     },
     {
@@ -5661,19 +5661,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 48.643,
+      "utility": 0.673515423765288,
+      "runtime_ms": 61.194,
       "cache_hit": false
     },
     {
@@ -5692,19 +5692,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 57.50517875000608,
-        "P50LatencyMs": 46.539,
+        "MeanLatencyMs": 56.00584491667137,
+        "P50LatencyMs": 46.39,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7213333333333335
+        "MeanMaxShare": 0.7340000000000002
       },
       "scores": {
-        "LatencyScore": 0.6348997588118742,
+        "LatencyScore": 0.6410016243520478,
         "RejectScore": 1,
-        "FairnessScore": 0.2786666666666665
+        "FairnessScore": 0.2659999999999998
       },
-      "utility": 0.7088065219537911,
-      "runtime_ms": 58.529,
+      "utility": 0.7112009746112287,
+      "runtime_ms": 56.939,
       "cache_hit": false
     },
     {
@@ -5723,19 +5723,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.08925475000052,
-        "P50LatencyMs": 82.317,
+        "MeanLatencyMs": 87.04759233333529,
+        "P50LatencyMs": 73.929,
         "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.66625
+        "MeanMaxShare": 0.6593333333333334
       },
       "scores": {
-        "LatencyScore": 0.5345042404152274,
+        "LatencyScore": 0.5346232942779139,
         "RejectScore": 1,
-        "FairnessScore": 0.33375
+        "FairnessScore": 0.34066666666666656
       },
-      "utility": 0.6540775442491364,
-      "runtime_ms": 59.443,
+      "utility": 0.6548406432334151,
+      "runtime_ms": 53.376,
       "cache_hit": false
     },
     {
@@ -5754,19 +5754,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 62.85120425000491,
-        "P50LatencyMs": 46.539,
+        "MeanLatencyMs": 60.135072833338945,
+        "P50LatencyMs": 46.39,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.759
+        "MeanMaxShare": 0.7841666666666667
       },
       "scores": {
-        "LatencyScore": 0.6140574794060634,
+        "LatencyScore": 0.6244728167955766,
         "RejectScore": 1,
-        "FairnessScore": 0.241
+        "FairnessScore": 0.21583333333333332
       },
-      "utility": 0.692534487643638,
-      "runtime_ms": 52.067,
+      "utility": 0.6962670234106793,
+      "runtime_ms": 56.788,
       "cache_hit": false
     },
     {
@@ -5785,19 +5785,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 87.54209108333377,
-        "P50LatencyMs": 75.853,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 86.80812200000175,
+        "P50LatencyMs": 73.929,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6565000000000001
+        "MeanMaxShare": 0.6549166666666668
       },
       "scores": {
-        "LatencyScore": 0.5332136344558795,
+        "LatencyScore": 0.5353086307457181,
         "RejectScore": 1,
-        "FairnessScore": 0.3434999999999999
+        "FairnessScore": 0.3450833333333332
       },
-      "utility": 0.6542781806735277,
-      "runtime_ms": 45.155,
+      "utility": 0.6556935117807642,
+      "runtime_ms": 54.166,
       "cache_hit": false
     },
     {
@@ -5816,19 +5816,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.525,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 57.607,
       "cache_hit": false
     },
     {
@@ -5847,19 +5847,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 55.730836083339305,
-        "P50LatencyMs": 46.539,
+        "MeanLatencyMs": 54.95194591667157,
+        "P50LatencyMs": 46.39,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7370833333333335
+        "MeanMaxShare": 0.7367500000000002
       },
       "scores": {
-        "LatencyScore": 0.6421335845553737,
+        "LatencyScore": 0.6453613693485137,
         "RejectScore": 1,
-        "FairnessScore": 0.26291666666666647
+        "FairnessScore": 0.26324999999999976
       },
-      "utility": 0.7115718173998908,
-      "runtime_ms": 51.24,
+      "utility": 0.7135418216091082,
+      "runtime_ms": 60.377,
       "cache_hit": false
     },
     {
@@ -5878,19 +5878,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.7045653333347,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.71064800000208,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5963333333333334
+        "MeanMaxShare": 0.58525
       },
       "scores": {
-        "LatencyScore": 0.5533894498765767,
+        "LatencyScore": 0.5533708229522748,
         "RejectScore": 1,
-        "FairnessScore": 0.4036666666666666
+        "FairnessScore": 0.41474999999999995
       },
-      "utility": 0.6724003365926127,
-      "runtime_ms": 53.858,
+      "utility": 0.6734974937713649,
+      "runtime_ms": 62.125,
       "cache_hit": false
     },
     {
@@ -5909,19 +5909,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 51.295,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 61.44,
       "cache_hit": false
     },
     {
@@ -5940,19 +5940,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 49.086,
+      "utility": 0.673515423765288,
+      "runtime_ms": 57.956,
       "cache_hit": false
     },
     {
@@ -5971,19 +5971,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 51.418,
+      "utility": 0.673515423765288,
+      "runtime_ms": 57.069,
       "cache_hit": false
     },
     {
@@ -6002,19 +6002,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 55.184,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 57.351,
       "cache_hit": false
     },
     {
@@ -6033,19 +6033,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 62.341173583337444,
+        "MeanLatencyMs": 60.60998616667114,
         "P50LatencyMs": 47.601,
-        "P99LatencyMs": 192.837,
+        "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6545833333333334
+        "MeanMaxShare": 0.6580833333333335
       },
       "scores": {
-        "LatencyScore": 0.6159866766557853,
+        "LatencyScore": 0.6226262910964089,
         "RejectScore": 1,
-        "FairnessScore": 0.3454166666666666
+        "FairnessScore": 0.34191666666666654
       },
-      "utility": 0.7041336726601379,
-      "runtime_ms": 50.535,
+      "utility": 0.7077674413245119,
+      "runtime_ms": 50.586,
       "cache_hit": false
     },
     {
@@ -6064,19 +6064,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 80.71294933333472,
-        "P50LatencyMs": 72.359,
+        "MeanLatencyMs": 80.7190320000021,
+        "P50LatencyMs": 68.845,
         "P99LatencyMs": 197.166,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.5960000000000001
+        "MeanMaxShare": 0.5849166666666668
       },
       "scores": {
-        "LatencyScore": 0.5533637759159398,
+        "LatencyScore": 0.5533451507199244,
         "RejectScore": 1,
-        "FairnessScore": 0.4039999999999999
+        "FairnessScore": 0.41508333333333325
       },
-      "utility": 0.6724182655495639,
-      "runtime_ms": 54.068,
+      "utility": 0.673515423765288,
+      "runtime_ms": 57.285,
       "cache_hit": false
     },
     {
@@ -6095,19 +6095,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.412150250005936,
-        "P50LatencyMs": 42.56,
+        "MeanLatencyMs": 53.37045391667056,
+        "P50LatencyMs": 40.631,
         "P99LatencyMs": 183.641,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7724166666666668
+        "MeanMaxShare": 0.7775833333333334
       },
       "scores": {
-        "LatencyScore": 0.6476174306108153,
+        "LatencyScore": 0.6520160659779499,
         "RejectScore": 1,
-        "FairnessScore": 0.22758333333333325
+        "FairnessScore": 0.2224166666666666
       },
-      "utility": 0.7113287916998224,
-      "runtime_ms": 49.049,
+      "utility": 0.7134513062534367,
+      "runtime_ms": 56.341,
       "cache_hit": false
     },
     {
@@ -6126,19 +6126,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 76.35064100000254,
-        "P50LatencyMs": 60.661,
-        "P99LatencyMs": 197.166,
+        "MeanLatencyMs": 75.3428251666697,
+        "P50LatencyMs": 60.288,
+        "P99LatencyMs": 192.837,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6920000000000001
+        "MeanMaxShare": 0.6959166666666668
       },
       "scores": {
-        "LatencyScore": 0.5670520925410107,
+        "LatencyScore": 0.5703113309880024,
         "RejectScore": 1,
-        "FairnessScore": 0.30799999999999994
+        "FairnessScore": 0.30408333333333315
       },
-      "utility": 0.6710312555246063,
-      "runtime_ms": 59.823,
+      "utility": 0.6725951319261347,
+      "runtime_ms": 61.926,
       "cache_hit": false
     },
     {
@@ -6157,19 +6157,19 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 54.80402166667257,
-        "P50LatencyMs": 46.39,
-        "P99LatencyMs": 180.558,
+        "MeanLatencyMs": 53.582590666670505,
+        "P50LatencyMs": 46.343,
+        "P99LatencyMs": 179.47791000000026,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.7505
+        "MeanMaxShare": 0.7568333333333335
       },
       "scores": {
-        "LatencyScore": 0.6459780496873795,
+        "LatencyScore": 0.6511154654047736,
         "RejectScore": 1,
-        "FairnessScore": 0.24950000000000006
+        "FairnessScore": 0.24316666666666653
       },
-      "utility": 0.7125368298124277,
-      "runtime_ms": 50.79,
+      "utility": 0.7149859459095308,
+      "runtime_ms": 55.954,
       "cache_hit": false
     },
     {
@@ -6188,225 +6188,225 @@
       "scenario_set_hash": "d7851875e824241e",
       "valid": true,
       "metrics": {
-        "MeanLatencyMs": 90.61688133333278,
-        "P50LatencyMs": 87.094,
+        "MeanLatencyMs": 90.92745725000056,
+        "P50LatencyMs": 85.023,
         "P99LatencyMs": 198.362,
         "RejectedRate": 0,
-        "MeanMaxShare": 0.6345833333333334
+        "MeanMaxShare": 0.6263333333333334
       },
       "scores": {
-        "LatencyScore": 0.5246125070377657,
+        "LatencyScore": 0.5237591357489244,
         "RejectScore": 1,
-        "FairnessScore": 0.3654166666666666
+        "FairnessScore": 0.3736666666666666
       },
-      "utility": 0.6513091708893262,
-      "runtime_ms": 51.063,
+      "utility": 0.6516221481160213,
+      "runtime_ms": 58.718,
       "cache_hit": false
     }
   ],
   "best_index": 10,
   "convergence": {
     "best_so_far_utility": [
-      0.6724182655495639,
-      0.6724182655495639,
-      0.6724182655495639,
-      0.6775985290170509,
-      0.6775985290170509,
-      0.6775985290170509,
-      0.6775985290170509,
-      0.6992012270390593,
-      0.6992012270390593,
-      0.6992012270390593,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468,
-      0.7191333670927468
+      0.673515423765288,
+      0.673515423765288,
+      0.673515423765288,
+      0.679031738865942,
+      0.679031738865942,
+      0.679031738865942,
+      0.679031738865942,
+      0.7026748440274636,
+      0.7026748440274636,
+      0.7026748440274636,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394,
+      0.7218009871262394
     ],
     "last_improved_at_index": 10,
     "plateaued": true,

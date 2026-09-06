@@ -111,22 +111,47 @@ func (ss ScenarioSpace) Generate(seeds replay.SeedTree) replay.Scenario {
 
 	failureRNG := rand.New(rand.NewSource(seeds.Failure))
 	var failEnd clock.VirtualTime
+	// candidateIdx is drawn from the FIXED, topology-independent name pool
+	// (len(targetNames), a ScenarioSpace-level constant, never derived
+	// from topoRNG) rather than Intn(n) -- Stage 12 Track A's fix for a
+	// real, confirmed reproducibility hazard (Stage 11 Program G,
+	// docs/StageArtifacts/Stage11.md §16): n is topology-seed-dependent
+	// whenever MinTargets != MaxTargets, so Intn(n) let the SAME
+	// failureRNG state produce a numerically different result purely
+	// because Topology changed n, coupling two axes meant to be
+	// independent. Drawing from the fixed pool size instead means the
+	// same failureRNG seed always produces the same candidate index,
+	// regardless of n -- when that index happens to fall within the
+	// CURRENT topology's actual target count, the resulting failure
+	// window (target, timing, duration) is now genuinely independent of
+	// Topology. When it doesn't (candidateIdx >= n, only possible for a
+	// smaller topology), this scenario simply has no failure -- a
+	// disclosed, principled consequence (a smaller topology has a
+	// correspondingly higher chance the fixed-pool draw lands outside its
+	// own target set) rather than silently reshuffling to force a failure
+	// to happen, which would reintroduce the exact coupling being removed.
 	if failureRNG.Float64() < ss.FailureProbability {
-		failTarget := targets[failureRNG.Intn(n)].Name
+		candidateIdx := failureRNG.Intn(len(targetNames))
 		durRange := int64(ss.MaxFailureDuration - ss.MinFailureDuration)
 		duration := ss.MinFailureDuration + time.Duration(failureRNG.Int63n(durRange+1))
 		// DownAt sampled within the first 60% of the arrival span, so
 		// there's always meaningful traffic both before and after the
 		// failure -- a failure starting in the last request or two would
-		// never actually get exercised by any routing decision.
+		// never actually get exercised by any routing decision. Drawn
+		// unconditionally (not only when candidateIdx is valid) so the
+		// failureRNG draw SEQUENCE itself never depends on n either --
+		// only whether the resulting window is actually applied does.
 		var downAt clock.VirtualTime
 		if window := int64(float64(lastArrival) * 0.6); window > 0 {
 			downAt = clock.VirtualTime(failureRNG.Int63n(window))
 		}
-		upAt := downAt.Add(duration)
-		scenario.Failures = []replay.FailureWindow{{Target: failTarget, DownAt: downAt, UpAt: upAt}}
-		scenario.UseHealthRegistry = true
-		failEnd = upAt
+		if candidateIdx < n {
+			failTarget := targets[candidateIdx].Name
+			upAt := downAt.Add(duration)
+			scenario.Failures = []replay.FailureWindow{{Target: failTarget, DownAt: downAt, UpAt: upAt}}
+			scenario.UseHealthRegistry = true
+			failEnd = upAt
+		}
 	}
 
 	// Horizon must clear the last arrival's own completion (using the

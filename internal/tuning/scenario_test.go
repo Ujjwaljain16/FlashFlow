@@ -1,6 +1,7 @@
 package tuning
 
 import (
+	"reflect"
 	"testing"
 
 	"flashflow/internal/replay"
@@ -121,53 +122,142 @@ func TestGenerateFromRoot_EquivalentToGenerateDeriveSeeds(t *testing.T) {
 // old design would have gotten this particular case right by accident;
 // the real proof is that Topology and Traffic draws never even
 // consult seeds.Failure now, by construction, not by argument.
-// TestGenerate_TopologySeedCanLeakIntoFailureSelection documents a real
-// reproducibility hazard discovered by Stage 11 Program G
-// (docs/StageArtifacts/Stage11.md §16): TestGenerate_IndependentAxisControl
-// above only ever checked ONE direction (varying Failure leaves Topology/
-// Traffic unchanged) -- it never checked the reverse. Generate draws
-// target COUNT n from topoRNG, then later draws failureRNG.Intn(n) to pick
-// WHICH target fails. Because n is topology-seed-dependent whenever
-// MinTargets != MaxTargets (true of DefaultScenarioSpace: 2-5), the same
-// failureRNG seed and draw sequence can select a different failure target
-// (or the SAME numeric draw can even land out of the old n's range
-// entirely) purely because Topology changed -- despite Failure never
-// having changed. This is the opposite of what Generate's own doc comment
-// promises ("topoRNG only ever affects target count/names/service-times").
+
+// TestGenerate_TopologySeedIndependentOfFailureSelection is the Stage 12
+// Track B fix confirmation for a real reproducibility hazard Stage 11
+// Program G discovered (docs/StageArtifacts/Stage11.md §16): the previous
+// TestGenerate_IndependentAxisControl only ever checked ONE direction
+// (varying Failure leaves Topology/Traffic unchanged) -- it never checked
+// the reverse. Generate used to draw target COUNT n from topoRNG, then
+// draw failureRNG.Intn(n) to pick which target fails -- since n is
+// topology-seed-dependent whenever MinTargets != MaxTargets, the same
+// failureRNG seed and draw sequence could select a different failure
+// outcome purely because Topology changed n.
 //
-// This test pins the CURRENT behavior (the leak exists) rather than
-// silently allowing it to be fixed or worsened without anyone noticing:
-// if a future change to Generate removes the leak (e.g. by fixing n
-// before drawing from failureRNG, or using a target-count-independent
-// selection scheme), this test should be updated to assert independence
-// instead -- that would be a genuine improvement, not a regression.
-func TestGenerate_TopologySeedCanLeakIntoFailureSelection(t *testing.T) {
-	ss := DefaultScenarioSpace() // MinTargets=2, MaxTargets=5 -- n varies with Topology
+// The fix (scenario.go's Generate): the failure-target candidate is now
+// drawn from Intn(len(targetNames)) -- the FIXED name-pool size, never
+// derived from topoRNG -- so the draw itself never depends on n. This
+// test confirms full independence with target count held fixed (so the
+// candidate draw is always valid, isolating the axis-independence claim
+// from the separate "what happens when it's invalid" case covered by
+// TestGenerate_SmallTopologyCanSuppressAnOtherwiseRolledFailure below).
+func TestGenerate_TopologySeedIndependentOfFailureSelection(t *testing.T) {
+	ss := DefaultScenarioSpace()
+	ss.MinTargets, ss.MaxTargets = len(targetNames), len(targetNames) // n always == len(targetNames): every failureRNG candidate is always valid
 	base := replay.SeedTree{Global: 0, Traffic: 100, Topology: 200, Failure: 300, Policy: 400}
-	varyTopology := base
-	varyTopology.Topology = 999
+
+	for _, topologySeed := range []int64{999, 12345, -42, 0} {
+		varyTopology := base
+		varyTopology.Topology = topologySeed
+
+		a := ss.Generate(base)
+		b := ss.Generate(varyTopology)
+
+		if len(a.Failures) != len(b.Failures) {
+			t.Fatalf("topology seed %d: expected identical failure PRESENCE, got %d vs %d failure windows", topologySeed, len(a.Failures), len(b.Failures))
+		}
+		for i := range a.Failures {
+			if a.Failures[i] != b.Failures[i] {
+				t.Fatalf("topology seed %d: varying ONLY Topology changed the failure window: %+v vs %+v -- independence is broken", topologySeed, a.Failures[i], b.Failures[i])
+			}
+		}
+	}
+}
+
+// TestGenerate_SmallTopologyCanSuppressAnOtherwiseRolledFailure documents
+// the accepted, disclosed consequence of the Track B fix: a topology
+// smaller than the full name pool has a correspondingly higher chance
+// that the fixed-pool failure-target draw lands outside its own target
+// set, in which case this scenario simply has no failure even though the
+// FailureProbability roll succeeded. This is deliberate (reintroducing
+// n-dependent reshuffling to force a failure to happen would restore the
+// exact coupling Track B removes), not an oversight -- this test exists
+// so the behavior is pinned and explained, not silently discovered later.
+func TestGenerate_SmallTopologyCanSuppressAnOtherwiseRolledFailure(t *testing.T) {
+	small := DefaultScenarioSpace()
+	small.MinTargets, small.MaxTargets = 1, 1
+	small.FailureProbability = 1.0 // always roll "yes, attempt a failure"
+
+	full := DefaultScenarioSpace()
+	full.MinTargets, full.MaxTargets = len(targetNames), len(targetNames)
+	full.FailureProbability = 1.0
+
+	// Sweep enough Failure seeds that at least one produces a candidate
+	// index >= 1 (out of range for the 1-target topology) -- with 5
+	// possible candidates and a uniform draw, roughly 4/5 of seeds should
+	// qualify, so a handful of tries suffices deterministically enough
+	// for a unit test without flakiness in practice.
+	foundSuppressed := false
+	for failureSeed := int64(0); failureSeed < 20; failureSeed++ {
+		seeds := replay.SeedTree{Global: 0, Traffic: 1, Topology: 1, Failure: failureSeed, Policy: 1}
+		smallScenario := small.Generate(seeds)
+		fullScenario := full.Generate(seeds)
+		if len(fullScenario.Failures) == 1 && len(smallScenario.Failures) == 0 {
+			foundSuppressed = true
+			break
+		}
+	}
+	if !foundSuppressed {
+		t.Fatal("expected at least one Failure seed (out of 20 tried) where the 1-target topology suppresses a failure the full-size topology would have applied -- the out-of-range-suppression path may be broken")
+	}
+}
+
+// TestGenerate_TrafficSeedIndependentOfTopologyAndFailure completes the
+// symmetric set of axis-ownership tests (Stage 12 Track B, Section 9):
+// varying ONLY Traffic must leave Targets and Failures unchanged, and
+// must actually change Arrivals (a seed axis that changes nothing when
+// varied would be exactly as broken as one that leaks into another axis).
+func TestGenerate_TrafficSeedIndependentOfTopologyAndFailure(t *testing.T) {
+	ss := DefaultScenarioSpace()
+	base := replay.SeedTree{Global: 0, Traffic: 100, Topology: 200, Failure: 300, Policy: 400}
+	varyTraffic := base
+	varyTraffic.Traffic = 999
 
 	a := ss.Generate(base)
-	b := ss.Generate(varyTopology)
+	b := ss.Generate(varyTraffic)
 
-	if len(a.Targets) == len(b.Targets) {
-		t.Skip("this seed pair happened to draw the same target count n -- the leak is n-count-dependent, not universal; rerun with different seeds to observe it, or see the fixed-n case below for direct confirmation")
+	if len(a.Targets) != len(b.Targets) {
+		t.Fatalf("expected identical target count with only Traffic varied, got %d vs %d", len(a.Targets), len(b.Targets))
 	}
-
-	// With n now different (the whole point of varying Topology), confirm
-	// the mechanism directly: fixing n removes the leak entirely, proving
-	// the target-count dependency -- not something else -- is the cause.
-	fixedN := ss
-	fixedN.MinTargets, fixedN.MaxTargets = 3, 3
-	fa := fixedN.Generate(base)
-	fb := fixedN.Generate(varyTopology)
-	if len(fa.Failures) != len(fb.Failures) {
-		t.Fatalf("expected identical failure PRESENCE with n fixed, got %d vs %d failure windows", len(fa.Failures), len(fb.Failures))
-	}
-	for i := range fa.Failures {
-		if fa.Failures[i] != fb.Failures[i] {
-			t.Fatalf("with target count n fixed (removing the topology->n->failureRNG.Intn(n) dependency), varying ONLY Topology still changed the failure window: %+v vs %+v -- the n-count hypothesis is wrong or incomplete", fa.Failures[i], fb.Failures[i])
+	for i := range a.Targets {
+		if a.Targets[i] != b.Targets[i] {
+			t.Fatalf("target %d differs despite only Traffic seed changing: %+v vs %+v", i, a.Targets[i], b.Targets[i])
 		}
+	}
+	if len(a.Failures) != len(b.Failures) {
+		t.Fatalf("expected identical failure presence with only Traffic varied, got %d vs %d", len(a.Failures), len(b.Failures))
+	}
+	for i := range a.Failures {
+		if a.Failures[i] != b.Failures[i] {
+			t.Fatalf("failure window %d differs despite only Traffic seed changing: %+v vs %+v", i, a.Failures[i], b.Failures[i])
+		}
+	}
+	if reflect.DeepEqual(a.Arrivals, b.Arrivals) {
+		t.Fatal("expected Arrivals to differ when Traffic seed changes (jitter is Traffic-seed-derived) -- a Traffic seed that changes nothing would be exactly as broken as one that leaks into another axis")
+	}
+}
+
+// TestGenerate_PolicySeedOwnsNoScenarioContent documents, rather than
+// merely assumes, that Generate never reads seeds.Policy at all: a
+// Scenario is exogenous "physics," and no policy's own randomness (e.g.
+// P2C's pair sampling, drawn from seeds.Policy inside
+// internal/replay/policies.go, not here) is part of it. The correct
+// expectation is ownership, not "every axis must change something at
+// every layer" -- Stage 11 Program G's G3 already confirmed Policy-seed
+// ownership at the routing-decision level (only p2c-load consumes it);
+// this test pins the complementary claim at the generator level.
+func TestGenerate_PolicySeedOwnsNoScenarioContent(t *testing.T) {
+	ss := DefaultScenarioSpace()
+	base := replay.SeedTree{Global: 0, Traffic: 100, Topology: 200, Failure: 300, Policy: 400}
+	varyPolicy := base
+	varyPolicy.Policy = 999
+
+	a := ss.Generate(base)
+	b := ss.Generate(varyPolicy)
+
+	if !reflect.DeepEqual(a.Targets, b.Targets) || !reflect.DeepEqual(a.Arrivals, b.Arrivals) || !reflect.DeepEqual(a.Failures, b.Failures) {
+		t.Fatalf("expected a byte-identical Scenario when only Policy varies (Generate has no Policy-seed consumer): targets equal=%v arrivals equal=%v failures equal=%v",
+			reflect.DeepEqual(a.Targets, b.Targets), reflect.DeepEqual(a.Arrivals, b.Arrivals), reflect.DeepEqual(a.Failures, b.Failures))
 	}
 }
 

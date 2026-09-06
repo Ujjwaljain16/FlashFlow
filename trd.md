@@ -152,7 +152,7 @@ The standard 4-state machine (HEALTHY, DEGRADED, UNHEALTHY, RECOVERING). Timers,
 
 ## 8. Cache Layer
 
-Core implements No Cache, TTL, LRU, and Stale-While-Revalidate (SWR), including **Request Coalescing** (singleflight) to mitigate stampedes.
+Core implements No Cache, TTL, and Stale-While-Revalidate (SWR), including **Request Coalescing** (singleflight) to mitigate stampedes. LRU eviction was evaluated and deliberately deferred — see §19.
 
 **Invariant:** Cache evolution is explicitly stateful. Replay runs must reconstruct cache memory logically from scratch.
 
@@ -332,6 +332,14 @@ unbuilt. See `docs/audit/RESOLUTION.md` for the full per-finding disposition.
   buckets) and `WriteText` (Prometheus text-exposition format), live at `cmd/proxy -metrics-addr`.
 - **§14 automated attribution engine**: built — `internal/attribution` (`CheckLittlesLaw`/
   `Utilization`/`UtilizationFromWorld`/`Explain`/`Compare`); `cmd/experiment-006d` refactored onto it.
+- **§8 Cache Layer (added Stage 16)**: LRU eviction was never built — `internal/cache/cache.go`'s own
+  doc comment states plainly there is "no eviction policy yet." Every other section this document
+  describes as unbuilt-at-Stage-9 was later built in Stage 10; LRU is the one exception, deliberately:
+  by the time Stage 10 was scoped, no experiment had ever needed bounded cache memory (every scenario's
+  own key space stayed small enough that lazy TTL expiry was sufficient), so building an eviction
+  policy with no experiment to justify it would have been speculative. `prd.md` §13 already discloses
+  this correctly; this document's own §8 body text did not until Stage 16's release audit caught the
+  gap.
 - **§4 Adaptive router**: implements four scored signals (Load, Latency, Cache, Cost) — Health is a
   pre-filter, Capacity folds into Load — across six tunable parameters, not six independently
   scored signals. Unchanged by Stage 10.

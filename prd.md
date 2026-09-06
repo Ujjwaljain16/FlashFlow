@@ -20,7 +20,7 @@ Scope: Core execution and experimental engines. Complex ML models (LinUCB, DR-OP
 
 ## 1. What — Definition
 
-**FlashFlow is a programmable Go laboratory for studying distributed edge topologies under extreme load and partial failure.** It provides a dual-engine architecture: a deterministic virtual-time engine for rigorous, reproducible routing strategy comparisons, and a real-world Docker emulation engine for high-fidelity validation. FlashFlow produces scored, queueing-theory-explained, statistically grounded comparisons between routing strategies, featuring a self-tuning adaptive router and a stateful counterfactual replay engine.
+**FlashFlow is a programmable Go laboratory for studying distributed edge topologies under extreme load and partial failure.** It provides a dual-engine architecture: a deterministic virtual-time engine for rigorous, reproducible routing strategy comparisons, and a real-world Docker emulation engine (real containers running the real proxy/edge/origin binaries; network degradation itself is a separate in-process simulator, `internal/netsim`, built in place of `tc netem` — see §13) for high-fidelity validation. FlashFlow produces scored, queueing-theory-explained, statistically grounded comparisons between routing strategies, featuring a self-tuning adaptive router and a stateful counterfactual replay engine.
 
 ---
 
@@ -70,7 +70,7 @@ The adaptive router's scoring function is tuned through an evolutionary progress
 - **Tuner v1**: Random Search (transparent baseline).
 - **Tuner v2**: Latin Hypercube Sampling.
 - **Tuner v3 (Advanced)**: Bayesian Optimization. 
-This makes the optimizer itself an experimental subject. Results are always validated against unseen holdout scenarios to prevent overfitting.
+This makes the optimizer itself an experimental subject. Results are validated against unseen holdout scenarios (the same scenario distribution as Development, differing only by seed) to catch overfitting to sampling noise — this does not demonstrate robustness to a genuinely shifted traffic distribution, which was never tested (see §13's disclosed scope).
 
 ### 6.3 Stateful Counterfactual Replay
 A true scientific evaluation framework. To test "what if," the engine replays the *identical exogenous trace* (arrival events, failure schedules) against a new policy. Crucially, the new policy evolves its own **isolated endogenous state** (cache hits, queue depths).
@@ -172,7 +172,7 @@ The full live interactive dashboard (topology view, live metrics panel) is expli
 
 **Architectural:** The system successfully executes experiments across both engines from a single specification, demonstrating that the Virtual-Time Engine provides deterministic, causally controlled / counterfactual-verified results, while the Emulation Engine validates those findings against real networking physics.
 
-**Experimental:** The Auto-Tuner improves upon baseline heuristics (e.g., P2C), validated by unseen holdout scenarios and proven via stateful Counterfactual Replay, outputting a statistical report with queueing explanations.
+**Experimental:** The Auto-Tuner improves upon baseline heuristics (e.g., P2C), validated by unseen holdout scenarios and evaluated via stateful Counterfactual Replay, outputting a statistical report with queueing explanations.
 
 ---
 

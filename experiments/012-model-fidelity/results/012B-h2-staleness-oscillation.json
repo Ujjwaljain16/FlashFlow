@@ -1,0 +1,30 @@
+{
+  "experiment": "012-B-h2-staleness-oscillation",
+  "timestamp": "2026-09-06T17:26:57Z",
+  "results": [
+    {
+      "policy": "ewma",
+      "mean_ms": 64.31438127090301,
+      "swap_window_mean_ms": 141.25,
+      "swap_window_share_to_a": 1
+    },
+    {
+      "policy": "adaptive-default",
+      "mean_ms": 30.13377926421405,
+      "swap_window_mean_ms": 90.76923076923077,
+      "swap_window_share_to_a": 0.6333333333333333
+    },
+    {
+      "policy": "adaptive-short-stale-after-100ms",
+      "mean_ms": 30.13377926421405,
+      "swap_window_mean_ms": 90.76923076923077,
+      "swap_window_share_to_a": 0.6333333333333333
+    },
+    {
+      "policy": "adaptive-long-stale-after-3s",
+      "mean_ms": 30.13377926421405,
+      "swap_window_mean_ms": 90.76923076923077,
+      "swap_window_share_to_a": 0.6333333333333333
+    }
+  ]
+}

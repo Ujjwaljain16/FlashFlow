@@ -1,0 +1,3246 @@
+{
+  "experiment": "011-A-policy-regime-map",
+  "timestamp": "2026-09-06T00:34:18Z",
+  "runs": [
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33557046979865773,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33557046979865773,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33557046979865773,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9798657718120806,
+      "max_utilization": 2.19,
+      "failed_target_rho": 2.19,
+      "utilization": {
+        "edge-a": 2.19,
+        "edge-b": 0.0225,
+        "edge-c": 0.0225
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.34563758389261745,
+      "max_utilization": 0.7725,
+      "failed_target_rho": 0.7424999999999999,
+      "utilization": {
+        "edge-a": 0.7424999999999999,
+        "edge-b": 0.72,
+        "edge-c": 0.7725
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33557046979865773,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3523489932885906,
+      "max_utilization": 0.7875,
+      "failed_target_rho": 0.6599999999999999,
+      "utilization": {
+        "edge-a": 0.6599999999999999,
+        "edge-b": 0.7875,
+        "edge-c": 0.7875
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35570469798657717,
+      "max_utilization": 0.7949999999999999,
+      "failed_target_rho": 0.6525,
+      "utilization": {
+        "edge-a": 0.6525,
+        "edge-b": 0.7875,
+        "edge-c": 0.7949999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3724832214765101,
+      "max_utilization": 0.8325,
+      "failed_target_rho": 0.6599999999999999,
+      "utilization": {
+        "edge-a": 0.6599999999999999,
+        "edge-b": 0.8325,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.8557046979865772,
+      "max_utilization": 1.9124999999999999,
+      "failed_target_rho": 1.9124999999999999,
+      "utilization": {
+        "edge-a": 1.9124999999999999,
+        "edge-b": 0.3,
+        "edge-c": 0.0225
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.36577181208053694,
+      "max_utilization": 0.8175,
+      "failed_target_rho": 0.645,
+      "utilization": {
+        "edge-a": 0.645,
+        "edge-b": 0.7725,
+        "edge-c": 0.8175
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3523489932885906,
+      "max_utilization": 0.7875,
+      "failed_target_rho": 0.6599999999999999,
+      "utilization": {
+        "edge-a": 0.6599999999999999,
+        "edge-b": 0.7875,
+        "edge-c": 0.7875
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3523489932885906,
+      "max_utilization": 0.7875,
+      "failed_target_rho": 0.6599999999999999,
+      "utilization": {
+        "edge-a": 0.6599999999999999,
+        "edge-b": 0.7875,
+        "edge-c": 0.7875
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35570469798657717,
+      "max_utilization": 0.7949999999999999,
+      "failed_target_rho": 0.6525,
+      "utilization": {
+        "edge-a": 0.6525,
+        "edge-b": 0.7875,
+        "edge-c": 0.7949999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3724832214765101,
+      "max_utilization": 0.8325,
+      "failed_target_rho": 0.6599999999999999,
+      "utilization": {
+        "edge-a": 0.6599999999999999,
+        "edge-b": 0.8325,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.8557046979865772,
+      "max_utilization": 1.9124999999999999,
+      "failed_target_rho": 1.9124999999999999,
+      "utilization": {
+        "edge-a": 1.9124999999999999,
+        "edge-b": 0.3,
+        "edge-c": 0.0225
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35570469798657717,
+      "max_utilization": 0.7949999999999999,
+      "failed_target_rho": 0.6599999999999999,
+      "utilization": {
+        "edge-a": 0.6599999999999999,
+        "edge-b": 0.7949999999999999,
+        "edge-c": 0.78
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3523489932885906,
+      "max_utilization": 0.7875,
+      "failed_target_rho": 0.6599999999999999,
+      "utilization": {
+        "edge-a": 0.6599999999999999,
+        "edge-b": 0.7875,
+        "edge-c": 0.7875
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.75,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.75,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5886287625418061,
+      "max_utilization": 1.3199999999999998,
+      "failed_target_rho": 1.3199999999999998,
+      "utilization": {
+        "edge-a": 1.3199999999999998,
+        "edge-b": 0.5549999999999999,
+        "edge-c": 0.3675
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9933110367892977,
+      "max_utilization": 2.2275,
+      "failed_target_rho": 2.2275,
+      "utilization": {
+        "edge-a": 2.2275,
+        "edge-b": 0.0075,
+        "edge-c": 0.0075
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3411371237458194,
+      "max_utilization": 0.765,
+      "failed_target_rho": 0.7424999999999999,
+      "utilization": {
+        "edge-a": 0.7424999999999999,
+        "edge-b": 0.765,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5451505016722408,
+      "max_utilization": 1.2225,
+      "failed_target_rho": 1.2225,
+      "utilization": {
+        "edge-a": 1.2225,
+        "edge-b": 0.7125,
+        "edge-c": 0.3075
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.34448160535117056,
+      "max_utilization": 0.7725,
+      "failed_target_rho": 0.705,
+      "utilization": {
+        "edge-a": 0.705,
+        "edge-b": 0.7725,
+        "edge-c": 0.765
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3411371237458194,
+      "max_utilization": 0.765,
+      "failed_target_rho": 0.7125,
+      "utilization": {
+        "edge-a": 0.7125,
+        "edge-b": 0.765,
+        "edge-c": 0.765
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5351170568561873,
+      "max_utilization": 1.2,
+      "failed_target_rho": 1.2,
+      "utilization": {
+        "edge-a": 1.2,
+        "edge-b": 0.6675,
+        "edge-c": 0.375
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.939799331103679,
+      "max_utilization": 2.1075,
+      "failed_target_rho": 2.1075,
+      "utilization": {
+        "edge-a": 2.1075,
+        "edge-b": 0.1275,
+        "edge-c": 0.0075
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35785953177257523,
+      "max_utilization": 0.8025,
+      "failed_target_rho": 0.6675,
+      "utilization": {
+        "edge-a": 0.6675,
+        "edge-b": 0.7725,
+        "edge-c": 0.8025
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5183946488294314,
+      "max_utilization": 1.1624999999999999,
+      "failed_target_rho": 0.7725,
+      "utilization": {
+        "edge-a": 0.7725,
+        "edge-b": 1.1624999999999999,
+        "edge-c": 0.3075
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4013377926421405,
+      "max_utilization": 0.8999999999999999,
+      "failed_target_rho": 0.4425,
+      "utilization": {
+        "edge-a": 0.4425,
+        "edge-b": 0.8999999999999999,
+        "edge-c": 0.8999999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4013377926421405,
+      "max_utilization": 0.8999999999999999,
+      "failed_target_rho": 0.4425,
+      "utilization": {
+        "edge-a": 0.4425,
+        "edge-b": 0.8999999999999999,
+        "edge-c": 0.8999999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.43478260869565216,
+      "max_utilization": 0.975,
+      "failed_target_rho": 0.975,
+      "utilization": {
+        "edge-a": 0.975,
+        "edge-b": 0.6675,
+        "edge-c": 0.6
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5852842809364549,
+      "max_utilization": 1.3125,
+      "failed_target_rho": 1.3125,
+      "utilization": {
+        "edge-a": 1.3125,
+        "edge-b": 0.9225,
+        "edge-c": 0.0075
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.41471571906354515,
+      "max_utilization": 0.9299999999999999,
+      "failed_target_rho": 0.42,
+      "utilization": {
+        "edge-a": 0.42,
+        "edge-b": 0.9299999999999999,
+        "edge-c": 0.8925
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5083612040133779,
+      "max_utilization": 1.14,
+      "failed_target_rho": 0.7949999999999999,
+      "utilization": {
+        "edge-a": 0.7949999999999999,
+        "edge-b": 1.14,
+        "edge-c": 0.3075
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.75,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.75,
+        "edge-c": 0.7424999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4414715719063545,
+      "max_utilization": 0.99,
+      "failed_target_rho": 0.99,
+      "utilization": {
+        "edge-a": 0.99,
+        "edge-b": 0.9225,
+        "edge-c": 0.32999999999999996
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9866220735785953,
+      "max_utilization": 2.2125,
+      "failed_target_rho": 2.2125,
+      "utilization": {
+        "edge-a": 2.2125,
+        "edge-b": 0.015,
+        "edge-c": 0.015
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35451505016722407,
+      "max_utilization": 0.7949999999999999,
+      "failed_target_rho": 0.735,
+      "utilization": {
+        "edge-a": 0.735,
+        "edge-b": 0.7125,
+        "edge-c": 0.7949999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3779264214046823,
+      "max_utilization": 0.8474999999999999,
+      "failed_target_rho": 0.7949999999999999,
+      "utilization": {
+        "edge-a": 0.7949999999999999,
+        "edge-b": 0.8474999999999999,
+        "edge-c": 0.6
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3511705685618729,
+      "max_utilization": 0.7875,
+      "failed_target_rho": 0.69,
+      "utilization": {
+        "edge-a": 0.69,
+        "edge-b": 0.7875,
+        "edge-c": 0.765
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.34782608695652173,
+      "max_utilization": 0.78,
+      "failed_target_rho": 0.69,
+      "utilization": {
+        "edge-a": 0.69,
+        "edge-b": 0.7725,
+        "edge-c": 0.78
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4080267558528428,
+      "max_utilization": 0.9149999999999999,
+      "failed_target_rho": 0.9075,
+      "utilization": {
+        "edge-a": 0.9075,
+        "edge-b": 0.9149999999999999,
+        "edge-c": 0.42
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9096989966555183,
+      "max_utilization": 2.04,
+      "failed_target_rho": 2.04,
+      "utilization": {
+        "edge-a": 2.04,
+        "edge-b": 0.1875,
+        "edge-c": 0.015
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3377926421404682,
+      "max_utilization": 0.7575,
+      "failed_target_rho": 0.7424999999999999,
+      "utilization": {
+        "edge-a": 0.7424999999999999,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.7575
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.38461538461538464,
+      "max_utilization": 0.8624999999999999,
+      "failed_target_rho": 0.8624999999999999,
+      "utilization": {
+        "edge-a": 0.8624999999999999,
+        "edge-b": 0.765,
+        "edge-c": 0.615
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.40468227424749165,
+      "max_utilization": 0.9075,
+      "failed_target_rho": 0.4425,
+      "utilization": {
+        "edge-a": 0.4425,
+        "edge-b": 0.9075,
+        "edge-c": 0.8925
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4013377926421405,
+      "max_utilization": 0.8999999999999999,
+      "failed_target_rho": 0.4425,
+      "utilization": {
+        "edge-a": 0.4425,
+        "edge-b": 0.8999999999999999,
+        "edge-c": 0.8999999999999999
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.49498327759197325,
+      "max_utilization": 1.1099999999999999,
+      "failed_target_rho": 0.645,
+      "utilization": {
+        "edge-a": 0.645,
+        "edge-b": 1.1099999999999999,
+        "edge-c": 0.4875
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5752508361204013,
+      "max_utilization": 1.29,
+      "failed_target_rho": 1.29,
+      "utilization": {
+        "edge-a": 1.29,
+        "edge-b": 0.9375,
+        "edge-c": 0.015
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.40468227424749165,
+      "max_utilization": 0.9075,
+      "failed_target_rho": 0.435,
+      "utilization": {
+        "edge-a": 0.435,
+        "edge-b": 0.8999999999999999,
+        "edge-c": 0.9075
+      }
+    },
+    {
+      "topology": "homogeneous",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4080267558528428,
+      "max_utilization": 0.9149999999999999,
+      "failed_target_rho": 0.54,
+      "utilization": {
+        "edge-a": 0.54,
+        "edge-b": 0.9149999999999999,
+        "edge-c": 0.7875
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 29.966442953020135,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33557046979865773,
+      "max_utilization": 0.99,
+      "failed_target_rho": 0.5,
+      "utilization": {
+        "edge-a": 0.5,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.99
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 27.65886287625418,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.46488294314381273,
+      "max_utilization": 0.6950000000000001,
+      "failed_target_rho": 0.6950000000000001,
+      "utilization": {
+        "edge-a": 0.6950000000000001,
+        "edge-b": 0.6825,
+        "edge-c": 0.6900000000000001
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 27.45819397993311,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5016722408026756,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.5625,
+        "edge-c": 0.74
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 20.367892976588628,
+      "p95_latency_ms": 20,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9765886287625418,
+      "max_utilization": 1.46,
+      "failed_target_rho": 1.46,
+      "utilization": {
+        "edge-a": 1.46,
+        "edge-b": 0.0225,
+        "edge-c": 0.04
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 28.754208754208754,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 297,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.39057239057239057,
+      "max_utilization": 0.79,
+      "failed_target_rho": 0.58,
+      "utilization": {
+        "edge-a": 0.58,
+        "edge-b": 0.765,
+        "edge-c": 0.79
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 27.45819397993311,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5016722408026756,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.75,
+      "utilization": {
+        "edge-a": 0.75,
+        "edge-b": 0.5625,
+        "edge-c": 0.74
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 30.57046979865772,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3523489932885906,
+      "max_utilization": 1.05,
+      "failed_target_rho": 0.44,
+      "utilization": {
+        "edge-a": 0.44,
+        "edge-b": 0.7875,
+        "edge-c": 1.05
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 28.48993288590604,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.40604026845637586,
+      "max_utilization": 0.76,
+      "failed_target_rho": 0.605,
+      "utilization": {
+        "edge-a": 0.605,
+        "edge-b": 0.7575,
+        "edge-c": 0.76
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 28.160535117056856,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4414715719063545,
+      "max_utilization": 0.77,
+      "failed_target_rho": 0.66,
+      "utilization": {
+        "edge-a": 0.66,
+        "edge-b": 0.6749999999999999,
+        "edge-c": 0.77
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 21.60535117056856,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.8528428093645485,
+      "max_utilization": 1.2750000000000001,
+      "failed_target_rho": 1.2750000000000001,
+      "utilization": {
+        "edge-a": 1.2750000000000001,
+        "edge-b": 0.3,
+        "edge-c": 0.04
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 29.395973154362416,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35906040268456374,
+      "max_utilization": 0.89,
+      "failed_target_rho": 0.535,
+      "utilization": {
+        "edge-a": 0.535,
+        "edge-b": 0.765,
+        "edge-c": 0.89
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 28.160535117056856,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4414715719063545,
+      "max_utilization": 0.77,
+      "failed_target_rho": 0.66,
+      "utilization": {
+        "edge-a": 0.66,
+        "edge-b": 0.6749999999999999,
+        "edge-c": 0.77
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 30.57046979865772,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3523489932885906,
+      "max_utilization": 1.05,
+      "failed_target_rho": 0.44,
+      "utilization": {
+        "edge-a": 0.44,
+        "edge-b": 0.7875,
+        "edge-c": 1.05
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 28.48993288590604,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.40604026845637586,
+      "max_utilization": 0.76,
+      "failed_target_rho": 0.605,
+      "utilization": {
+        "edge-a": 0.605,
+        "edge-b": 0.7575,
+        "edge-c": 0.76
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 28.160535117056856,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4414715719063545,
+      "max_utilization": 0.77,
+      "failed_target_rho": 0.66,
+      "utilization": {
+        "edge-a": 0.66,
+        "edge-b": 0.6749999999999999,
+        "edge-c": 0.77
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 21.60535117056856,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.8528428093645485,
+      "max_utilization": 1.2750000000000001,
+      "failed_target_rho": 1.2750000000000001,
+      "utilization": {
+        "edge-a": 1.2750000000000001,
+        "edge-b": 0.3,
+        "edge-c": 0.04
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 28.959731543624162,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.37583892617449666,
+      "max_utilization": 0.81,
+      "failed_target_rho": 0.56,
+      "utilization": {
+        "edge-a": 0.56,
+        "edge-b": 0.7875,
+        "edge-c": 0.81
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 28.160535117056856,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4414715719063545,
+      "max_utilization": 0.77,
+      "failed_target_rho": 0.66,
+      "utilization": {
+        "edge-a": 0.66,
+        "edge-b": 0.6749999999999999,
+        "edge-c": 0.77
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 29.96655518394649,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 0.99,
+      "failed_target_rho": 0.5,
+      "utilization": {
+        "edge-a": 0.5,
+        "edge-b": 0.75,
+        "edge-c": 0.99
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 27.65886287625418,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.46488294314381273,
+      "max_utilization": 0.6950000000000001,
+      "failed_target_rho": 0.6950000000000001,
+      "utilization": {
+        "edge-a": 0.6950000000000001,
+        "edge-b": 0.6825,
+        "edge-c": 0.6900000000000001
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 24.347826086956523,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.6956521739130435,
+      "max_utilization": 1.04,
+      "failed_target_rho": 1.04,
+      "utilization": {
+        "edge-a": 1.04,
+        "edge-b": 0.39,
+        "edge-c": 0.39
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 20.16722408026756,
+      "p95_latency_ms": 20,
+      "p99_latency_ms": 20.199999999999818,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9899665551839465,
+      "max_utilization": 1.48,
+      "failed_target_rho": 1.48,
+      "utilization": {
+        "edge-a": 1.48,
+        "edge-b": 0.0075,
+        "edge-c": 0.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 28.795986622073578,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.38461538461538464,
+      "max_utilization": 0.79,
+      "failed_target_rho": 0.5750000000000001,
+      "utilization": {
+        "edge-a": 0.5750000000000001,
+        "edge-b": 0.7875,
+        "edge-c": 0.79
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 27.59197324414716,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5518394648829431,
+      "max_utilization": 0.93,
+      "failed_target_rho": 0.8250000000000001,
+      "utilization": {
+        "edge-a": 0.8250000000000001,
+        "edge-b": 0.3075,
+        "edge-c": 0.93
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 30.267558528428093,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.34448160535117056,
+      "max_utilization": 1.02,
+      "failed_target_rho": 0.47000000000000003,
+      "utilization": {
+        "edge-a": 0.47000000000000003,
+        "edge-b": 0.7725,
+        "edge-c": 1.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 28.02675585284281,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.43812709030100333,
+      "max_utilization": 0.72,
+      "failed_target_rho": 0.655,
+      "utilization": {
+        "edge-a": 0.655,
+        "edge-b": 0.72,
+        "edge-c": 0.72
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 24.648829431438127,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.6588628762541806,
+      "max_utilization": 0.985,
+      "failed_target_rho": 0.985,
+      "utilization": {
+        "edge-a": 0.985,
+        "edge-b": 0.4875,
+        "edge-c": 0.37
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 20.702341137123746,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9364548494983278,
+      "max_utilization": 1.4000000000000001,
+      "failed_target_rho": 1.4000000000000001,
+      "utilization": {
+        "edge-a": 1.4000000000000001,
+        "edge-b": 0.1275,
+        "edge-c": 0.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 28.528428093645484,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.39464882943143814,
+      "max_utilization": 0.8025,
+      "failed_target_rho": 0.59,
+      "utilization": {
+        "edge-a": 0.59,
+        "edge-b": 0.8025,
+        "edge-c": 0.74
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 24.816053511705686,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.6555183946488294,
+      "max_utilization": 0.98,
+      "failed_target_rho": 0.98,
+      "utilization": {
+        "edge-a": 0.98,
+        "edge-b": 0.46499999999999997,
+        "edge-c": 0.41000000000000003
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 32.04013377926422,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4013377926421405,
+      "max_utilization": 1.2,
+      "failed_target_rho": 0.295,
+      "utilization": {
+        "edge-a": 0.295,
+        "edge-b": 0.8999999999999999,
+        "edge-c": 1.2
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30.401337792642142,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.411371237458194,
+      "max_utilization": 0.9400000000000001,
+      "failed_target_rho": 0.41000000000000003,
+      "utilization": {
+        "edge-a": 0.41000000000000003,
+        "edge-b": 0.9225,
+        "edge-c": 0.9400000000000001
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 27.391304347826086,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.47491638795986624,
+      "max_utilization": 0.71,
+      "failed_target_rho": 0.71,
+      "utilization": {
+        "edge-a": 0.71,
+        "edge-b": 0.6975,
+        "edge-c": 0.64
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 24.247491638795985,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5819397993311036,
+      "max_utilization": 0.9225,
+      "failed_target_rho": 0.87,
+      "utilization": {
+        "edge-a": 0.87,
+        "edge-b": 0.9225,
+        "edge-c": 0.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30.96989966555184,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.39464882943143814,
+      "max_utilization": 1.05,
+      "failed_target_rho": 0.38,
+      "utilization": {
+        "edge-a": 0.38,
+        "edge-b": 0.885,
+        "edge-c": 1.05
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 29.498327759197323,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3612040133779264,
+      "max_utilization": 0.93,
+      "failed_target_rho": 0.54,
+      "utilization": {
+        "edge-a": 0.54,
+        "edge-b": 0.735,
+        "edge-c": 0.93
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 29.96655518394649,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 0.99,
+      "failed_target_rho": 0.5,
+      "utilization": {
+        "edge-a": 0.5,
+        "edge-b": 0.75,
+        "edge-c": 0.99
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 27.65886287625418,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.46488294314381273,
+      "max_utilization": 0.6950000000000001,
+      "failed_target_rho": 0.6950000000000001,
+      "utilization": {
+        "edge-a": 0.6950000000000001,
+        "edge-b": 0.6825,
+        "edge-c": 0.6900000000000001
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 23.645484949832777,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.7424749163879598,
+      "max_utilization": 1.11,
+      "failed_target_rho": 1.11,
+      "utilization": {
+        "edge-a": 1.11,
+        "edge-b": 0.33749999999999997,
+        "edge-c": 0.32
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 20.20066889632107,
+      "p95_latency_ms": 20,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9866220735785953,
+      "max_utilization": 1.475,
+      "failed_target_rho": 1.475,
+      "utilization": {
+        "edge-a": 1.475,
+        "edge-b": 0.015,
+        "edge-c": 0.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 28.127090301003346,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.44816053511705684,
+      "max_utilization": 0.78,
+      "failed_target_rho": 0.67,
+      "utilization": {
+        "edge-a": 0.67,
+        "edge-b": 0.6525,
+        "edge-c": 0.78
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 25.585284280936456,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.568561872909699,
+      "max_utilization": 0.85,
+      "failed_target_rho": 0.85,
+      "utilization": {
+        "edge-a": 0.85,
+        "edge-b": 0.6825,
+        "edge-c": 0.38
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 30.334448160535118,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3511705685618729,
+      "max_utilization": 1.02,
+      "failed_target_rho": 0.46,
+      "utilization": {
+        "edge-a": 0.46,
+        "edge-b": 0.7875,
+        "edge-c": 1.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 28.160535117056856,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4280936454849498,
+      "max_utilization": 0.735,
+      "failed_target_rho": 0.64,
+      "utilization": {
+        "edge-a": 0.64,
+        "edge-b": 0.735,
+        "edge-c": 0.73
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 24.782608695652176,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.6655518394648829,
+      "max_utilization": 0.995,
+      "failed_target_rho": 0.995,
+      "utilization": {
+        "edge-a": 0.995,
+        "edge-b": 0.4275,
+        "edge-c": 0.43
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 20.96989966555184,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9096989966555183,
+      "max_utilization": 1.36,
+      "failed_target_rho": 1.36,
+      "utilization": {
+        "edge-a": 1.36,
+        "edge-b": 0.1875,
+        "edge-c": 0.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 28.561872909698998,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4180602006688963,
+      "max_utilization": 0.8200000000000001,
+      "failed_target_rho": 0.625,
+      "utilization": {
+        "edge-a": 0.625,
+        "edge-b": 0.69,
+        "edge-c": 0.8200000000000001
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 25.785953177257525,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5986622073578596,
+      "max_utilization": 0.895,
+      "failed_target_rho": 0.895,
+      "utilization": {
+        "edge-a": 0.895,
+        "edge-b": 0.5025,
+        "edge-c": 0.53
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 32.0066889632107,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.40468227424749165,
+      "max_utilization": 1.19,
+      "failed_target_rho": 0.295,
+      "utilization": {
+        "edge-a": 0.295,
+        "edge-b": 0.9075,
+        "edge-c": 1.19
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 30.434782608695652,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.41471571906354515,
+      "max_utilization": 0.9400000000000001,
+      "failed_target_rho": 0.405,
+      "utilization": {
+        "edge-a": 0.405,
+        "edge-b": 0.9299999999999999,
+        "edge-c": 0.9400000000000001
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 26.421404682274247,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5418060200668896,
+      "max_utilization": 0.81,
+      "failed_target_rho": 0.81,
+      "utilization": {
+        "edge-a": 0.81,
+        "edge-b": 0.615,
+        "edge-c": 0.55
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 24.31438127090301,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5752508361204013,
+      "max_utilization": 0.9375,
+      "failed_target_rho": 0.86,
+      "utilization": {
+        "edge-a": 0.86,
+        "edge-b": 0.9375,
+        "edge-c": 0.02
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30.702341137123746,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4013377926421405,
+      "max_utilization": 1,
+      "failed_target_rho": 0.395,
+      "utilization": {
+        "edge-a": 0.395,
+        "edge-b": 0.8999999999999999,
+        "edge-c": 1
+      }
+    },
+    {
+      "topology": "moderate",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 26.956521739130434,
+      "p95_latency_ms": 40,
+      "p99_latency_ms": 40,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.44816053511705684,
+      "max_utilization": 1.005,
+      "failed_target_rho": 0.64,
+      "utilization": {
+        "edge-a": 0.64,
+        "edge-b": 1.005,
+        "edge-c": 0.37
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 34.84848484848485,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 297,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3367003367003367,
+      "max_utilization": 1.47,
+      "failed_target_rho": 0.375,
+      "utilization": {
+        "edge-a": 0.375,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 1.47
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 25.48494983277592,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5752508361204013,
+      "max_utilization": 0.645,
+      "failed_target_rho": 0.645,
+      "utilization": {
+        "edge-a": 0.645,
+        "edge-b": 0.645,
+        "edge-c": 0.615
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 25.620805369127517,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5738255033557047,
+      "max_utilization": 0.64125,
+      "failed_target_rho": 0.64125,
+      "utilization": {
+        "edge-a": 0.64125,
+        "edge-b": 0.6375,
+        "edge-c": 0.63
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 15.903010033444817,
+      "p95_latency_ms": 15,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9732441471571907,
+      "max_utilization": 1.09125,
+      "failed_target_rho": 1.09125,
+      "utilization": {
+        "edge-a": 1.09125,
+        "edge-b": 0.0225,
+        "edge-c": 0.075
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30.75503355704698,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.412751677852349,
+      "max_utilization": 1.035,
+      "failed_target_rho": 0.46125,
+      "utilization": {
+        "edge-a": 0.46125,
+        "edge-b": 0.7949999999999999,
+        "edge-c": 1.035
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 27.38255033557047,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5033557046979866,
+      "max_utilization": 0.7424999999999999,
+      "failed_target_rho": 0.5625,
+      "utilization": {
+        "edge-a": 0.5625,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 36.06060606060606,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 297,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35353535353535354,
+      "max_utilization": 1.56,
+      "failed_target_rho": 0.32999999999999996,
+      "utilization": {
+        "edge-a": 0.32999999999999996,
+        "edge-b": 0.7875,
+        "edge-c": 1.56
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 27.38255033557047,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5033557046979866,
+      "max_utilization": 0.7424999999999999,
+      "failed_target_rho": 0.5625,
+      "utilization": {
+        "edge-a": 0.5625,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 27.391304347826086,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5016722408026756,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.5625,
+      "utilization": {
+        "edge-a": 0.5625,
+        "edge-b": 0.75,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 17.759197324414714,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.8494983277591973,
+      "max_utilization": 0.9525,
+      "failed_target_rho": 0.9525,
+      "utilization": {
+        "edge-a": 0.9525,
+        "edge-b": 0.3,
+        "edge-c": 0.075
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 31.60535117056856,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.38461538461538464,
+      "max_utilization": 1.08,
+      "failed_target_rho": 0.42,
+      "utilization": {
+        "edge-a": 0.42,
+        "edge-b": 0.8624999999999999,
+        "edge-c": 1.08
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 28.892617449664428,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4429530201342282,
+      "max_utilization": 0.8325,
+      "failed_target_rho": 0.495,
+      "utilization": {
+        "edge-a": 0.495,
+        "edge-b": 0.8325,
+        "edge-c": 0.825
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 36.06060606060606,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 297,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.35353535353535354,
+      "max_utilization": 1.56,
+      "failed_target_rho": 0.32999999999999996,
+      "utilization": {
+        "edge-a": 0.32999999999999996,
+        "edge-b": 0.7875,
+        "edge-c": 1.56
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 27.28187919463087,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5033557046979866,
+      "max_utilization": 0.75,
+      "failed_target_rho": 0.5625,
+      "utilization": {
+        "edge-a": 0.5625,
+        "edge-b": 0.75,
+        "edge-c": 0.72
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 27.38255033557047,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5033557046979866,
+      "max_utilization": 0.7424999999999999,
+      "failed_target_rho": 0.5625,
+      "utilization": {
+        "edge-a": 0.5625,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.735
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 17.759197324414714,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.8494983277591973,
+      "max_utilization": 0.9525,
+      "failed_target_rho": 0.9525,
+      "utilization": {
+        "edge-a": 0.9525,
+        "edge-b": 0.3,
+        "edge-c": 0.075
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30.858585858585858,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 297,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4074074074074074,
+      "max_utilization": 1.035,
+      "failed_target_rho": 0.45375,
+      "utilization": {
+        "edge-a": 0.45375,
+        "edge-b": 0.8025,
+        "edge-c": 1.035
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "constant",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 28.892617449664428,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4429530201342282,
+      "max_utilization": 0.8325,
+      "failed_target_rho": 0.495,
+      "utilization": {
+        "edge-a": 0.495,
+        "edge-b": 0.8325,
+        "edge-c": 0.825
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 34.91638795986622,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 1.4849999999999999,
+      "failed_target_rho": 0.375,
+      "utilization": {
+        "edge-a": 0.375,
+        "edge-b": 0.75,
+        "edge-c": 1.4849999999999999
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 25.48494983277592,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5752508361204013,
+      "max_utilization": 0.645,
+      "failed_target_rho": 0.645,
+      "utilization": {
+        "edge-a": 0.645,
+        "edge-b": 0.645,
+        "edge-c": 0.615
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 21.2,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.7533333333333333,
+      "max_utilization": 0.8474999999999999,
+      "failed_target_rho": 0.8474999999999999,
+      "utilization": {
+        "edge-a": 0.8474999999999999,
+        "edge-b": 0.3675,
+        "edge-c": 0.375
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 15.35,
+      "p95_latency_ms": 15,
+      "p99_latency_ms": 15.149999999999864,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.99,
+      "max_utilization": 1.11375,
+      "failed_target_rho": 1.11375,
+      "utilization": {
+        "edge-a": 1.11375,
+        "edge-b": 0.0075,
+        "edge-c": 0.03
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.43478260869565216,
+      "max_utilization": 0.975,
+      "failed_target_rho": 0.4875,
+      "utilization": {
+        "edge-a": 0.4875,
+        "edge-b": 0.78,
+        "edge-c": 0.975
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 23.05,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.73,
+      "max_utilization": 0.8212499999999999,
+      "failed_target_rho": 0.8212499999999999,
+      "utilization": {
+        "edge-a": 0.8212499999999999,
+        "edge-b": 0.3075,
+        "edge-c": 0.6
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 35.51839464882943,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.34448160535117056,
+      "max_utilization": 1.53,
+      "failed_target_rho": 0.3525,
+      "utilization": {
+        "edge-a": 0.3525,
+        "edge-b": 0.7725,
+        "edge-c": 1.53
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 26.237458193979933,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5451505016722408,
+      "max_utilization": 0.69,
+      "failed_target_rho": 0.61125,
+      "utilization": {
+        "edge-a": 0.61125,
+        "edge-b": 0.69,
+        "edge-c": 0.6599999999999999
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 22,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.7,
+      "max_utilization": 0.7875,
+      "failed_target_rho": 0.7875,
+      "utilization": {
+        "edge-a": 0.7875,
+        "edge-b": 0.4875,
+        "edge-c": 0.375
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 16.15,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9366666666666666,
+      "max_utilization": 1.05375,
+      "failed_target_rho": 1.05375,
+      "utilization": {
+        "edge-a": 1.05375,
+        "edge-b": 0.1275,
+        "edge-c": 0.03
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 29.35,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4633333333333333,
+      "max_utilization": 0.945,
+      "failed_target_rho": 0.52125,
+      "utilization": {
+        "edge-a": 0.52125,
+        "edge-b": 0.735,
+        "edge-c": 0.945
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 25.68561872909699,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5418060200668896,
+      "max_utilization": 0.7424999999999999,
+      "failed_target_rho": 0.6074999999999999,
+      "utilization": {
+        "edge-a": 0.6074999999999999,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 0.57
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 39.080267558528426,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4013377926421405,
+      "max_utilization": 1.7999999999999998,
+      "failed_target_rho": 0.22125,
+      "utilization": {
+        "edge-a": 0.22125,
+        "edge-b": 0.8999999999999999,
+        "edge-c": 1.7999999999999998
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 31.304347826086957,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.44481605351170567,
+      "max_utilization": 0.9974999999999999,
+      "failed_target_rho": 0.3825,
+      "utilization": {
+        "edge-a": 0.3825,
+        "edge-b": 0.9974999999999999,
+        "edge-c": 0.96
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 27.65,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.49666666666666665,
+      "max_utilization": 0.765,
+      "failed_target_rho": 0.55875,
+      "utilization": {
+        "edge-a": 0.55875,
+        "edge-b": 0.75,
+        "edge-c": 0.765
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 21.45,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30,
+      "completed": 300,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5833333333333334,
+      "max_utilization": 0.9225,
+      "failed_target_rho": 0.65625,
+      "utilization": {
+        "edge-a": 0.65625,
+        "edge-b": 0.9225,
+        "edge-c": 0.03
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 34.56521739130435,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.451505016722408,
+      "max_utilization": 1.275,
+      "failed_target_rho": 0.29625,
+      "utilization": {
+        "edge-a": 0.29625,
+        "edge-b": 1.0125,
+        "edge-c": 1.275
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "burst",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 27.54180602006689,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.43478260869565216,
+      "max_utilization": 0.975,
+      "failed_target_rho": 0.48374999999999996,
+      "utilization": {
+        "edge-a": 0.48374999999999996,
+        "edge-b": 0.975,
+        "edge-c": 0.6
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "round-robin",
+      "mean_latency_ms": 34.91638795986622,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.33444816053511706,
+      "max_utilization": 1.4849999999999999,
+      "failed_target_rho": 0.375,
+      "utilization": {
+        "edge-a": 0.375,
+        "edge-b": 0.75,
+        "edge-c": 1.4849999999999999
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 25.48494983277592,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5752508361204013,
+      "max_utilization": 0.645,
+      "failed_target_rho": 0.645,
+      "utilization": {
+        "edge-a": 0.645,
+        "edge-b": 0.645,
+        "edge-c": 0.615
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "least-connections",
+      "mean_latency_ms": 19.816053511705686,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.7993311036789298,
+      "max_utilization": 0.89625,
+      "failed_target_rho": 0.89625,
+      "utilization": {
+        "edge-a": 0.89625,
+        "edge-b": 0.315,
+        "edge-c": 0.27
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "ewma",
+      "mean_latency_ms": 15.551839464882944,
+      "p95_latency_ms": 15,
+      "p99_latency_ms": 30.599999999999454,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9832775919732442,
+      "max_utilization": 1.1025,
+      "failed_target_rho": 1.1025,
+      "utilization": {
+        "edge-a": 1.1025,
+        "edge-b": 0.015,
+        "edge-c": 0.045
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "p2c-load",
+      "mean_latency_ms": 28.691275167785236,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.47651006711409394,
+      "max_utilization": 0.87,
+      "failed_target_rho": 0.5325,
+      "utilization": {
+        "edge-a": 0.5325,
+        "edge-b": 0.735,
+        "edge-c": 0.87
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "none",
+      "policy": "adaptive",
+      "mean_latency_ms": 22.876254180602007,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.7090301003344481,
+      "max_utilization": 0.7949999999999999,
+      "failed_target_rho": 0.7949999999999999,
+      "utilization": {
+        "edge-a": 0.7949999999999999,
+        "edge-b": 0.39,
+        "edge-c": 0.525
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "round-robin",
+      "mean_latency_ms": 35.618729096989966,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.3511705685618729,
+      "max_utilization": 1.53,
+      "failed_target_rho": 0.345,
+      "utilization": {
+        "edge-a": 0.345,
+        "edge-b": 0.7875,
+        "edge-c": 1.53
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 26.57718120805369,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5302013422818792,
+      "max_utilization": 0.7125,
+      "failed_target_rho": 0.5925,
+      "utilization": {
+        "edge-a": 0.5925,
+        "edge-b": 0.7125,
+        "edge-c": 0.6749999999999999
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "least-connections",
+      "mean_latency_ms": 21.77257525083612,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.7224080267558528,
+      "max_utilization": 0.8099999999999999,
+      "failed_target_rho": 0.8099999999999999,
+      "utilization": {
+        "edge-a": 0.8099999999999999,
+        "edge-b": 0.4275,
+        "edge-c": 0.39
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "ewma",
+      "mean_latency_ms": 16.705685618729095,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30.599999999999454,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.9063545150501672,
+      "max_utilization": 1.0162499999999999,
+      "failed_target_rho": 1.0162499999999999,
+      "utilization": {
+        "edge-a": 1.0162499999999999,
+        "edge-b": 0.1875,
+        "edge-c": 0.045
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "p2c-load",
+      "mean_latency_ms": 30.100671140939596,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4429530201342282,
+      "max_utilization": 1.005,
+      "failed_target_rho": 0.495,
+      "utilization": {
+        "edge-a": 0.495,
+        "edge-b": 0.7424999999999999,
+        "edge-c": 1.005
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "isolated",
+      "policy": "adaptive",
+      "mean_latency_ms": 26.53846153846154,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5451505016722408,
+      "max_utilization": 0.705,
+      "failed_target_rho": 0.61125,
+      "utilization": {
+        "edge-a": 0.61125,
+        "edge-b": 0.6675,
+        "edge-c": 0.705
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "round-robin",
+      "mean_latency_ms": 38.979933110367895,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.40468227424749165,
+      "max_utilization": 1.785,
+      "failed_target_rho": 0.22125,
+      "utilization": {
+        "edge-a": 0.22125,
+        "edge-b": 0.9075,
+        "edge-c": 1.785
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "weighted-round-robin",
+      "mean_latency_ms": 31.359060402684563,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4463087248322148,
+      "max_utilization": 0.9974999999999999,
+      "failed_target_rho": 0.37875,
+      "utilization": {
+        "edge-a": 0.37875,
+        "edge-b": 0.9974999999999999,
+        "edge-c": 0.96
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "least-connections",
+      "mean_latency_ms": 26.036789297658864,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5518394648829431,
+      "max_utilization": 0.6825,
+      "failed_target_rho": 0.61875,
+      "utilization": {
+        "edge-a": 0.61875,
+        "edge-b": 0.6825,
+        "edge-c": 0.645
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "ewma",
+      "mean_latency_ms": 21.722408026755854,
+      "p95_latency_ms": 30,
+      "p99_latency_ms": 30.599999999999454,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.5719063545150501,
+      "max_utilization": 0.9375,
+      "failed_target_rho": 0.64125,
+      "utilization": {
+        "edge-a": 0.64125,
+        "edge-b": 0.9375,
+        "edge-c": 0.045
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "p2c-load",
+      "mean_latency_ms": 33.6744966442953,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 298,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.4395973154362416,
+      "max_utilization": 1.2,
+      "failed_target_rho": 0.32625,
+      "utilization": {
+        "edge-a": 0.32625,
+        "edge-b": 0.9824999999999999,
+        "edge-c": 1.2
+      }
+    },
+    {
+      "topology": "severe",
+      "workload": "flash_crowd",
+      "failure": "during_transition",
+      "policy": "adaptive",
+      "mean_latency_ms": 26.989966555183948,
+      "p95_latency_ms": 60,
+      "p99_latency_ms": 60,
+      "completed": 299,
+      "rejected": 0,
+      "completion_rate": 1,
+      "max_share": 0.44816053511705684,
+      "max_utilization": 1.005,
+      "failed_target_rho": 0.4875,
+      "utilization": {
+        "edge-a": 0.4875,
+        "edge-b": 1.005,
+        "edge-c": 0.525
+      }
+    }
+  ]
+}

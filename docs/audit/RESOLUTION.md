@@ -1,10 +1,15 @@
-# Audit Resolution — Stage 9
+# Audit Resolution — Stages 9–10
 
 Maps every finding in [FINDINGS.md](FINDINGS.md) to exactly one disposition:
-**Fixed** (code/test change, this stage) · **Disclosed** (documentation-only, deferred to Stage 10)
-· **Already fixed** (found silently applied during planning, pre-dating Stage 9 — see
-`docs/StageArtifacts/Stage9.md`'s "An Incident, Disclosed Up Front") · **Deferred** (P2/P3 item
-explicitly not addressed this stage, with reason).
+**Fixed** (code/test change) · **Disclosed** (documentation-only) · **Already fixed** (found
+silently applied during planning, pre-dating Stage 9 — see `docs/StageArtifacts/Stage9.md`'s "An
+Incident, Disclosed Up Front") · **Deferred** (P2/P3 item explicitly not addressed, with reason).
+Stage 9 fixed every P0-P2 finding it could without building new features, and explicitly disclosed
+the 9 PRD/TRD features F-04 through F-10 (plus the LHS/Bayesian tuner tiers named in F-22 and the
+telemetry stack named in F-23) as deferred to a dedicated build stage rather than fixed by
+documentation alone. Stage 10 (`docs/StageArtifacts/Stage10.md`) then built all 9 of those features;
+this ledger has been updated in place to reflect that rather than left to describe a stale,
+Stage-9-only state.
 
 ## P0
 
@@ -18,13 +23,13 @@ explicitly not addressed this stage, with reason).
 
 | ID | Disposition | Detail |
 |---|---|---|
-| F-04 | Disclosed | `ExperimentEngine` interface — no such interface exists; Stage 9 Limitations #1 |
-| F-05 | Disclosed | Manifest/provenance/hierarchical seeds — none exist; Stage 9 Limitations #2; `FinalResearchReport.md` overclaim corrected |
-| F-06 | Disclosed | Traffic generator — not built; Stage 9 Limitations #3 |
-| F-07 | Disclosed | Metamorphic invariant tests (TRD §16) — not built; folded into Stage 9 Limitations #6 (chaos engine) |
-| F-08 | Disclosed | Automated queueing-attribution engine — one-off script only; Stage 9 Limitations #4 |
-| F-09 | Disclosed | SWR cache policy — not built; Stage 9 Limitations #5 |
-| F-10 | Disclosed | Declarative YAML chaos engine — not built; Stage 9 Limitations #6 |
+| F-04 | Fixed (Stage 10, §10.8) | `internal/engine.ExperimentEngine` interface added; `VirtualEngine`/`RealEngine` both satisfy it (compile-time-checked); see `docs/StageArtifacts/Stage10.md` |
+| F-05 | Fixed (Stage 10, §10.3) | `Scenario.Seed` widened to `replay.SeedTree` (Global/Traffic/Topology/Failure/Policy); `internal/provenance` adds `Manifest`/`ConfigHash`/`GitCommit`; `FinalResearchReport.md`'s manifest wording now matches what exists |
+| F-06 | Fixed (Stage 10, §10.1) | `internal/traffic` adds `Generate` (Constant/RampUp/RampDown/Burst/FlashCrowd) and `ImportCombinedLog`/`ArrivalsFromLog` ("Fuze log" concretized as NCSA combined format) |
+| F-07 | Fixed (Stage 10, §10.4) | `internal/challenge/metamorphic_test.go`: doubled-service-time (latency must not decrease) and halved-arrival-count (utilization must not increase) invariants, both against real `RunWorld`/`attribution` output |
+| F-08 | Fixed (Stage 10, §10.2) | `internal/attribution` adds `CheckLittlesLaw`/`Utilization`/`UtilizationFromWorld`/`Explain`/`Compare`; `cmd/experiment-006d` refactored onto it |
+| F-09 | Fixed (Stage 10, §10.5) | `cache.Cache.GetSWR`/`Config.StaleWindow` added; `topology.EdgeConfig.StaleWindow` wired into the real request path; real end-to-end test in `topology_test.go` |
+| F-10 | Fixed (Stage 10, §10.7) | `internal/chaos`: hand-rolled flat-schema YAML parser, `ToFailureWindows` (virtual), `ToRealSchedule`/`RunReal` (real, via new `EdgeServer.SetDown`) |
 | F-11 | Fixed | `internal/health/checker.go`: `stopCh` captured locally, not read as a struct field; `TestChecker_StartStopStart_OnlyOneActiveLoop` |
 | F-12 | Fixed | `ReadHeaderTimeout` added to `internal/proxy/proxy.go`, `internal/topology/edge.go`, `cmd/dashboard/main.go` servers |
 | F-13 | Fixed | `netsim.Conditions.Seed` field added, threaded through `EdgeServer`; `TestEdgeServer_NetworkConditions_SeededIsReproducible` |
@@ -41,8 +46,8 @@ explicitly not addressed this stage, with reason).
 
 | ID | Disposition | Detail |
 |---|---|---|
-| F-22 | Fixed (doc) | prd.md §6.2 reworded — Random Search v1 shipped, LHS/Bayesian deliberately deferred |
-| F-23 | Fixed (doc) | prd.md/trd.md telemetry sections reworded — `internal/statistics` shipped, HdrHistogram/Prometheus deferred |
+| F-22 | Fixed (Stage 10, §10.9) | `internal/tuning` gains a `Tuner` interface; `LHSTuner`/`BayesOptTuner` (hand-rolled GP+EI) added alongside `RandomSearchTuner`, all running through the identical `RunSearch` loop; `cmd/experiment-010a` reports honestly that neither beats Random Search on this project's own scenarios, matching Stage 8's own convergence finding |
+| F-23 | Fixed (Stage 10, §10.6) | `internal/telemetry` adds a hand-rolled `Histogram` (HdrHistogram-style, logarithmic buckets) and `WriteText` (Prometheus text-exposition format); `cmd/proxy -metrics-addr` serves it live |
 | F-24 | Fixed | `evaluateCandidate` gates the search loop on `ConfigSpace.Valid`; `TestEvaluateCandidate_RejectsOutOfSpaceConfigWithoutCallingEvaluate` |
 | F-25 | Fixed (doc) | "six-signal"→"four-signal (six tunable parameters)" in README, prd.md, trd.md; appended correction in Stage7.md |
 | F-26 | Fixed | `scoreUtilization` distinguishes absent-from-map vs. explicit-zero capacity; `TestAdaptiveSelector_ZeroCapacityIsPenalizedNotAveraged` |
@@ -85,10 +90,14 @@ explicitly not addressed this stage, with reason).
 
 ## Summary
 
-- **P0**: 3/3 resolved (1 already fixed, 2 fixed this stage)
-- **P1**: 18/18 resolved (6 disclosed as Stage 10 scope, 1 partially-already-fixed, 11 fixed)
-- **P2**: 24/24 resolved (5 disclosed/deferred, 19 fixed)
-- **P3**: 12/12 resolved (11 fixed, 1 deferred — F-56)
+- **P0**: 3/3 resolved (1 already fixed, 2 fixed in Stage 9)
+- **P1**: 18/18 resolved (7 built in Stage 10 — F-04 through F-10 — 1 partially-already-fixed, 10 fixed in Stage 9)
+- **P2**: 24/24 resolved (2 built in Stage 10 — F-22, F-23 — 3 disclosed/deferred, 19 fixed in Stage 9)
+- **P3**: 12/12 resolved (11 fixed in Stage 9, 1 deferred — F-56)
 
-No finding is left in an undisclosed or unaddressed state. See `docs/StageArtifacts/Stage9.md` and
-`docs/learning/009-stage9-audit-remediation.md` for the full narrative.
+No finding is left in an undisclosed or unaddressed state, and as of Stage 10 no finding is left in
+a merely-disclosed state either where building the feature was the actual ask (F-04 through F-10,
+F-22, F-23) -- every one of those now has real, tested code. See `docs/StageArtifacts/Stage9.md` /
+`docs/learning/009-stage9-audit-remediation.md` for the audit-remediation narrative and
+`docs/StageArtifacts/Stage10.md` / `docs/learning/010-stage10-features.md` for the feature-build
+narrative.

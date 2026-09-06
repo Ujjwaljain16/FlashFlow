@@ -27,15 +27,19 @@ FlashFlow is a programmable Go laboratory for studying distributed edge topologi
        Internal Statistics          Experiment Result JSON
 ```
 
-**Implementation status, stated plainly**: the two engines share routing/health code but are not
-yet unified behind a single `ExperimentEngine` interface; network degradation is a real,
-in-process Go simulator (`internal/netsim`) built specifically in place of `tc netem`, which this
-project evaluated and did not use (Linux-only, unavailable on the Windows host this was developed
-on — see `docs/StageArtifacts/Stage4.md`); metrics are computed via `internal/statistics`
-(percentiles, Mann-Whitney U, Cliff's Delta, bootstrap CI), not HdrHistogram/Prometheus; and each
-experiment writes its own result JSON rather than a unified manifest ledger. All of this is
-tracked as deliberately deferred work — see `docs/StageArtifacts/Stage9.md`'s Limitations section
-and `docs/audit/RESOLUTION.md` for the full per-finding disposition.
+**Implementation status, stated plainly**: as of Stage 10, the two engines ARE unified behind a
+single `internal/engine.ExperimentEngine` interface (`VirtualEngine`/`RealEngine`, both
+compile-time-verified against `Prepare/Run/Replay`); network degradation is a real, in-process Go
+simulator (`internal/netsim`) built specifically in place of `tc netem`, which this project
+evaluated and did not use (Linux-only, unavailable on the Windows host this was developed on — see
+`docs/StageArtifacts/Stage4.md`); metrics are computed via `internal/statistics` (percentiles,
+Mann-Whitney U, Cliff's Delta, bootstrap CI) for this project's own scientific claims, AND via
+`internal/telemetry` (a hand-rolled histogram + Prometheus text-exposition format, live at
+`cmd/proxy -metrics-addr`) for operational export; `internal/provenance.Manifest` (hierarchical
+Traffic/Topology/Failure/Policy seeds, a configuration hash, git commit/dirty state) exists and is
+tested, though most individual experiment binaries still write their own ad hoc result JSON rather
+than a manifest — see `docs/StageArtifacts/Stage10.md` for exactly which experiments call it. Full
+per-finding disposition: `docs/audit/RESOLUTION.md`.
 
 ---
 
@@ -54,11 +58,14 @@ FlashFlow is built learning-first — not architecture-first.
 | **7** | P2C + Four-Signal Adaptive Router (six tunable parameters), Counterfactual Replay | ✅ Complete |
 | **8** | Auto-Tuner (Random Search v1), Live Dashboard | ✅ Complete |
 | **9** | Post-Stage-8 adversarial audit remediation — every finding fixed or honestly disclosed; no new capability shipped | ✅ Complete |
+| **10** | Traffic generator, SWR cache, declarative YAML chaos engine, experiment manifest/provenance, a generalized queueing-attribution engine, HdrHistogram+Prometheus telemetry, LHS/Bayesian tuner tiers, a formal `ExperimentEngine` interface | ✅ Complete — see `docs/StageArtifacts/Stage10.md` |
 
-Stage 10 (building the features Stage 9 disclosed as deferred — traffic generator, SWR cache,
-declarative YAML chaos engine, experiment manifest/provenance, a generalized queueing-attribution
-engine, HdrHistogram+Prometheus telemetry, LHS/Bayesian tuner tiers, a formal `ExperimentEngine`
-interface) is planned but not started — see `docs/audit/RESOLUTION.md`.
+A note on Stage 10's own numbers: widening `Scenario.Seed` into a hierarchical `SeedTree` (needed
+for genuine independent-axis seed control) changed the actual Development/Holdout scenario content,
+so Stage 8's originally-reported specific tuning numbers no longer reproduce exactly under the
+current code — the search/validation methodology itself is unaffected and was re-verified end to
+end. See `docs/StageArtifacts/Stage10.md`'s own callout for the full explanation before citing any
+Stage 8 number against a fresh run.
 
 ---
 
@@ -104,6 +111,94 @@ prompt); the NGINX benchmark additionally requires Docker.
 
 ---
 
+## Stage 10 Demo
+
+**The question**: when one edge target is both overloaded and prone to temporary failure, does
+FlashFlow's adaptive router actually route around the problem better than blind round-robin — and
+can that be proven, explained, and reproduced, not just asserted?
+
+**The controlled experiment** (`cmd/demo-stage10`): 3 heterogeneous edges (20ms / 15ms / 60ms
+service time), a real generated workload (`internal/traffic`, 300 requests), and a declarative
+failure schedule (`internal/chaos`) crashing the fastest edge at t=1s and recovering it at t=2s.
+Round Robin and Adaptive are compared via `internal/engine`'s `Run`/`Replay` against the
+byte-for-byte identical `Scenario`.
+
+**Real output** (from an actual run — reproduced below exactly, nothing hand-edited):
+
+```text
+policy             mean(ms)    p99(ms)   rejected   completed by target
+round-robin           34.35      60.00          0   edge-a=117  edge-b=67  edge-c=116
+adaptive              28.73      60.00          0   edge-a=122  edge-b=100  edge-c=78
+
+Mean latency: adaptive's 28.73ms vs round-robin's 34.35ms -- a 16.4% reduction in this
+specific scenario. p99 ties at 60.00ms under BOTH policies: Adaptive did not "solve" the
+tail here, only the mean -- a small-sample-size effect Stage 8's own tuning work already
+found and corrected for (p99 is a weak discriminator at this request count).
+
+--- Proof moment: counterfactual divergence ---
+The two policies' event traces are IDENTICAL up through event #8, then diverge -- proof
+the difference above is a real routing-decision effect, not two runs that quietly saw
+different conditions.
+```
+
+**Why it happened** (`internal/attribution`, not asserted — computed): the attribution model shows
+Adaptive reduces the estimated offered-load-to-capacity ratio on the overloaded edge (edge-c) from
+**ρ=1.99 to ρ=1.34** — still overloaded either way (no routing policy gives a fixed-capacity target
+more capacity), but meaningfully less severe, because Adaptive shifts load onto edge-a/edge-b, which
+have headroom.
+
+**Reproducibility** — the same experiment run 3 separate times (clean state, same-seed repeat, and a
+full `demo/output/` wipe followed by a fresh run):
+
+| Run | Mean latency reduction | Trace divergence from Run 1 |
+|---|---:|---|
+| 1 — baseline | 16.4% | — |
+| 2 — same seed, no cleanup | 16.4% | 0 |
+| 3 — fresh state | 16.4% | 0 |
+
+A real provenance manifest (seed tree, configuration hash, git commit) is written to
+`demo/output/stage10-demo/manifest.json` on every run.
+
+**What this does and doesn't show**: this is not evidence that Adaptive always wins — Stage 8's own
+broader evaluation found it wins 62.5–70% of scenarios, not all of them, and trades fairness for
+latency. It's evidence that, under this one controlled failure scenario, FlashFlow can reproduce the
+comparison, identify exactly where the policies diverge, and connect the performance difference to a
+measurable system mechanism, rather than reporting a number with no explanation behind it.
+
+```bash
+go run -buildvcs=true ./cmd/demo-stage10
+# or: scripts/demo-stage10.sh
+```
+
+Full recording script, on-screen captions, claims audit, and a secondary (real-engine + live
+telemetry) demo: [`docs/demo/Stage10Demo.md`](docs/demo/Stage10Demo.md). Independent adversarial
+validation of every Stage 10 capability: [`docs/StageArtifacts/Stage10DemoValidation.md`](docs/StageArtifacts/Stage10DemoValidation.md).
+
+## Running Stage 10 Features
+
+```bash
+# Tuner comparison: Random Search vs LHS vs Bayesian Optimization
+# (also writes real provenance manifests to experiments/010-stage10-features/runs/ --
+# -buildvcs=true is required for git_commit/git_dirty to populate: plain `go run`
+# defaults to -buildvcs=auto, which silently omits VCS info for a `go run` build)
+go run -buildvcs=true ./cmd/experiment-010a
+
+# Live Prometheus metrics from a running proxy
+go run ./cmd/proxy -addr :8081 -targets http://127.0.0.1:8000 -metrics-addr :9090 &
+curl http://127.0.0.1:9090/metrics
+
+# Dashboard (Playground / Experiment browser / Tuning view)
+go run ./cmd/dashboard    # http://127.0.0.1:7070
+
+# Package-level tests double as runnable demonstrations of each Stage 10
+# capability (traffic patterns, SeedTree axis-independence, SWR staleness/
+# revalidation, chaos YAML parsing, metamorphic invariants):
+go test ./internal/traffic/... -v
+go test ./internal/chaos/... -v
+go test ./internal/cache/... -run SWR -v
+go test ./internal/challenge/... -run Metamorphic -v
+```
+
 ## Specifications
 
 - [PRD v3.1](prd.md) — Product requirements and build sequence authority
@@ -125,6 +220,7 @@ prompt); the NGINX benchmark additionally requires Docker.
 | [006](experiments/006-statistics-queueing/) | Statistics & Queueing | ✅ Complete |
 | [007](experiments/007-adaptive-replay/) | Adaptive Routing & Replay | ✅ Complete |
 | [008](experiments/008-tuning-validation/) | Tuning & Final Validation | ✅ Complete |
+| [010-A](experiments/010-stage10-features/) | Tuner Comparison (Random Search vs LHS vs Bayesian Optimization) | ✅ Complete |
 
 ---
 

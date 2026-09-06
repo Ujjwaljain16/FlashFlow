@@ -293,33 +293,49 @@ internal/statistics/
 
 ---
 
-## 19. Implementation Status (added Stage 9 — post-audit)
+## 19. Implementation Status (added Stage 9 — post-audit; updated Stage 10)
 
 An adversarial audit after Stage 8 (`docs/audit/`) found this document's repository map, some type
-sketches, and several described-but-unbuilt subsystems no longer match the actual codebase. Stage 9
-fixed every correctness/security/reproducibility finding and corrects the record here; it did not
-build the unbuilt items — see `docs/audit/RESOLUTION.md` for the full per-finding disposition and
-the Stage 10 plan that will build them.
+sketches, and several described-but-unbuilt subsystems no longer matched the actual codebase at the
+time. Stage 9 fixed every correctness/security/reproducibility finding; Stage 10
+(`docs/StageArtifacts/Stage10.md`) then built every subsystem this section originally listed as
+unbuilt. See `docs/audit/RESOLUTION.md` for the full per-finding disposition.
 
-- **§1 Repository structure**: the actual package layout is `internal/{cache,challenge,clock,
-  dashboard,health,httpx,netsim,proxy,replay,statistics,tcp,topology,transport,tuning,vtime}` plus
-  ~50 `cmd/experiment-*` binaries — not the `internal/{engine,router,traffic,chaos,tuner,
-  provenance,analysis,telemetry}` layout sketched above. Responsibilities that *were* built
-  relocated sensibly (routing lives in `internal/proxy`, the discrete-event loop in
-  `internal/vtime`); `traffic`, `chaos`, `provenance`, `analysis`, and `telemetry` have no
-  implementation anywhere yet, not merely a renamed home.
+- **§1 Repository structure**: the actual package layout is `internal/{attribution,cache,challenge,
+  chaos,clock,dashboard,engine,health,httpx,netsim,proxy,provenance,replay,statistics,tcp,telemetry,
+  topology,traffic,transport,tuning,vtime}` plus ~50 `cmd/experiment-*` binaries — closer to this
+  section's original sketch than it was at Stage 9's close, though `router`/`tuner`/`analysis`
+  never became separate packages (that responsibility lives in `internal/proxy` and
+  `internal/tuning` respectively, and no `analysis` package was ever needed).
 - **§2 `Clock` interface**: the actual interface is `Clock interface { Now() VirtualTime }` — no
   `SleepUntil`. Time advancement is push-based (`Engine.Schedule`), not the blocking-sleep model
   sketched above; a deliberate, documented improvement (`docs/StageArtifacts/Stage5.md`), not an
-  oversight, but this document was never updated to match.
-- **§3 `ExperimentEngine` interface**, **§9 `manifest.json`/hierarchical seeds**, **§11 Tuner
-  v2/v3**, **§12 YAML chaos**, **§13 HdrHistogram/Prometheus**, **§14 automated attribution
-  engine**: none built yet. See `prd.md` §13 for the as-built status of each (routing/health/cache/
-  virtual-time/replay/statistics/tuner-v1 all shipped and were independently re-verified correct in
-  Stage 9; these six specific items remain Stage 10 scope).
+  oversight, but this document's original sketch was never updated to match (still true as of
+  Stage 10 — a cosmetic drift, not a functional gap).
+- **§3 `ExperimentEngine` interface**: built — `internal/engine.ExperimentEngine`
+  (`Prepare/Run/Replay`), implemented by `VirtualEngine` and `RealEngine`, both compile-time-verified
+  against the interface. `ValidateConsistency` additionally cross-checks that a `Scenario` and its
+  `RealExperimentConfig` name the same topology, closing a real gap Stage 10's own demo-readiness
+  audit found (the two could otherwise silently describe different experiments).
+- **§9 `manifest.json`/hierarchical seeds**: built — `replay.Scenario.Seeds` is a real `SeedTree`
+  (Global/Traffic/Topology/Failure/Policy, genuine independent-axis control, not a derive-only
+  convenience); `internal/provenance.Manifest`/`ConfigHash`/`GitCommit` write real manifests, wired
+  into `cmd/experiment-010a` specifically.
+- **§11 Tuner v2/v3**: built — `internal/tuning.Tuner` interface with `LHSTuner` and `BayesOptTuner`
+  (hand-rolled Gaussian Process + Expected Improvement) alongside `RandomSearchTuner`, sharing one
+  `RunSearch` loop. `cmd/experiment-010a`'s real 3-way comparison found neither meaningfully beats
+  Random Search on this project's own search space — the expected result, not a wasted effort.
+- **§12 YAML chaos**: built — `internal/chaos` (hand-rolled flat 4-key schema parser;
+  `ToFailureWindows` for the virtual engine, `ToRealSchedule`/`RunReal` plus a new
+  `EdgeServer.SetDown` for the real engine).
+- **§13 HdrHistogram/Prometheus**: built — `internal/telemetry.Histogram` (hand-rolled, logarithmic
+  buckets) and `WriteText` (Prometheus text-exposition format), live at `cmd/proxy -metrics-addr`.
+- **§14 automated attribution engine**: built — `internal/attribution` (`CheckLittlesLaw`/
+  `Utilization`/`UtilizationFromWorld`/`Explain`/`Compare`); `cmd/experiment-006d` refactored onto it.
 - **§4 Adaptive router**: implements four scored signals (Load, Latency, Cache, Cost) — Health is a
   pre-filter, Capacity folds into Load — across six tunable parameters, not six independently
-  scored signals.
-- **§16 Metamorphic testing**: the two named invariants (2x delay → latency must not decrease;
-  halved load → utilization must not increase) are not implemented as tests anywhere. Deferred to
-  Stage 10 alongside the attribution engine they depend on.
+  scored signals. Unchanged by Stage 10.
+- **§16 Metamorphic testing**: built — `internal/challenge/metamorphic_test.go` implements both
+  named invariants (doubled service time → latency must not decrease; halved arrival count →
+  utilization must not increase), each verified by Stage 10's own demo-readiness audit to actually
+  catch a deliberately-injected violation, not just pass vacuously.

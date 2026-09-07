@@ -33,20 +33,6 @@ func MedianStat(samples []float64) float64 {
 	return m
 }
 
-// PercentileStat returns a Statistic computing the p-th percentile,
-// e.g. PercentileStat(99) for bootstrapping a p99 estimate. Panics under
-// the same "never called on genuinely invalid input" contract as
-// MeanStat/MedianStat.
-func PercentileStat(p float64) Statistic {
-	return func(samples []float64) float64 {
-		v, err := Percentile(samples, p)
-		if err != nil {
-			panic(fmt.Sprintf("statistics: PercentileStat(%v) called with invalid input: %v", p, err))
-		}
-		return v
-	}
-}
-
 // BootstrapResult is a percentile bootstrap confidence interval for one
 // statistic computed on one sample.
 //

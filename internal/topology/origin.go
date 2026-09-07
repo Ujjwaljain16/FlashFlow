@@ -63,13 +63,6 @@ func NewOriginServer(cfg OriginConfig) *OriginServer {
 	}
 }
 
-// SetArtificialDelay dynamically sets processing delay for testing.
-func (s *OriginServer) SetArtificialDelay(d time.Duration) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.artificialDelay = d
-}
-
 // Handler returns the HTTP handler for the origin service.
 func (s *OriginServer) Handler() http.Handler {
 	mux := http.NewServeMux()

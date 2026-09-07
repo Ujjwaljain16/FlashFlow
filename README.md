@@ -111,9 +111,10 @@ Counterfactual (same scenario, same seeds, different policy):
 
 `report`/`explain`/`stress-map` all support `--json` for scripting and their own `--help`. The
 classifier's two magnitude constants (concentration ≥1.2× fair share, committed work ≥10× capacity) were
-iteratively calibrated to match Stage 15/16's own six already-published policy outcomes — a genuine
-internal-consistency check, not an independently-derived or externally-validated threshold. **Diagnostic
-thresholds are heuristic calibration parameters, not universal system thresholds.** See
+iteratively calibrated to match Stage 15/16's own six already-published policy outcomes (the two-mechanism
+model described below, in **The key research finding**) — a genuine internal-consistency check, not an
+independently-derived or externally-validated threshold. **Diagnostic thresholds are heuristic calibration
+parameters, not universal system thresholds.** See
 [Stage17-DiagnosticTooling.md](docs/StageArtifacts/Stage17-DiagnosticTooling.md) for exactly how, and
 three real classifier bugs that calibration caught. `stress-map`'s own grid is a small, **exploratory**
 run — its numbers are not a Stage 13-16 finding.
@@ -274,7 +275,8 @@ rather than hidden.
   seed.
 - The real engine has genuine OS/timing variance; a validated concurrency ceiling reproduces the
   mechanism's direction at most, not all, tested overload levels.
-- Most experiment binaries after Stage 10 write ad hoc result JSON rather than a full provenance manifest.
+- Most experiment binaries after Stage 10 (the last stage to focus on system-building rather than
+  research) write ad hoc result JSON rather than a full provenance manifest.
 - Never run against real production traffic.
 
 ## What FlashFlow is not

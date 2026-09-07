@@ -112,17 +112,31 @@ func (t Timeline) PeakDepthAt() (peak int, atMs float64) {
 }
 
 // DrainedAfter returns the first time at or after afterMs that depth/
-// capacity returns to at or below 1.0 -- generalizing the drain-check
-// AnalyzeDiversion already performs (there, only reachable once a
-// diversion has been found) into a standalone method usable for a
-// target whose policy never diverts at all (e.g. weighted-round-robin's
-// static allocation): DrainedAfter answers "did this target's queue
-// ever clear," independent of whether any reactive correction occurred.
-func (t Timeline) DrainedAfter(capacity int, afterMs float64) (drainAtMs float64, found bool) {
+// capacity returns to at or below ratioThreshold -- generalizing the
+// drain-check AnalyzeDiversion already performs (there, only reachable
+// once a diversion has been found) into a standalone method usable for
+// a target whose policy never diverts at all (e.g. weighted-round-
+// robin's static allocation): DrainedAfter answers "did this target's
+// queue ever clear," independent of whether any reactive correction
+// occurred.
+//
+// ratioThreshold is the SAME value used to decide the target was
+// congested in the first place (CongestionConfig.RatioThreshold), not
+// a second, independently hardcoded 1.0 -- an earlier version used a
+// literal 1.0 here regardless of what threshold congestion detection
+// was actually configured with. Every current caller happens to use
+// RatioThreshold=1.0, so this was dormant, but CongestionConfig's own
+// doc comment names 0.9 as a real tested candidate value: at
+// RatioThreshold=0.9, a target sitting at ratio=0.95 would have been
+// simultaneously "congested" (0.95 > 0.9) and "drained" (0.95 <= a
+// hardcoded 1.0) -- an internally contradictory state. Using the same
+// threshold for both makes "drained" the exact logical complement of
+// "congested," never overlapping. Found in an independent audit.
+func (t Timeline) DrainedAfter(capacity int, afterMs float64, ratioThreshold float64) (drainAtMs float64, found bool) {
 	depth := 0
 	for _, e := range t.Events {
 		depth += e.Delta
-		if e.TimeMs >= afterMs && pressureRatio(depth, capacity) <= 1.0 {
+		if e.TimeMs >= afterMs && pressureRatio(depth, capacity) <= ratioThreshold {
 			return e.TimeMs, true
 		}
 	}
@@ -422,11 +436,13 @@ func AnalyzeDiversion(records []replay.SelectionRecord, timeline Timeline, targe
 	}
 
 	// Queue drain: first time at or after diversion that depth/capacity
-	// returns to <= 1.0.
+	// returns to <= cfg.RatioThreshold -- the same threshold that
+	// decided congestion, not a separately hardcoded 1.0 (see
+	// DrainedAfter's own doc comment for why that matters).
 	depth := 0
 	for _, e := range timeline.Events {
 		depth += e.Delta
-		if e.TimeMs >= result.DiversionAtMs && pressureRatio(depth, capacity) <= 1.0 {
+		if e.TimeMs >= result.DiversionAtMs && pressureRatio(depth, capacity) <= cfg.RatioThreshold {
 			result.QueueDrainAtMs = e.TimeMs
 			result.QueueDrainFound = true
 			break

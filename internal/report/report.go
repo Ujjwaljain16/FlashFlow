@@ -153,7 +153,7 @@ func AnalyzeTarget(wr *replay.WorldResult, targets []replay.TargetProfile, capac
 		// share never crosses the diversion threshold at all. Whether
 		// the target recovers is then a property of the TARGET alone
 		// (does its own queue drain), not of any policy reaction.
-		drainAt, drained := tl.DrainedAfter(capacity, peakAt)
+		drainAt, drained := tl.DrainedAfter(capacity, peakAt, cfg.RatioThreshold)
 		m.Drained, m.DrainAtMs = drained, drainAt
 		if drained {
 			endMs = drainAt

@@ -62,14 +62,56 @@ func TestTimeline_DrainedAfter(t *testing.T) {
 	tl := sampleTimeline()
 	// From t=6 onward (after the peak at t=5), depth first returns to
 	// <=1 (capacity=1) at the t=8 completion event.
-	drainAt, found := tl.DrainedAfter(1, 6)
+	drainAt, found := tl.DrainedAfter(1, 6, 1.0)
 	if !found || drainAt != 8 {
-		t.Errorf("DrainedAfter(1, 6) = (%v, %v), want (8, true)", drainAt, found)
+		t.Errorf("DrainedAfter(1, 6, 1.0) = (%v, %v), want (8, true)", drainAt, found)
 	}
 	// No event exists at or after t=100, so it must report not found,
 	// not a false positive from carrying over an earlier depth check.
-	if _, found := tl.DrainedAfter(1, 100); found {
-		t.Errorf("DrainedAfter(1, 100) reported found=true, want false (no events at or after 100)")
+	if _, found := tl.DrainedAfter(1, 100, 1.0); found {
+		t.Errorf("DrainedAfter(1, 100, 1.0) reported found=true, want false (no events at or after 100)")
+	}
+}
+
+// TestTimeline_DrainedAfter_UsesGivenThresholdNotHardcodedOne is a
+// regression test for a real bug an independent audit found:
+// DrainedAfter used to hardcode "drained" as ratio<=1.0 regardless of
+// what RatioThreshold congestion detection was actually configured
+// with. Every current production caller happens to use
+// RatioThreshold=1.0 (so this was previously dormant), but
+// CongestionConfig's own doc comment names 0.9 as a real tested
+// candidate value -- at that threshold, this exact timeline's t=6 depth
+// of 2 (ratio 2.0 at capacity=1) would still count as congested, but a
+// later point sitting between the two thresholds could have been
+// wrongly reported as already drained under the old hardcoded check.
+// This test picks a threshold where the drain point provably differs
+// from the ratioThreshold=1.0 case above.
+func TestTimeline_DrainedAfter_UsesGivenThresholdNotHardcodedOne(t *testing.T) {
+	// Two dispatches at t=0, one completion at t=4 (depth 2->1), a second
+	// completion at t=8 (depth 1->0) -- so depth/capacity(=2) is 1.0 from
+	// t=0, 0.5 from t=4, and 0 from t=8.
+	tl := Timeline{Events: []Event{
+		{TimeMs: 0, Delta: 2},
+		{TimeMs: 4, Delta: -1},
+		{TimeMs: 8, Delta: -1},
+	}}
+	const capacity = 2
+
+	// At ratioThreshold=1.0, "drained" (ratio<=1.0) is already true at
+	// t=0 itself (2/2==1.0) -- the loop's very first event.
+	drainAt, found := tl.DrainedAfter(capacity, 0, 1.0)
+	if !found || drainAt != 0 {
+		t.Fatalf("DrainedAfter(threshold=1.0) = (%v, %v), want (0, true)", drainAt, found)
+	}
+
+	// At a stricter ratioThreshold=0.4, ratio must fall to <=0.4 -- not
+	// reached until t=8 (0/2==0), NOT t=0 or t=4 (0.5 > 0.4). A version
+	// hardcoded to 1.0 would incorrectly report t=0 here too, exactly
+	// the "congested per the configured threshold, yet already drained
+	// per the hardcoded one" contradiction this fix closes.
+	drainAt, found = tl.DrainedAfter(capacity, 0, 0.4)
+	if !found || drainAt != 8 {
+		t.Fatalf("DrainedAfter(threshold=0.4) = (%v, %v), want (8, true) -- ratioThreshold must actually change the drain point, not be silently ignored", drainAt, found)
 	}
 }
 

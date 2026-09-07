@@ -155,18 +155,31 @@ func main() {
 		fmt.Println("probabilistic, not universal, effect at this operating point.")
 	}
 
+	// AdaptiveVsEWMACI*/RRVsEWMACI* close a real gap an independent audit
+	// found: this experiment already computed both bootstrap 95% CIs
+	// (ci1, ci2 above) -- exactly the numbers Stage14.md's own "Statistical
+	// Robustness" section cites as headline results -- and printed them to
+	// stdout, but never persisted them here, leaving them unverifiable
+	// from the committed artifact alone (recomputing from the still-
+	// present seed_results confirms them, but a reader shouldn't have to).
 	out := struct {
-		Experiment          string       `json:"experiment"`
-		Timestamp           string       `json:"timestamp"`
-		SeedResults         []SeedResult `json:"seed_results"`
-		AdaptiveVsEWMADelta float64      `json:"adaptive_vs_ewma_cliffs_delta"`
-		AdaptiveVsEWMAWins  int          `json:"adaptive_vs_ewma_wins"`
-		RRVsEWMADelta       float64      `json:"rr_vs_ewma_cliffs_delta"`
-		RRVsEWMAWins        int          `json:"rr_vs_ewma_wins"`
+		Experiment            string       `json:"experiment"`
+		Timestamp             string       `json:"timestamp"`
+		SeedResults           []SeedResult `json:"seed_results"`
+		AdaptiveVsEWMADelta   float64      `json:"adaptive_vs_ewma_cliffs_delta"`
+		AdaptiveVsEWMAWins    int          `json:"adaptive_vs_ewma_wins"`
+		AdaptiveVsEWMACILower float64      `json:"adaptive_vs_ewma_ci_lower_ms"`
+		AdaptiveVsEWMACIUpper float64      `json:"adaptive_vs_ewma_ci_upper_ms"`
+		RRVsEWMADelta         float64      `json:"rr_vs_ewma_cliffs_delta"`
+		RRVsEWMAWins          int          `json:"rr_vs_ewma_wins"`
+		RRVsEWMACILower       float64      `json:"rr_vs_ewma_ci_lower_ms"`
+		RRVsEWMACIUpper       float64      `json:"rr_vs_ewma_ci_upper_ms"`
 	}{
 		Experiment: "014-I-statistical-confirmation-n8-boundary", Timestamp: time.Now().UTC().Format(time.RFC3339),
 		SeedResults: seedResults, AdaptiveVsEWMADelta: delta1.Delta, AdaptiveVsEWMAWins: adaptiveWins,
+		AdaptiveVsEWMACILower: ci1.Lower, AdaptiveVsEWMACIUpper: ci1.Upper,
 		RRVsEWMADelta: delta2.Delta, RRVsEWMAWins: rrWins,
+		RRVsEWMACILower: ci2.Lower, RRVsEWMACIUpper: ci2.Upper,
 	}
 	b, _ := json.MarshalIndent(out, "", "  ")
 	os.WriteFile(filepath.Join(outDirName, "014I-statistical-confirmation.json"), b, 0644)

@@ -110,8 +110,17 @@ constructed to test one specific mechanism, not swept generically).
 | moderate heterogeneity | ewma, every time |
 | severe heterogeneity | ewma, every time |
 
-Win count across all 27 configs: round-robin 9/27 (all 9 homogeneous configs), ewma 18/27 (all 18
-heterogeneous configs), weighted-round-robin/least-connections/p2c-load/**adaptive 0/27**.
+Win count across all 27 configs, counting only SOLE/exclusive wins: round-robin 9/27 (all 9 homogeneous
+configs), ewma 18/27 (all 18 heterogeneous configs), weighted-round-robin/least-connections/p2c-load/
+**adaptive 0/27**. That "0" needs the same caveat the table row directly above already states and this
+count doesn't repeat: in the 9 homogeneous configs, Adaptive TIES for the minimum along with all five
+other policies (the exact 30.00ms tie described above). `cmd/experiment-011a`'s own win-counting code
+sorts each config's six runs by mean latency with `sort.Slice` (Go's UNSTABLE sort) and credits
+`runs[0]` as "the winner" -- for a six-way exact tie, which policy lands at index 0 is whatever that
+unstable sort happens to produce, not a principled tie-breaking rule, and not evidence round-robin
+actually outperformed Adaptive there. "0/27" is accurate under "sole wins only"; it is not evidence
+Adaptive was never among the best-performing policies in any config (found stated ambiguously enough to
+mislead in an independent audit).
 
 **H1 confirmed exactly, and more strongly than hypothesized**: under homogeneous load, every policy
 ties Round Robin at 30.00ms mean latency — not "competitive," identical. With three interchangeable
@@ -164,10 +173,15 @@ superiority):
 | The virtual engine cannot express a latency cost for overutilization | If a future version of `RunWorld` is found to already model contention some other way (e.g., via `health.Registry` degradation) that this analysis missed |
 
 Fairness signal (max_share) corroborates the mechanism independently of the utilization numbers: EWMA
-concentrates 85-99% of traffic on one target in every heterogeneous config; Adaptive stays in the
-30-73% range, consistent with Stage 7/8's own previously-reported "Adaptive trades some fairness for
-latency" framing being, if anything, backwards *relative to EWMA specifically* — here Adaptive is the
-policy buying fairness/balance, at a cost, not the one taking it.
+concentrates 85-99% of traffic on one target in 14 of the 18 heterogeneous configs; the other 4 (moderate
+and severe topology, burst and flash_crowd workload, all specifically the `during_transition` failure
+phase) sit lower, 57-58% -- a real, checked range of 57-99%, not a uniform 85-99% floor (an independent
+audit found "in every heterogeneous config" stated as if the floor held everywhere; it doesn't during a
+failure transition specifically, plausibly because EWMA's smoothed signal hasn't yet re-locked onto one
+target while the transition is still in progress). Adaptive stays in the 30-73% range throughout,
+consistent with Stage 7/8's own previously-reported "Adaptive trades some fairness for latency" framing
+being, if anything, backwards *relative to EWMA specifically* — here Adaptive is the policy buying
+fairness/balance, at a cost, not the one taking it.
 
 ## 10. Program F Results — Virtual vs Real Validation
 

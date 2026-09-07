@@ -1,6 +1,6 @@
 {
   "experiment": "014-I-statistical-confirmation-n8-boundary",
-  "timestamp": "2026-09-06T19:42:46Z",
+  "timestamp": "2026-09-07T16:19:05Z",
   "seed_results": [
     {
       "seed": 14700,
@@ -65,6 +65,10 @@
   ],
   "adaptive_vs_ewma_cliffs_delta": 1,
   "adaptive_vs_ewma_wins": 10,
+  "adaptive_vs_ewma_ci_lower_ms": 260.2077428223039,
+  "adaptive_vs_ewma_ci_upper_ms": 274.88264678357206,
   "rr_vs_ewma_cliffs_delta": 1,
-  "rr_vs_ewma_wins": 10
+  "rr_vs_ewma_wins": 10,
+  "rr_vs_ewma_ci_lower_ms": 119.49281151511002,
+  "rr_vs_ewma_ci_upper_ms": 134.11067702671787
 }

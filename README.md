@@ -250,10 +250,11 @@ generalize to.
 | P2C vs. EWMA committed-backlog separation | 8/8 seeds vs. 0/8 seeds | [Stage 15](docs/StageArtifacts/Stage15.md), claim C25 |
 | Topology-size generalization | Rank ordering holds across N=3/5/8; the raw ρ threshold does not | [Stage 14](docs/StageArtifacts/Stage14.md) |
 
-**Not shown here as a headline number, deliberately**: Adaptive's own P99 was the *worst* of all six
-policies tested in the flagship scenario, despite the strongest mean — see **Key Research Findings**
-above. A benchmark leaderboard would have hidden that behind the mean; FlashFlow's own analysis is what
-surfaced it.
+**Not shown here as a headline number, deliberately**: despite the strongest mean, Adaptive's own P99 was
+worst-of-six in two of the flagship scenario's three seeds, and a statistical near-tie with EWMA in the
+third — never among the safer half of six policies in any seed tested. See **Flagship Result** above. A
+benchmark leaderboard would have hidden that behind the mean; FlashFlow's own analysis is what surfaced
+it.
 
 ## Evidence Boundaries
 
@@ -351,8 +352,9 @@ final answer were obvious from the start. A note on Stage 10's own numbers: wide
 a hierarchical `SeedTree` changed the actual Development/Holdout scenario content, so Stage 8's originally
 -reported specific tuning numbers no longer reproduce exactly under current code — the methodology itself
 was re-verified end to end (`docs/StageArtifacts/Stage10.md`). A note on Stage 11's own numbers: Stage 8's
-"Adaptive wins 62.5-70% of scenarios" and Stage 11's "Adaptive wins 0/27 regime-map configurations on mean
-latency" are **not contradictory** — they measure different things (composite utility vs. raw mean
+"Adaptive wins 62.5-70% of scenarios" and Stage 11's "Adaptive wins 0/27 regime-map configurations
+outright on mean latency (it ties for the minimum in the 9 homogeneous ones, along with all five other
+policies)" are **not contradictory** — they measure different things (composite utility vs. raw mean
 latency); see `Stage11.md` §19.
 
 ### Stage 1 — TCP Foundations
@@ -402,9 +404,10 @@ Full recording script: [`docs/demo/Stage10Demo.md`](docs/demo/Stage10Demo.md).
 
 ### Stage 11 — What Appeared to Be True
 
-An 8-program sweep (162+ runs) found Adaptive wins 0 of 27 regime-map configurations on raw mean latency
-under heterogeneous load in the FLAT (no-queueing) model — because the model had no way to penalize
-EWMA's unconstrained concentration. Also found: a real cache-affinity trap (Adaptive can permanently fail
+An 8-program sweep (162+ runs) found Adaptive never wins a regime-map configuration outright on raw mean
+latency in the FLAT (no-queueing) model — 0/27, though it ties for the minimum in all 9 homogeneous
+configs, along with every other policy — because the model had no way to penalize EWMA's unconstrained
+concentration under heterogeneous load. Also found: a real cache-affinity trap (Adaptive can permanently fail
 to route back to a recovered target), a real `RealEngine` instrumentation bug (dynamic policies selected
 blind), and a real SeedTree independence gap.
 

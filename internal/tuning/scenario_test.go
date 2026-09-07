@@ -288,3 +288,51 @@ func TestGenerate_IndependentAxisControl(t *testing.T) {
 		}
 	}
 }
+
+// TestDefaultScenarioSpace_SevereNoFailureCornerIsNotRare is the check
+// docs/StageArtifacts/Stage11.md Section 19 cites directly (an
+// independent audit found that section had asserted, without ever
+// checking, that Stage 8's random sampling "may rarely or never
+// construct" Program A's severe-heterogeneity/no-failure corner -- a
+// claim that turns out to be wrong once actually measured). This
+// doesn't reproduce Stage 8's own tuning run; it measures
+// DefaultScenarioSpace's own generation distribution directly, the same
+// quantity the doc's reconciliation argument depends on.
+func TestDefaultScenarioSpace_SevereNoFailureCornerIsNotRare(t *testing.T) {
+	ss := DefaultScenarioSpace()
+	const trials = 50000
+	var n3, severeNoFailure int
+	for i := int64(0); i < trials; i++ {
+		scenario := ss.GenerateFromRoot(900000 + i)
+		if len(scenario.Targets) != 3 {
+			continue
+		}
+		n3++
+		minSvc, maxSvc := scenario.Targets[0].ServiceTime, scenario.Targets[0].ServiceTime
+		for _, tg := range scenario.Targets {
+			if tg.ServiceTime < minSvc {
+				minSvc = tg.ServiceTime
+			}
+			if tg.ServiceTime > maxSvc {
+				maxSvc = tg.ServiceTime
+			}
+		}
+		ratio := float64(maxSvc) / float64(minSvc)
+		if ratio >= 4.0 && len(scenario.Failures) == 0 { // Program A's own severe topology (15/30/60ms) is a 4x ratio
+			severeNoFailure++
+		}
+	}
+	rate := float64(severeNoFailure) / float64(trials)
+	// Measured ~6.9% at 200,000 trials (see Stage11.md Section 19); a
+	// generous [2%, 15%] band absorbs sampling noise at this smaller
+	// trial count without weakening the actual claim under test: this
+	// corner is common, not "rare or never," so the reconciliation's own
+	// real explanatory weight has to sit on the metric difference, not
+	// scenario-distribution rarity.
+	if rate < 0.02 {
+		t.Fatalf("severe/no-failure corner occurred in only %.2f%% of %d trials (%d/%d) -- if this has genuinely become rare, Stage11.md Section 19's correction needs revisiting, not this test silently loosened", rate*100, trials, severeNoFailure, trials)
+	}
+	if rate > 0.15 {
+		t.Fatalf("severe/no-failure corner occurred in %.2f%% of %d trials (%d/%d) -- unexpectedly far from the ~6.9%% this test documents; investigate before trusting either number", rate*100, trials, severeNoFailure, trials)
+	}
+}

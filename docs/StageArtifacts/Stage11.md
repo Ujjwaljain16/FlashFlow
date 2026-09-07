@@ -625,8 +625,23 @@ metric (`Stage8.md`: "driven by a clear lead on latency quality, `LatencyScore` 
 Development/Holdout scenarios (`internal/tuning.ScenarioSpace.Generate`, 2-5 targets, 5-200ms service
 times, 50% chance of one failure). Program A instead measures **raw mean latency** on a **systematically
 constructed** regime sweep, specifically including a severe-heterogeneity/no-failure/constant-load
-corner Stage 8's random sampling may rarely or never construct in exactly this form. These are
-legitimately different, complementary questions — not competing answers to the same one. Stage 8 asks
+corner.
+
+**Checked directly (independent audit correction)**: this section originally asserted, without checking,
+that Stage 8's random sampling "may rarely or never construct" Program A's severe/no-failure corner. That
+claim was never actually verified and turns out to be wrong when checked: Monte Carlo sampling 200,000
+draws from `DefaultScenarioSpace().Generate()` finds this corner (exactly 3 targets, max/min service-time
+ratio ≥4x — Program A's own severe topology is 15/30/60ms, a 4x ratio — and no failure window) occurs
+with probability ≈6.9%, not rarely at all. Stage 8's actual 60-scenario Development+Holdout run would be
+expected to contain roughly **4 such scenarios**. Frequency of exposure to this specific corner is
+therefore NOT what separates the two conclusions — the metric difference below (composite utility vs.
+raw mean latency) is the reconciliation's actual, load-bearing explanation. The scenario-distribution
+difference between the two programs is still real (Stage 8 draws scenarios at random across a broad
+space; Program A hand-constructs one specific corner deliberately, then holds it fixed while varying
+policy), but "Stage 8 rarely saw this regime" is not a claim this project can make — it was checked and
+is false.
+
+These are legitimately different, complementary questions — not competing answers to the same one. Stage 8 asks
 "does Adaptive win, by its own composite objective, across a broad random scenario distribution" (yes,
 substantially); Program A asks "in this specific, controlled regime, does Adaptive beat EWMA on raw
 mean latency" (no, decisively, even tuned). **This is precisely the kind of regime-boundary finding

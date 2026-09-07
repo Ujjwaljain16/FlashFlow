@@ -16,6 +16,16 @@ RUN → COMPARE → DIAGNOSE → EXPLAIN → EVIDENCE → REPRODUCE
 
 [**Try the demo**](#try-it-in-2-minutes) &nbsp;·&nbsp; [**Watch the flagship**](docs/StageArtifacts/Stage16-FlagshipDemo.md) &nbsp;·&nbsp; [**Read the research**](#research-history) &nbsp;·&nbsp; [**GitHub**](https://github.com/Ujjwaljain16/FlashFlow)
 
+| Overview | Compare |
+|---|---|
+| [![Overview tab](docs/images/dashboard-overview.png)](docs/images/dashboard-overview.png) | [![Compare tab](docs/images/dashboard-compare.png)](docs/images/dashboard-compare.png) |
+
+| Diagnose | Stress Map |
+|---|---|
+| [![Diagnose tab](docs/images/dashboard-diagnose.png)](docs/images/dashboard-diagnose.png) | [![Stress Map tab](docs/images/dashboard-stressmap.png)](docs/images/dashboard-stressmap.png) |
+
+*Live dashboard (`go run ./cmd/dashboard`) — every number shown is computed by `internal/report`, not hand-authored.*
+
 ---
 
 ## Why FlashFlow?

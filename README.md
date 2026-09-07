@@ -2,128 +2,79 @@
 
 ### Why did your routing system fail under pressure?
 
-**FlashFlow is a routing failure-analysis laboratory for distributed edge systems.** It lets engineers run
-controlled experiments, compare routing policies under identical conditions, reconstruct congestion and
-backlog dynamics, and explain why latency collapses — not just which policy produced the lowest benchmark
-number.
+**FlashFlow is a routing failure-analysis laboratory for distributed edge systems.** It runs controlled
+experiments, compares routing policies under identical conditions, reconstructs congestion and backlog
+dynamics, and explains why latency collapses — not just which policy produced the lowest benchmark number.
 
 ```
-RUN -> COMPARE -> WHY? -> MECHANISM -> EVIDENCE -> REPRODUCE
+RUN → COMPARE → DIAGNOSE → EXPLAIN → EVIDENCE → REPRODUCE
 ```
 
-```bash
-go run ./cmd/flashflow report --policy ewma      # classify a scenario
-go run ./cmd/dashboard                            # or: browse it interactively
-```
+[![Go](https://img.shields.io/badge/Go-1.23-00ADD8?logo=go&logoColor=white)](go.mod)
+[![CI](https://github.com/Ujjwaljain16/FlashFlow/actions/workflows/ci.yml/badge.svg)](https://github.com/Ujjwaljain16/FlashFlow/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-FlashFlow is **not** a production CDN, a replacement for Envoy/NGINX/HAProxy, a complete packet-level
-network simulator, or a universal routing optimizer — see [Non-Goals](#non-goals).
+[**Try the demo**](#try-it-in-2-minutes) &nbsp;·&nbsp; [**Watch the flagship**](docs/StageArtifacts/Stage16-FlagshipDemo.md) &nbsp;·&nbsp; [**Read the research**](#research-history) &nbsp;·&nbsp; [**GitHub**](https://github.com/Ujjwaljain16/FlashFlow)
 
 ---
 
-## What FlashFlow Studies
+## Why FlashFlow?
 
-FlashFlow studies one question with increasing precision across 16 development stages: under
-heterogeneous edge conditions (targets with different speeds, occasional failures, finite serving
-capacity), which routing policies handle concentrated load well, and why? It is not a benchmark
-leaderboard — every stage's conclusion was tested against its predecessor's, and several were later
-narrowed or outright falsified as evidence accumulated. See **Key Research Findings** below for the
-current best answer, and **Research History** for the full sequence of corrections that produced it.
+Distributed routing failures are hard to diagnose because several variables change at once: traffic,
+capacity, latency, failures, and cache state all shift together, and a single aggregate latency number
+can't tell you which one mattered.
 
-## Architecture
+A typical benchmark answers: *"Policy A was faster."* FlashFlow asks: *"Why did Policy A fail?"*
 
-```text
-                       FlashFlow
-                           │
-          ┌────────────────┴────────────────┐
-          │                                 │
-   Virtual-Time Engine              Real Emulation Engine
-   (deterministic)                  (net/http + internal/netsim)
-          │                                 │
-          └────────────────┬────────────────┘
-                           │
-                  Per-Component Trace/Metrics
-                           │
-               ┌───────────┴───────────────┐
-               ▼                           ▼
-       Internal Statistics          Experiment Result JSON
+```
+traffic → concentration → capacity pressure → committed work / chronic over-allocation
+        → queue behavior → tail latency
 ```
 
-Both engines implement one shared `internal/engine.ExperimentEngine` interface
-(`Prepare`/`Run`/`Replay`, compile-time-verified), so any experiment specification runs unmodified
-against either.
+FlashFlow holds everything exogenous (traffic, topology, failures, seed) fixed, lets each policy evolve
+its own routing decisions on top of that identical world, and reconstructs — from the raw dispatch and
+completion events — exactly where and why one policy's queues grew and another's didn't.
 
-### Engines
+## What makes it different?
 
-- **Virtual-Time Engine** (`internal/vtime`, `internal/replay`): a deterministic discrete-event
-  simulator. Given the same seed, it is byte-for-byte reproducible on the same machine/Go toolchain —
-  confirmed directly, not just assumed (see **Reproduction Commands**).
-- **Real Emulation Engine** (`internal/engine/real.go`): real Go `net/http` servers and a real reverse
-  proxy, with an in-process network-degradation simulator (`internal/netsim`) built specifically in
-  place of `tc netem` (Linux-only, unavailable on this project's Windows development host — evaluated,
-  not used). Subject to genuine OS scheduling and wall-clock timing noise, disclosed and measured, not
-  hidden — see **Evidence Boundaries**.
+| Typical benchmark | FlashFlow |
+|---|---|
+| Compares final latency | Compares behavior and mechanism |
+| Separate runs per policy | Counterfactual same-world comparison |
+| Produces a leaderboard | Produces a failure diagnosis |
+| Aggregate metrics only | Event-level queue/backlog reconstruction |
+| One workload | Controlled workload × topology × failure matrix |
+| Declares a "winner" | Reports evidence, limitations, and a reproduction command |
 
-### Routing Policies
+This describes FlashFlow's own workflow, not a claim about any other specific tool.
 
-Six policies, each mechanistically distinct (see **Key Research Findings**): round-robin (no signal),
-weighted-round-robin (static configured weights), least-connections (current in-flight count), EWMA
-(smoothed latency history), P2C (sampled comparison of two random targets), and Adaptive (a weighted
-combination of Load, Latency, Cache, and Cost signals — four scored signals, not the six-signal count an
-early draft of this document incorrectly used). Source: `internal/proxy/`.
-
-### Cache & Failure Modeling
-
-TTL caching with request coalescing (singleflight, prevents redundant concurrent fetches for the same
-key) and stale-while-revalidate (serves a stale response immediately while refreshing in the background)
-— `internal/cache/`. LRU eviction was evaluated and deliberately deferred: no experiment in this
-project's history has ever needed bounded cache memory. Failure injection is a declarative YAML chaos
-schedule (`internal/chaos/`) that crashes and recovers targets at specified times, backed by a 4-state
-health machine (`internal/health/`).
-
-### Virtual Time
-
-`internal/vtime`: a logical clock that only advances when a discrete event is popped from a priority
-queue, not on a wall-clock timer — the mechanism that makes the virtual engine deterministic.
-
-### Replay
-
-`internal/replay`: stateful counterfactual replay. Two policies run against the byte-for-byte identical
-exogenous trace (arrivals, failures) while each evolves its own isolated endogenous state (cache hits,
-queue depths) — confirmed via full-trace identity/divergence tests, not summary statistics.
-
-### Statistics
-
-`internal/statistics`: percentile, Mann-Whitney U, Cliff's Delta, and bootstrap confidence intervals,
-each independently checked against hand-computed reference values, not just "runs without panicking."
-
-### Tuning
-
-`internal/tuning`: three tuners (Random Search, Latin Hypercube Sampling, Bayesian Optimization) sharing
-one search loop, with development/holdout scenario sets drawn from disjoint seed ranges. Random Search
-is the one that actually wins on this project's own (small, 6-parameter) search space — LHS and Bayesian
-Optimization were built and directly compared, and neither meaningfully improves on it. See **Project
-Status** for why that outcome was kept rather than "fixed."
-
-### Dashboard
-
-`cmd/dashboard` (`internal/dashboard`): a local (`127.0.0.1`-only by default) experiment browser, tuning
-visualizer, and live policy playground. It reads existing result JSON directly from disk and never
-recomputes or overrides a number found there — the dashboard is a presentation surface, never the
-authoritative source for a research claim.
-
-### Diagnostic Tooling
-
-`cmd/flashflow` (`internal/report`): turns Stage 15's own backlog measurements into three things an
-engineer can run directly, built on top of the completed research rather than extending it —
-[`docs/StageArtifacts/Stage17-DiagnosticTooling.md`](docs/StageArtifacts/Stage17-DiagnosticTooling.md)
-has the full classifier design and the three real bugs caught calibrating it against Stage 16's own six
-known policy outcomes.
+## Try it in 2 minutes
 
 ```bash
 go run ./cmd/flashflow report --policy ewma
+go run ./cmd/flashflow explain --policy ewma <the report JSON the command above just wrote>
+go run ./cmd/flashflow stress-map --policy least-connections
 ```
-```text
+
+Or browse it interactively:
+
+```bash
+go run ./cmd/dashboard
+```
+
+Or reproduce the flagship result end to end (5 heterogeneous targets, Capacity=1, a FlashCrowd workload,
+3 independent seeds):
+
+```bash
+./scripts/reproduce-flagship.sh
+```
+
+`scripts/*.sh` need Git Bash or WSL on Windows — a plain `cmd.exe`/PowerShell prompt won't run them.
+
+## Diagnose a failure
+
+```bash
+$ go run ./cmd/flashflow report --policy ewma
 FLASHFLOW FAILURE REPORT
 ---------------------------------------
 
@@ -132,7 +83,7 @@ Scenario
 
 Policy: ewma
 
-Failure classification
+Diagnostic classification
 ACUTE_COLLAPSE
 (concentrated overload that had not, or had only just, resolved)
 
@@ -144,410 +95,223 @@ SMOOTHED-HISTORY LOCK-IN
 ```
 
 ```bash
-go run ./cmd/flashflow explain --policy ewma <the report JSON above>
-```
-```text
+$ go run ./cmd/flashflow explain --policy ewma <report.json>
 WHY DID THIS POLICY COLLAPSE?
 
-1. Traffic concentrated on edge-02.
+1. Traffic concentrated on edge-02 (4.4x its fair share).
 2. edge-02 crossed capacity at 2.488s.
-3. 97 additional requests were committed before diversion.
+3. EWMA continued routing traffic to edge-02, committing 97 additional
+   requests before its dispatch share materially dropped.
+4. The policy began diverting new traffic at 2.698s.
 ...
 Counterfactual (same scenario, same seeds, different policy):
   round-robin            committed_work=4     classification=CHRONIC_COLLAPSE
   least-connections      committed_work=8     classification=STABLE
 ```
 
-```bash
-go run ./cmd/flashflow stress-map --policy least-connections
+`report`/`explain`/`stress-map` all support `--json` for scripting and their own `--help`. The
+classifier's two magnitude constants (concentration ≥1.2× fair share, committed work ≥10× capacity) were
+iteratively calibrated to match Stage 15/16's own six already-published policy outcomes — a genuine
+internal-consistency check, not an independently-derived or externally-validated threshold. **Diagnostic
+thresholds are heuristic calibration parameters, not universal system thresholds.** See
+[Stage17-DiagnosticTooling.md](docs/StageArtifacts/Stage17-DiagnosticTooling.md) for exactly how, and
+three real classifier bugs that calibration caught. `stress-map`'s own grid is a small, **exploratory**
+run — its numbers are not a Stage 13-16 finding.
+
+## The key research finding
+
+Under finite capacity, concentration alone doesn't explain collapse — FlashFlow's experiments found
+evidence for at least two distinct failure shapes:
+
 ```
-```text
-POLICY STRESS MAP: least-connections
-
-EXPLORATORY ANALYSIS -- this grid is a new, small (9-cell) run. It is not a
-reproduction of any specific Stage 13-16 experiment, and its numbers should
-not be cited as a Stage 13-16 finding.
-
-heterogeneity  constant  burst  flash_crowd
-low            OK        OK     OK
-moderate       OK        OK     AC
-severe         OK        OK     OK
+ACUTE COLLAPSE                          CHRONIC COLLAPSE
+concentration                           structural over-allocation
+    ↓                                        ↓
+continued commitment                    sustained time above capacity
+    ↓                                        ↓
+committed backlog                       persistent queue pressure
+    ↓                                        ↓
+tail collapse                           tail collapse
 ```
 
-Every subcommand also supports `--json` for scripting (`flashflow report --json`, etc.) and its own
-`--help`.
+Committed backlog (work already dispatched to a target between the moment it congests and the moment a
+policy materially diverts new work elsewhere): in the tested topology-size generalization, this was the
+strongest available retrospective severity measure for acute collapse; sustained time-above-capacity is
+more informative for chronic collapse. **No single scalar metric was found that explains both** — and committed backlog itself is a *retrospective* statistic: it's
+computed by anchoring its counting window to whichever congestion episode turns out to contain the run's
+peak depth, which requires already having seen that episode's own future. It's a faithful, correct
+post-hoc explanation, not something a live system could compute as events arrive.
 
----
+Full evidence ledger: [Stage16-ClaimLedger.md](docs/StageArtifacts/Stage16-ClaimLedger.md). Full
+narrative: [Stage16-ResearchSynthesis.md](docs/StageArtifacts/Stage16-ResearchSynthesis.md).
 
-## Key Research Findings
+## The most important negative result
 
-FlashFlow's experiments indicate that routing collapse is not explained by "load-aware vs. load-blind"
-routing alone. Under finite capacity, concentration can produce two distinguishable failure shapes:
-**acute over-commitment**, where committed backlog (work already dispatched to a target between the
-moment it becomes congested and the moment a policy materially diverts new work elsewhere) becomes the
-strongest available *retrospective* severity measure in the tested topology-size generalization, and
-**chronic over-allocation**, where sustained time above capacity is more informative than any single-event
-metric. Committed backlog is computed by anchoring its counting window to whichever congestion episode
-turns out to contain the run's peak depth — a genuinely POST-HOC computation (it requires having already
-seen the episode's own future to know it was the peak one), not something a live system could evaluate
-online as events arrive. It correctly explains, after the fact, which measured runs collapsed worst and
-why; it is not proposed as a real-time predictive signal or a circuit-breaker input.
+**Adaptive does not always win.** In the canonical flagship scenario (5 heterogeneous targets,
+Capacity=1, FlashCrowd), Adaptive's own P99 was worst-of-six in two of three independent seeds, and a
+statistical near-tie with EWMA (within 0.3%) in the third — never among the safer half of six policies in
+any seed tested — despite a comparatively strong mean latency. A controlled ablation traced its resistance
+to collapse specifically to its Load signal, not general "smartness."
 
-This result is not a universal law across workload distributions or arbitrary real systems: cross-
-workload prediction is imperfect, the cache-affinity mechanism (Stage 13's own interim-latency finding)
-remains unresolved, and virtual/real behavior diverges under the most extreme real overload tested.
+That negative result was useful: mean latency alone would have hidden it, and it's what motivated moving
+from "which policy wins?" to "what mechanism caused the tail failure?" — the entire premise of this
+project's diagnostic tooling.
 
-Five stages of corrections produced this answer, each narrowing or falsifying the one before it:
+## FlashFlow in numbers
 
-1. **Stage 11**: EWMA sometimes beats Adaptive under heterogeneity in a flat (no-queueing) model.
-2. **Stage 12**: adding a minimal finite-capacity model reverses that finding sharply in one scenario —
-   at Capacity=1, EWMA's mean latency explodes 8x while Adaptive barely moves (12-seed confirmation,
-   Cliff's Delta=1.000).
-3. **Stage 13**: two independent sweeps locate the reversal's true driver at offered ρ≈0.89-0.97, and
-   reframe the deeper boundary as "load-blind vs. load-aware routing" — round-robin and EWMA (no live
-   signal) collapse; every policy with SOME load signal stays stable.
-4. **Stage 14**: scaling to more targets falsifies that reframing directly — EWMA (load-aware by signal)
-   loses outright to round-robin at N=8, confirmed across 10 independent seeds. Rho's own predictive
-   power decreases as target count grows even as severity worsens.
-5. **Stage 15**: direct backlog measurement (a new `internal/backlog` package) replaces both prior
-   explanations with a measured, two-mechanism model — committed backlog for acute collapse (perfect
-   rank agreement across a target-count generalization test where peak rho is badly misordered),
-   fraction-of-time-over-capacity for chronic collapse (round-robin's own failure: tiny committed
-   backlog, 71% of the run over capacity, never drains).
-
-Full ledger with exact evidence for every claim: [`docs/StageArtifacts/Stage16-ClaimLedger.md`](docs/StageArtifacts/Stage16-ClaimLedger.md).
-Full narrative: [`docs/StageArtifacts/Stage16-ResearchSynthesis.md`](docs/StageArtifacts/Stage16-ResearchSynthesis.md).
-
-## Flagship Result
-
-One scenario shows the whole mechanism at once: 5 heterogeneous targets (15-75ms), each with exactly one
-serving slot, under a FlashCrowd workload peaking at t=2.5s, run across three independent seeds. EWMA and
-Adaptive both build the deepest queues and show severe, often-non-draining acute collapse (committed
-backlog 93-127 for Adaptive, consistently among the worst P99 latencies of all six policies). Round-robin
-shows a completely different, chronic failure: a tiny committed backlog (4) but the highest
-fraction-of-time-over-capacity of the six (71%), and it never drains either. Weighted-round-robin,
-least-connections, and P2C-load all stay comparatively mild.
-
-**This finding is deliberately not framed as "Adaptive wins."** Adaptive's own P99 was worst-of-six in two
-of the three seeds, and a statistical near-tie with EWMA (within 0.3%) in the third — never among the
-safer half of the six policies in any seed tested — a controlled ablation traced its resistance to
-collapse specifically to its Load signal, not general "smartness."
-
-Full walkthrough: [`docs/StageArtifacts/Stage16-FlagshipDemo.md`](docs/StageArtifacts/Stage16-FlagshipDemo.md).
-Reproduce it yourself: `./scripts/reproduce-flagship.sh`.
-
-## FlashFlow in Numbers
-
-Every figure below is measured in one specific stage's own experiment, not a general system-performance
-claim — see the **Evidence Boundaries** and **Research History** sections for what each does and doesn't
-generalize to.
+Every figure below is measured in one specific stage's own experiment, not a general performance claim.
 
 | Measurement | Value | Measured in |
 |---|---|---|
-| Virtual-time engine throughput | ~2.53M events/sec | [Stage 5](docs/StageArtifacts/Stage5.md) (100,000 events packed into a 100ms virtual span) |
-| HTTP keep-alive vs. no-reuse throughput | 3.06× | [Stage 2](docs/StageArtifacts/Stage2.md), Experiment 002-A1, at concurrency=100 |
-| EWMA vs. Adaptive mean latency at Capacity=1 | 8× (Cliff's Delta=1.000, 12 seeds) | [Stage 12](docs/StageArtifacts/Stage12.md), the finite-capacity reversal |
+| Virtual-time engine throughput | ~2.53M events/sec | [Stage 5](docs/StageArtifacts/Stage5.md) |
+| HTTP keep-alive vs. no-reuse throughput | 3.06× | [Stage 2](docs/StageArtifacts/Stage2.md), at concurrency=100 |
+| EWMA vs. Adaptive mean latency at Capacity=1 | 8× (Cliff's Delta=1.000, 12 seeds) | [Stage 12](docs/StageArtifacts/Stage12.md) |
 | P2C vs. EWMA committed-backlog separation | 8/8 seeds vs. 0/8 seeds | [Stage 15](docs/StageArtifacts/Stage15.md), claim C25 |
 | Topology-size generalization | Rank ordering holds across N=3/5/8; the raw ρ threshold does not | [Stage 14](docs/StageArtifacts/Stage14.md) |
 
-**Not shown here as a headline number, deliberately**: despite the strongest mean, Adaptive's own P99 was
-worst-of-six in two of the flagship scenario's three seeds, and a statistical near-tie with EWMA in the
-third — never among the safer half of six policies in any seed tested. See **Flagship Result** above. A
-benchmark leaderboard would have hidden that behind the mean; FlashFlow's own analysis is what surfaced
-it.
+## How it works
 
-## Evidence Boundaries
+1. **Define a scenario** — topology, workload, capacity, failure schedule.
+2. **Run policies** — each under identical exogenous conditions.
+3. **Capture the event stream** — dispatch, completion, and state-transition events.
+4. **Compare outcomes** — latency, queue depth, committed backlog, recovery.
+5. **Diagnose the mechanism** — acute collapse / chronic collapse / stable / recovery-limited.
+6. **Reproduce** — exact configuration, seed, and command.
 
-- Committed backlog generalizes with **perfect rank agreement** across topology size (N=3/5/8, plus a
-  bimodal shape); its cross-**workload**-shape generalization is real but imperfect.
-- Committed backlog is a **retrospective** severity measure (`internal/backlog.FindPeakEpisodeCongestionOnset`
-  anchors its counting window to whichever episode contains the run's peak depth, which requires having
-  already observed that episode's own future) — a valid post-hoc explanatory statistic, not something a
-  live system could compute online or use as a circuit-breaker input. An earlier version of this
-  documentation implied otherwise; caught in an independent audit.
-- A validated real concurrency ceiling reproduces the mechanism's direction at most, not all, tested
-  real-engine overload levels — it reverses at the most extreme level tested.
-- The cache-affinity interim-latency effect (higher cache weight worsens interim latency, improves
-  eventual recovery) was tested directly against this mechanism in two candidate locations and remains
-  **unresolved**.
-- Virtual-engine results are byte-for-byte reproducible except a timestamp field (confirmed directly this
-  stage); the one real-engine experiment is **not** byte-identical across reruns — genuine OS/timing
-  variance, disclosed and measured rather than hidden.
-- LRU cache eviction, DR-OPE, contextual bandits/RL, real `tc netem`, and OpenTelemetry are **not
-  implemented** anywhere in this codebase — see [`docs/StageArtifacts/Stage16-ScopeFreeze.md`](docs/StageArtifacts/Stage16-ScopeFreeze.md)
-  for the full capability-by-capability audit.
+## Architecture
 
-## Reproduction Commands
+FlashFlow's core capabilities, compactly:
 
-```bash
-# Full release-readiness gate (formatting, vet, tests, deterministic replay,
-# statistical/tuning validation, challenge suite)
-./scripts/final-validation.sh
-
-# Reproduce every Stage 15 (mechanism-identification) experiment in order
-./scripts/reproduce-stage15.sh
-
-# Reproduce the flagship demonstration across 3 independent seeds
-./scripts/reproduce-flagship.sh
+```
+                    FlashFlow
+                        │
+          ┌─────────────┴─────────────┐
+          │                           │
+   Virtual-Time Engine         Real HTTP Engine
+   (deterministic)             (net/http + internal/netsim)
+          │                           │
+          └─────────────┬─────────────┘
+                         ↓
+                Experiment Engine
+                         ↓
+           Trace / Metrics / Results
+                         ↓
+              Statistics / Replay
+                         ↓
+             Diagnostics / Reports
 ```
 
-`scripts/*.sh` require Git Bash or WSL on Windows (not a plain `cmd.exe`/PowerShell prompt).
-Per-stage experiment commands are listed in **Research History** below.
+| Component | Purpose |
+|---|---|
+| Virtual Time (`internal/vtime`, `internal/replay`) | Deterministic discrete-event experiments |
+| Real Engine (`internal/engine/real.go`) | Real Go `net/http` execution, in-process network degradation |
+| Routing (`internal/proxy/`) | Six mechanistically distinct policy implementations |
+| Replay (`internal/replay`) | Same-world counterfactual comparison |
+| Backlog (`internal/backlog`) | Queue/congestion reconstruction |
+| Statistics (`internal/statistics`) | Percentiles, effect sizes, confidence intervals |
+| Tuning (`internal/tuning`) | Parameter search with development/holdout validation |
+| Dashboard (`cmd/dashboard`) | Interactive experiment exploration |
+| Diagnostics (`cmd/flashflow`, `internal/report`) | report / explain / stress-map |
 
-## Project Status
+Six routing policies, each mechanistically distinct: round-robin (no signal), weighted-round-robin
+(static weights), least-connections (current in-flight count), EWMA (smoothed latency history), P2C
+(sampled comparison of two random targets), and Adaptive (a weighted combination of **four** scored
+signals — Load, Latency, Cache, Cost).
 
-All 16 planned stages are complete. The research program (Stages 11-15) reached a measured, precisely-
-bounded mechanistic explanation rather than a universal law, and Stage 16 froze that evidence, re-audited
-every strong claim against source, fixed one real security gap and two documentation overclaims found
-during that audit, and confirmed reproducibility from a clean checkout. Final verdict: **READY WITH
-DOCUMENTED LIMITATIONS** — see [`docs/StageArtifacts/Stage16.md`](docs/StageArtifacts/Stage16.md).
+## Same world, different policy
 
-| Stage | Ships | Status |
-|---|---|---|
-| **1** | Raw TCP server/client, connection lifecycle, framing, benchmarks | ✅ Complete |
-| **2** | HTTP reverse proxy, 3-edge topology, real emulation engine | ✅ Complete |
-| **3** | Round-robin → EWMA routing policies | ✅ Complete |
-| **4** | LRU (deferred) + TTL edge cache, `internal/netsim` network degradation | ✅ Complete |
-| **5** | Virtual-Time Engine, Clock abstraction, Event Stream | ✅ Complete |
-| **6** | Internal statistics, Little's-Law-based queueing analysis | ✅ Complete |
-| **7** | P2C + Four-Signal Adaptive Router, Counterfactual Replay | ✅ Complete |
-| **8** | Auto-Tuner (Random Search v1), Live Dashboard | ✅ Complete |
-| **9** | Post-Stage-8 adversarial audit remediation | ✅ Complete |
-| **10** | Traffic generator, SWR cache, YAML chaos engine, provenance, attribution engine, LHS/Bayesian tuning, telemetry, `ExperimentEngine` | ✅ Complete — [`Stage10.md`](docs/StageArtifacts/Stage10.md) |
-| **11** | Research validation: 8-program sweep mapping policy regime boundaries | ✅ **PASS WITH LIMITATIONS** — [`Stage11.md`](docs/StageArtifacts/Stage11.md) |
-| **12** | Model fidelity: finite-capacity contention model reveals the first reversal | ✅ **PASS** — [`Stage12.md`](docs/StageArtifacts/Stage12.md) |
-| **13** | Regime discovery: ρ≈0.9 and "load-blind vs. load-aware" | ✅ **PASS** — [`Stage13.md`](docs/StageArtifacts/Stage13.md) |
-| **14** | Scale & topology generalization: falsifies "load-blind vs. load-aware" | ✅ **PASS WITH LIMITATIONS** — [`Stage14.md`](docs/StageArtifacts/Stage14.md) |
-| **15** | Mechanism identification: committed backlog + chronic/acute collapse | ✅ **PASS WITH LIMITATIONS** — [`Stage15.md`](docs/StageArtifacts/Stage15.md) |
-| **16** | Final synthesis, reproducibility audit, release, flagship demo | ✅ **READY WITH DOCUMENTED LIMITATIONS** — [`Stage16.md`](docs/StageArtifacts/Stage16.md) |
+FlashFlow's counterfactual replay holds the exogenous world fixed — arrivals, failures, topology, seed —
+while each policy evolves its own independent endogenous state (queue depths, cache contents).
 
-## Known Limitations
+```
+same traffic, topology, failures, seed
+              ↓
+      policy A     policy B
+              ↓         ↓
+   independent state evolution
+              ↓
+     first point of divergence
+```
+
+Confirmed via full-trace identity/divergence tests: two policies replayed against the identical trace
+diverge only after their own decisions actually differ, not before.
+
+## Evidence, not just benchmarks
+
+Every reported result carries its configuration, seed, result artifact, and reproduction command —
+findings are meant to be checked, not taken on faith:
+
+- [Stage16-ClaimLedger.md](docs/StageArtifacts/Stage16-ClaimLedger.md) — every strong claim with its exact
+  evidence and status (supported / limited / retired)
+- [Stage16-ResearchSynthesis.md](docs/StageArtifacts/Stage16-ResearchSynthesis.md) — the full narrative
+- [PublicReleaseAudit.md](docs/PublicReleaseAudit.md) — an independent repository/claims/security audit
+
+## Reproducibility
+
+The repository was cloned into an isolated clean directory at the release commit: `go build ./...`
+succeeded, `go test ./...` passed across all 23 packages, and `./scripts/reproduce-flagship.sh` reproduced
+the flagship result byte-for-byte identical except the timestamp field.
+
+```bash
+go test ./...
+go build ./...
+./scripts/final-validation.sh      # formatting, vet, tests, deterministic replay, statistical/tuning gates
+./scripts/reproduce-flagship.sh    # the flagship demonstration, 3 independent seeds
+```
+
+This holds for the **virtual engine**. The real engine is subject to genuine OS scheduling and wall-clock
+timing noise — its results are directionally, not byte-for-byte, reproducible, and disclosed as such
+rather than hidden.
+
+## Limitations
 
 - The finite-capacity model is a single FIFO queue per target, not a real multi-resource scheduler.
-- No cross-hardware determinism guarantee — "deterministic" means same machine, same Go toolchain
-  version, same seed.
-- The real engine is subject to genuine OS scheduling and wall-clock timing noise; its results are
-  directionally, not byte-for-byte, reproducible.
-- Cache-affinity's interim-latency mechanism remains unexplained.
-- Committed backlog's cross-workload-shape generalization is imperfect.
-- Most experiment binaries after Stage 10's `experiment-010a` write ad hoc result JSON rather than a full
-  provenance manifest (disclosed, not hidden).
+- Committed backlog is a retrospective severity measure, not something a live system could compute online.
+- Cross-workload-shape generalization of committed backlog is imperfect (real, but not perfect, rank
+  agreement).
+- The cache-affinity interim-latency mechanism remains unresolved.
+- No cross-hardware determinism guarantee — "deterministic" means same machine, same Go toolchain, same
+  seed.
+- The real engine has genuine OS/timing variance; a validated concurrency ceiling reproduces the
+  mechanism's direction at most, not all, tested overload levels.
+- Most experiment binaries after Stage 10 write ad hoc result JSON rather than a full provenance manifest.
 - Never run against real production traffic.
 
-## Non-Goals
+## What FlashFlow is not
 
-FlashFlow is a research laboratory for controlled experiments on distributed edge-routing behavior. It is
-**not**: a production CDN, a replacement for Envoy/NGINX/HAProxy, a complete packet-level network
-simulator (ns-3, Mininet), a universal routing optimizer, or a proof that Adaptive always wins. Doubly
-Robust Off-Policy Evaluation, contextual bandits/reinforcement learning, real `tc netem`/Kubernetes
-orchestration, and OpenTelemetry integration were all evaluated in this project's own planning documents
-and are explicitly **not implemented** — see [`docs/StageArtifacts/Stage16-ScopeFreeze.md`](docs/StageArtifacts/Stage16-ScopeFreeze.md).
+Not a production CDN, a replacement for Envoy/NGINX/HAProxy, a complete packet-level network simulator
+(ns-3, Mininet), a universal routing optimizer, or a proof that Adaptive always wins. Doubly Robust
+Off-Policy Evaluation, contextual bandits/RL, real `tc netem`/Kubernetes orchestration, and OpenTelemetry
+were evaluated and are explicitly **not implemented** — see
+[Stage16-ScopeFreeze.md](docs/StageArtifacts/Stage16-ScopeFreeze.md).
 
----
+## Research history
 
-## Research History
+FlashFlow's research story is a sequence of increasingly precise hypotheses: later experiments repeatedly
+narrowed or falsified earlier explanations, rather than confirming a single thesis from the start.
 
-The full stage-by-stage narrative, preserved as a sequence of corrections rather than rewritten as if the
-final answer were obvious from the start. A note on Stage 10's own numbers: widening `Scenario.Seed` into
-a hierarchical `SeedTree` changed the actual Development/Holdout scenario content, so Stage 8's originally
--reported specific tuning numbers no longer reproduce exactly under current code — the methodology itself
-was re-verified end to end (`docs/StageArtifacts/Stage10.md`). A note on Stage 11's own numbers: Stage 8's
-"Adaptive wins 62.5-70% of scenarios" and Stage 11's "Adaptive wins 0/27 regime-map configurations
-outright on mean latency (it ties for the minimum in the 9 homogeneous ones, along with all five other
-policies)" are **not contradictory** — they measure different things (composite utility vs. raw mean
-latency); see `Stage11.md` §19.
+Stages 1-10 built the system itself (raw TCP, HTTP reverse proxying, six routing policies, caching and
+failure injection, the virtual-time engine, statistics, counterfactual replay, tuning, and the dashboard —
+see [`docs/StageArtifacts/`](docs/StageArtifacts/) for each). The research program proper:
 
-### Stage 1 — TCP Foundations
-
-**Research question**: What is the performance difference between creating a new TCP connection for
-every request versus reusing persistent connections?
-
-1. TCP is a byte stream; application-level message boundaries require explicit framing.
-2. Even on loopback, `net.Dial()` costs ~0.5–1.5ms p99. On real networks this is 50–200ms.
-3. At c=100, per-request mode app RTT degrades to ~9.4ms (p50) vs ~0µs for persistent.
-4. TIME_WAIT socket exhaustion contaminates sequential benchmarks.
-
-```bash
-go run ./cmd/tcp-server --addr 127.0.0.1:9000
-go run ./cmd/tcp-client --addr 127.0.0.1:9000 --requests 10000 --concurrency 10 --connection-mode persistent
-go run ./cmd/benchmark-runner       # full 120-run benchmark matrix
-go run ./cmd/experiment-001a        # causal decomposition
-```
-
-### Stage 10 Demo
-
-**The question**: when one edge target is both overloaded and prone to temporary failure, does
-FlashFlow's adaptive router actually route around the problem better than blind round-robin — and can
-that be proven, explained, and reproduced?
-
-3 heterogeneous edges (20ms/15ms/60ms), a real generated workload (300 requests), a declarative failure
-schedule crashing the fastest edge at t=1s and recovering it at t=2s:
-
-```text
-policy             mean(ms)    p99(ms)   rejected   completed by target
-round-robin           34.35      60.00          0   edge-a=117  edge-b=67  edge-c=116
-adaptive              28.73      60.00          0   edge-a=122  edge-b=100  edge-c=78
-```
-
-Adaptive's 28.73ms vs. round-robin's 34.35ms is a 16.4% mean-latency reduction in this specific scenario
-(p99 ties — Adaptive did not "solve" the tail here, only the mean). The attribution model shows why: it
-reduces the overloaded edge's estimated ρ from 1.99 to 1.34 by shifting load onto edges with headroom.
-Reproduced identically across 3 separate runs (same seed, and a full state wipe). This is not evidence
-Adaptive always wins — Stage 8's own broader evaluation found 62.5-70%, not 100% — it's evidence the
-platform can reproduce, isolate, and mechanistically explain one specific comparison.
-
-```bash
-go run -buildvcs=true ./cmd/demo-stage10   # or: scripts/demo-stage10.sh
-```
-
-Full recording script: [`docs/demo/Stage10Demo.md`](docs/demo/Stage10Demo.md).
-
-### Stage 11 — What Appeared to Be True
-
-An 8-program sweep (162+ runs) found Adaptive never wins a regime-map configuration outright on raw mean
-latency in the FLAT (no-queueing) model — 0/27, though it ties for the minimum in all 9 homogeneous
-configs, along with every other policy — because the model had no way to penalize EWMA's unconstrained
-concentration under heterogeneous load. Also found: a real cache-affinity trap (Adaptive can permanently fail
-to route back to a recovered target), a real `RealEngine` instrumentation bug (dynamic policies selected
-blind), and a real SeedTree independence gap.
-
-```bash
-go run -buildvcs=true ./cmd/experiment-011a   # Program A: policy regime map (162 runs)
-go run -buildvcs=true ./cmd/experiment-011h   # statistical robustness (12-seed replication)
-```
-
-Full findings: [`Stage11.md`](docs/StageArtifacts/Stage11.md) · [`011-stage11-research-validation.md`](docs/learning/011-stage11-research-validation.md)
-
-### Stage 12 — Finite Capacity Reverses the Finding
-
-Adding a minimal, opt-in finite-capacity model (`TargetProfile.Capacity`, FIFO queueing) reverses Stage
-11's flagship finding sharply: once EWMA's own concentration pushes a target past ρ=1, its mean latency
-explodes 8x while Adaptive barely moves — confirmed across 12 seeds (Cliff's Delta=1.000). Explicitly
-scoped to one tested scenario, not claimed as a general law.
-
-```bash
-go run -buildvcs=true ./cmd/experiment-012a   # capacity sweep 0/1/2/3
-go run -buildvcs=true ./cmd/experiment-012e   # 12-seed statistical robustness
-go test ./internal/replay/... -run TestContention -v
-```
-
-Full findings: [`Stage12.md`](docs/StageArtifacts/Stage12.md) · [`012-stage12-model-fidelity-and-control.md`](docs/learning/012-stage12-model-fidelity-and-control.md)
-
-### Stage 13 — Toward Rho and Concentration
-
-Two independent sweeps locate the reversal's driver at offered ρ≈0.89-0.97. The deepest reframing:
-round-robin and EWMA (no live load signal) collapse under contention; every policy with SOME load
-signal — static or live — stays nearly unaffected. "Load-blind vs. load-aware," not "EWMA vs. Adaptive."
-
-```bash
-go run -buildvcs=true ./cmd/experiment-013b   # is Capacity=1 special, or does normalized rho matter?
-go run -buildvcs=true ./cmd/experiment-013i   # multi-policy regime map
-go test ./internal/replay/... -run TestContention_ScaleInvariance -v
-```
-
-Full findings: [`Stage13.md`](docs/StageArtifacts/Stage13.md) · [`013-stage13-regime-discovery.md`](docs/learning/013-stage13-regime-discovery.md)
-
-### Stage 14 — Scale Falsifies the Simplification
-
-EWMA (load-aware by Stage 13's own classification) loses outright to round-robin at N=8, confirmed
-across 10 independent seeds (Cliff's Delta=1.000) — falsifying "load-blind vs. load-aware" as the
-deepest regime boundary. Achieved rho DECREASES as target count grows even as severity WORSENS. A
-validated real concurrency ceiling reproduces the virtual reversal Stage 13's own real engine couldn't.
-
-```bash
-go run -buildvcs=true ./cmd/experiment-014c   # the central rho-matched cross-scale test
-go run -buildvcs=true ./cmd/experiment-014f   # full 6-policy set + falsification attempt
-go run -buildvcs=true ./cmd/experiment-014i   # 10-seed statistical confirmation
-```
-
-Full findings: [`Stage14.md`](docs/StageArtifacts/Stage14.md) · [`014-stage14-scale-and-topology.md`](docs/learning/014-stage14-scale-and-topology.md)
-
-### Stage 15 — Direct Backlog Measurement
-
-A new `internal/backlog` package measures committed backlog directly: perfect rank agreement with
-severity across a target-count generalization test where peak rho is badly misordered. Reveals collapse
-has (at least) two shapes — round-robin's own failure has tiny committed backlog yet is chronically over
-capacity, the opposite pairing from EWMA/Adaptive's acute failures. A controlled ablation traces
-Adaptive's resistance specifically to its Load signal; Adaptive's own P99 was nonetheless the worst of
-six policies tested in the canonical scenario.
-
-```bash
-go run -buildvcs=true ./cmd/experiment-015a   # canonical scenario, full 6-policy backlog dynamics
-go run -buildvcs=true ./cmd/experiment-015c   # Adaptive signal ablation
-go run -buildvcs=true ./cmd/experiment-015e   # predictor generalization across topology/workload
-go test ./internal/backlog/... -v
-```
-
-Full findings: [`Stage15.md`](docs/StageArtifacts/Stage15.md) · [`015-stage15-mechanism-identification.md`](docs/learning/015-stage15-mechanism-identification.md)
-
-### Stage 16 — Final Synthesis & Release
-
-Froze the research scope, audited every strong claim against source (fixing two documentation overclaims
-and one real security gap — `internal/topology/origin.go`'s `OriginServer` lacked the same
-`ReadHeaderTimeout`/error-logging every other real server had had since Stage 9), built the flagship
-demonstration, and confirmed reproducibility from a clean checkout.
-
-Full findings: [`Stage16.md`](docs/StageArtifacts/Stage16.md) · [`Stage16-ClaimLedger.md`](docs/StageArtifacts/Stage16-ClaimLedger.md) · [`Stage16-ResearchSynthesis.md`](docs/StageArtifacts/Stage16-ResearchSynthesis.md) · [`Stage16-FlagshipDemo.md`](docs/StageArtifacts/Stage16-FlagshipDemo.md) · [`016-stage16-final-synthesis.md`](docs/learning/016-stage16-final-synthesis.md)
-
-### Stage 17 — Diagnostic Tooling
-
-Not a new research stage — tooling built on top of Stages 11-16's completed research. Turns Stage 15's own
-backlog measurements into three commands an engineer can run directly (`flashflow report`/`explain`/
-`stress-map`), validated by running the classifier against the flagship's own six already-published
-policy outcomes; that validation process caught three real classifier design bugs before it shipped (see
-the artifact below for exact details, including a threshold that misclassified EWMA and a concentration
-measurement that looked at the wrong time window).
-
-```bash
-go run ./cmd/flashflow report --policy ewma
-```
-
-Full findings: [`Stage17-DiagnosticTooling.md`](docs/StageArtifacts/Stage17-DiagnosticTooling.md).
-
----
-
-## Specifications
-
-- [PRD v3.1](prd.md) — Product requirements and build sequence authority
-- [TRD v3.1](trd.md) — Technical architecture and implementation authority
-- [Research](research.md) — Research methodology reference (pre-implementation vision document; see its
-  own top-of-file status note for what was and wasn't built)
-
-## Experiments
-
-| # | Title | Status |
+| Stage | Question | Finding |
 |---|---|---|
-| [001](experiments/001-tcp-connection-lifecycle/) | TCP Connection Lifecycle | ✅ Complete |
-| [002](experiments/002-http-reverse-proxy/) | HTTP Reverse Proxy | ✅ Complete |
-| [003](experiments/003-routing-policies/) | Routing Policies | ✅ Complete |
-| [004](experiments/004-caching-failures/) | Caching & Failures | ✅ Complete |
-| [005](experiments/005-virtual-time/) | Virtual Time | ✅ Complete |
-| [006](experiments/006-statistics-queueing/) | Statistics & Queueing | ✅ Complete |
-| [007](experiments/007-adaptive-replay/) | Adaptive Routing & Replay | ✅ Complete |
-| [008](experiments/008-tuning-validation/) | Tuning & Final Validation | ✅ Complete |
-| [010-A](experiments/010-stage10-features/) | Tuner Comparison (Random Search vs LHS vs Bayesian Optimization) | ✅ Complete |
-| [011](experiments/011-research-validation/) | Research Validation (Programs A-H) | ✅ Complete — [`INDEX.json`](experiments/011-research-validation/INDEX.json) |
-| [012](experiments/012-model-fidelity/) | Model Fidelity (finite-capacity reversal) | ✅ Complete — [`Stage12.md`](docs/StageArtifacts/Stage12.md) |
-| [013](experiments/013-regime-discovery/) | Regime Discovery (rho, load-blind vs. load-aware) | ✅ Complete — [`Stage13.md`](docs/StageArtifacts/Stage13.md) |
-| [014](experiments/014-scale-topology/) | Scale & Topology Generalization (falsification) | ✅ Complete — [`Stage14.md`](docs/StageArtifacts/Stage14.md) |
-| [015](experiments/015-mechanism-identification/) | Mechanism Identification (committed backlog) | ✅ Complete — [`Stage15.md`](docs/StageArtifacts/Stage15.md) |
-| [016](experiments/016-final-synthesis/) | Final Synthesis (flagship demonstration) | ✅ Complete — [`Stage16.md`](docs/StageArtifacts/Stage16.md) |
+| [11](docs/StageArtifacts/Stage11.md) | Does Adaptive routing beat simpler policies under heterogeneity? | An 8-program sweep found Adaptive never wins outright on raw mean latency in a flat (no-queueing) model — the model had no way to penalize EWMA's unconstrained concentration. |
+| [12](docs/StageArtifacts/Stage12.md) | Does a minimal finite-capacity model change the answer? | Reverses sharply: at Capacity=1, EWMA's mean latency explodes 8× while Adaptive barely moves (12-seed confirmation). |
+| [13](docs/StageArtifacts/Stage13.md) | What actually drives the Stage 12 reversal? | Locates it at offered ρ≈0.89-0.97; reframes the boundary as "load-blind vs. load-aware routing." |
+| [14](docs/StageArtifacts/Stage14.md) | Does that boundary hold as the topology scales? | Falsified: EWMA (load-aware by Stage 13's classification) loses outright to round-robin at N=8. |
+| [15](docs/StageArtifacts/Stage15.md) | If not rho, what explains collapse? | Direct backlog measurement reveals two distinct collapse shapes — see **The key research finding** above. |
+| [16](docs/StageArtifacts/Stage16.md) | Is the evidence solid enough to freeze and release? | Re-audited every strong claim against source, fixed a real security gap, confirmed clean-checkout reproducibility. |
+| [17](docs/StageArtifacts/Stage17-DiagnosticTooling.md) | Can the Stage 15/16 model become something an engineer runs directly? | `flashflow report`/`explain`/`stress-map` — productizes the research; adds no new claim. |
 
----
+Per-stage experiment commands, detailed methodology, and the full correction history live in each linked
+artifact and in [`docs/learning/`](docs/learning/).
+
+## Project status
+
+All 17 stages are complete. Verdict: **ready with documented limitations** — see
+[Stage16.md](docs/StageArtifacts/Stage16.md) for the full release audit.
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE). See [`SECURITY.md`](SECURITY.md) to report a concern.
-
----
-
-## Resume Line
-
-> **FlashFlow — Adaptive Edge Networking Laboratory**: Built a dual-engine distributed system in Go
-> combining a deterministic virtual-time simulator and a real HTTP emulation engine with an in-process
-> network-degradation simulator; implemented six mechanistically-distinct routing policies, TTL+SWR edge
-> caching, and a self-tuning parameter optimizer — then ran a genuine, evolving research program across
-> six further stages that discovered routing collapse under finite capacity splits into two measurable
-> shapes (acute over-commitment, explained by committed backlog; chronic over-allocation, explained by
-> sustained time-over-capacity), falsifying two of its own earlier explanations along the way and
-> disclosing, rather than hiding, the boundaries of what the evidence actually supports.
+MIT — see [LICENSE](LICENSE). See [SECURITY.md](SECURITY.md) to report a concern.

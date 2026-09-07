@@ -36,3 +36,13 @@ tmp/
 temp/
 scratch/
 *.log
+
+# Secrets & credentials -- defense-in-depth; none are committed as of this
+# writing (confirmed by docs/PublicReleaseAudit.md's full-history scan), but
+# there's no rule stopping one from landing here by accident.
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+*.pfx

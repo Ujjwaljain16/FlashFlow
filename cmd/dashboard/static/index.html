@@ -10,7 +10,14 @@
 <header>
   <h1>FlashFlow <span class="muted">Routing Failure Analysis Lab</span></h1>
   <nav>
-    <button class="tab-btn active" data-tab="control">Control Room</button>
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="compare">Compare</button>
+    <button class="tab-btn" data-tab="diagnose">Diagnose</button>
+    <button class="tab-btn" data-tab="stressmap">Stress Map</button>
+    <button class="tab-btn" data-tab="research">Research</button>
+    <button class="tab-btn" data-tab="evidence">Evidence</button>
+    <button class="tab-btn" data-tab="reproduce">Reproduce</button>
+    <span class="nav-sep">Advanced</span>
     <button class="tab-btn" data-tab="playground">Playground</button>
     <button class="tab-btn" data-tab="experiments">Experiments</button>
     <button class="tab-btn" data-tab="tuning">Tuning</button>
@@ -22,8 +29,8 @@
   <div class="shortcuts-panel">
     <div class="shortcuts-title">Keyboard Shortcuts <button id="shortcuts-close" class="btn-ghost">&times;</button></div>
     <table class="metrics-table">
-      <tr><td><span class="kbd">1</span>-<span class="kbd">4</span></td><td>Switch tabs (Control Room / Playground / Experiments / Tuning)</td></tr>
-      <tr><td><span class="kbd">r</span></td><td>Re-run the Control Room report with fresh seeds</td></tr>
+      <tr><td><span class="kbd">1</span>-<span class="kbd">0</span></td><td>Switch tabs (Overview / Compare / Diagnose / Stress Map / Research / Evidence / Reproduce / Playground / Experiments / Tuning)</td></tr>
+      <tr><td><span class="kbd">r</span></td><td>Re-run the canonical scenario with fresh seeds</td></tr>
       <tr><td><span class="kbd">?</span></td><td>Toggle this panel</td></tr>
       <tr><td><span class="kbd">Esc</span></td><td>Close this panel</td></tr>
     </table>
@@ -33,14 +40,15 @@
 
 <main>
 
-<!-- ===================== CONTROL ROOM ===================== -->
-<section id="tab-control" class="tab-panel active">
-  <p class="hint">
-    Stage 15/16's own canonical scenario -- 5 heterogeneous targets (15-75ms), Capacity=1, a FlashCrowd
-    workload peaking at t=2.5s, 8s horizon. Every number below is a fresh, real run, classified by the
-    same mechanism (acute/chronic collapse, committed backlog) Stage 15's own research established --
-    see <code>docs/StageArtifacts/Stage17-DiagnosticTooling.md</code>.
-  </p>
+<!-- ===================== OVERVIEW ===================== -->
+<section id="tab-overview" class="tab-panel active">
+  <div class="hero">
+    <h2 class="hero-title">Why did your routing system fail under pressure?</h2>
+    <p class="hero-sub">FlashFlow runs controlled routing experiments, compares policies under identical
+      conditions, reconstructs congestion behavior, and explains the mechanism behind latency collapse --
+      not just which policy produced the lowest benchmark number.</p>
+    <div class="hero-loop mono">RUN &rarr; COMPARE &rarr; WHY? &rarr; MECHANISM &rarr; EVIDENCE &rarr; REPRODUCE</div>
+  </div>
 
   <div class="card scenario-banner">
     <div class="scenario-label mono" id="control-scenario-label">Loading scenario&hellip;</div>
@@ -51,6 +59,46 @@
     </div>
   </div>
   <div id="report-reproduce" class="reproduce-box"></div>
+
+  <div class="capability-row">
+    <div class="capability-card">
+      <div class="capability-title">BENCHMARK</div>
+      <div class="capability-desc">Run controlled routing experiments across six mechanistically distinct policies.</div>
+    </div>
+    <div class="capability-card">
+      <div class="capability-title">COMPARE</div>
+      <div class="capability-desc">Compare policies under the exact same scenario, seed, and topology.</div>
+    </div>
+    <div class="capability-card">
+      <div class="capability-title">EXPLAIN</div>
+      <div class="capability-desc">Trace degradation back to a measurable mechanism, not a guess.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>FlashFlow in Numbers</h2>
+    <p class="hint">Every figure is measured in one specific stage's own experiment, not a general
+      system-performance claim -- see the <strong>Evidence</strong> tab and
+      <code>docs/PublicReleaseAudit.md</code> for exact sources and scope.</p>
+    <div id="stat-row" class="stat-row"></div>
+  </div>
+
+  <div class="card">
+    <h2>Surprising Result</h2>
+    <p class="hint">FlashFlow is an investigative system, not a benchmark leaderboard -- this result stayed
+      visible rather than getting quietly dropped because it complicated the story.</p>
+    <div id="surprising-result"></div>
+  </div>
+</section>
+
+<!-- ===================== COMPARE ===================== -->
+<section id="tab-compare" class="tab-panel">
+  <p class="hint">
+    Stage 15/16's own canonical scenario -- 5 heterogeneous targets (15-75ms), Capacity=1, a FlashCrowd
+    workload peaking at t=2.5s, 8s horizon. How did each policy actually behave under this scenario?
+    Policy performance here is regime-dependent, not a universal ranking -- see
+    <code>docs/StageArtifacts/Stage17-DiagnosticTooling.md</code>.
+  </p>
 
   <div class="card">
     <h2>Policy Comparison</h2>
@@ -63,23 +111,14 @@
     <p class="hint">Concentration (how far above fair share the bottleneck target's own traffic rose), committed work (requests sent there before the policy corrected), and time above capacity -- the three signals the classification below is built from.</p>
     <div id="control-bars" class="behavior-bars"></div>
   </div>
+</section>
 
-  <div class="card">
-    <h2>Regime Explorer</h2>
-    <p class="hint"><strong>Exploratory analysis</strong> -- one policy across a compact grid of conditions (3 topology heterogeneities &times; 3 workload shapes, one seed per cell). This is a new, small run, not a reproduction of any specific Stage 13-16 experiment; see <code>internal/report.RunStressMap</code>. Its numbers should not be cited as a Stage 13-16 finding. Click a cell for its full metrics.</p>
-    <div class="controls">
-      <label>Policy
-        <select id="regime-policy"></select>
-      </label>
-      <button id="regime-btn">&#9654; Run Grid</button>
-      <button id="regime-export-btn" class="btn-ghost">&#8595; Export JSON</button>
-      <span id="regime-status" class="status"></span>
-    </div>
-    <div id="regime-empty" class="empty-state">Pick a policy and click <strong>Run Grid</strong> to classify it across 9 heterogeneity &times; workload conditions.</div>
-    <div id="regime-grid" class="regime-grid" hidden></div>
-    <div id="regime-detail" class="regime-detail" hidden></div>
-    <div id="stress-reproduce" class="reproduce-box"></div>
-  </div>
+<!-- ===================== DIAGNOSE ===================== -->
+<section id="tab-diagnose" class="tab-panel">
+  <p class="hint">
+    Why did a policy fail, mechanistically? These views trace one already-classified run back to the
+    events that produced it -- congestion, committed work, queue growth, diversion, drain.
+  </p>
 
   <div class="card">
     <h2>Why Did It Fail?</h2>
@@ -89,12 +128,6 @@
       </label>
     </div>
     <div id="explain-content"></div>
-  </div>
-
-  <div class="card">
-    <h2>Evidence</h2>
-    <p class="hint">Every claim below is traced to a specific experiment in <code>docs/StageArtifacts/Stage16-ClaimLedger.md</code> -- highlighted cards apply to the policy currently selected above.</p>
-    <div id="evidence-cards" class="evidence-cards"></div>
   </div>
 
   <div class="card">
@@ -149,11 +182,54 @@
       <div id="div-reproduce" class="reproduce-box"></div>
     </div>
   </div>
+</section>
 
+<!-- ===================== STRESS MAP ===================== -->
+<section id="tab-stressmap" class="tab-panel">
+  <div class="card">
+    <h2>Stress Map</h2>
+    <p class="hint"><strong>Exploratory analysis</strong> -- one policy across a compact grid of conditions (3 topology heterogeneities &times; 3 workload shapes, one seed per cell). This is a new, small run, not a reproduction of any specific Stage 13-16 experiment; see <code>internal/report.RunStressMap</code>. Its numbers should not be cited as a Stage 13-16 finding. Click a cell for its full metrics.</p>
+    <div class="controls">
+      <label>Policy
+        <select id="regime-policy"></select>
+      </label>
+      <button id="regime-btn">&#9654; Run Grid</button>
+      <button id="regime-export-btn" class="btn-ghost">&#8595; Export JSON</button>
+      <span id="regime-status" class="status"></span>
+    </div>
+    <div id="regime-empty" class="empty-state">Pick a policy and click <strong>Run Grid</strong> to classify it across 9 heterogeneity &times; workload conditions.</div>
+    <div id="regime-grid" class="regime-grid" hidden></div>
+    <div id="regime-detail" class="regime-detail" hidden></div>
+    <div id="stress-reproduce" class="reproduce-box"></div>
+  </div>
+</section>
+
+<!-- ===================== RESEARCH ===================== -->
+<section id="tab-research" class="tab-panel">
+  <p class="hint">
+    How FlashFlow evolved -- one line of question, discovery, and change in understanding per stage.
+    Preserved as a sequence of corrections rather than rewritten as if the final answer were obvious from
+    the start. Full narrative in <code>README.md</code>'s own Research History section.
+  </p>
+  <div id="research-timeline" class="research-timeline"></div>
+</section>
+
+<!-- ===================== EVIDENCE ===================== -->
+<section id="tab-evidence" class="tab-panel">
+  <div class="card">
+    <h2>Evidence</h2>
+    <p class="hint">Every claim below is traced to a specific experiment in <code>docs/StageArtifacts/Stage16-ClaimLedger.md</code> -- highlighted cards apply to the policy currently selected on the Diagnose tab.</p>
+    <div id="evidence-cards" class="evidence-cards"></div>
+  </div>
+</section>
+
+<!-- ===================== REPRODUCE ===================== -->
+<section id="tab-reproduce" class="tab-panel">
   <div class="card">
     <h2>CLI Reference</h2>
-    <p class="hint">Every view above has a dashboard-only convenience layer, but the underlying diagnostic tooling is a real CLI you can script against -- see <code>docs/StageArtifacts/Stage17-DiagnosticTooling.md</code>.</p>
+    <p class="hint">Every view in this dashboard has a dashboard-only convenience layer, but the underlying diagnostic tooling is a real CLI you can script against -- see <code>docs/StageArtifacts/Stage17-DiagnosticTooling.md</code>. Every subcommand also supports <code>--json</code> and its own <code>--help</code>.</p>
     <div id="cli-reference" class="cli-reference"></div>
+    <p class="hint" style="margin-top:14px">Every individual view elsewhere in this dashboard (Compare, Diagnose, Stress Map) also carries its own inline "Reproduce" box with the exact seed and command or call recipe for that specific result.</p>
   </div>
 </section>
 

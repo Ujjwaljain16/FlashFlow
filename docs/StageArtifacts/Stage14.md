@@ -187,7 +187,21 @@ All six policies at the N=8 below/near/above-boundary cells, classified by actua
 p2c-load/adaptive: a live, continuously-updated signal) rather than by name. **FALSIFIER FOUND**: EWMA —
 a "dynamic-load-aware" policy — is WORSE than round-robin at both near_boundary (307.32ms vs 170.48ms)
 and above_boundary (589.39ms vs 376.80ms), directly falsifying "load-aware always beats load-blind" as a
-categorical claim. The data instead points to CONCENTRATION-PRONENESS as the real mechanism: EWMA and
+categorical claim.
+
+**Disclosure, found in an independent audit**: this qualitative reversal (round-robin beating EWMA) was
+not first discovered here. `014a`'s own N=8/Capacity=1 cell, run roughly 20 minutes before this
+experiment, already shows round-robin at mean=88.81ms against EWMA's mean=137.03ms — the same numbers
+`014a`'s own section above cites for a different point (falsifying "rho alone predicts collapse"), one
+row over from a round-robin comparison nobody had connected yet at the time. `014f` was designed and run
+already having that dataset committed, so this experiment characterizes and generalizes an effect its own
+author's design choices (a purpose-built below/near/above-boundary sweep at N=8, the full 6-policy set)
+could plausibly have been shaped by, rather than being the blind, pre-registered test the "FALSIFIER
+FOUND" framing implies. The finding itself is not weakened by this: `014i` independently confirms it
+across 10/10 seeds with Cliff's Delta=1.000, which no amount of hindsight in choosing `014f`'s own design
+could produce on its own. What's corrected here is the discovery narrative, not the result.
+
+The data instead points to CONCENTRATION-PRONENESS as the real mechanism: EWMA and
 P2C-load lock onto a single target via a smoothed/sampled signal and stay locked even as it overloads
 (EWMA's own rho at its locked target hits 3.131 at above_boundary), while least-connections and adaptive
 stay flat and excellent (15-45ms) at every level by actively correcting away from an overloading target.

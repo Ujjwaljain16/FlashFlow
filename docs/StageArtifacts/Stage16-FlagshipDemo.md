@@ -80,11 +80,20 @@ notice — it's in what happens between noticing and correcting:
 | Policy | Committed backlog (Seed A) | Meaning |
 |---|---:|---|
 | round-robin | 4 | Never "diverts" in the reactive sense — its allocation is fixed from the start |
-| weighted-round-robin | N/A | Never registers a diversion event at all — its static weights never change |
+| weighted-round-robin | N/A* | Never registers a diversion event at all — its static weights never change |
 | least-connections | 8 | Diverts fast, commits little |
 | p2c-load | 4 | Diverts fast, commits little |
 | ewma | 98 | Diverts, but not before committing ~25x more work than LC/P2C |
 | adaptive | 107 | Diverts, but commits even more than EWMA in this seed |
+
+\* "N/A" is a TEXT-RENDERING convention (`cmd/experiment-016-flagship`'s own console printer), not a
+property of the committed JSON artifact -- `016-flagship-results.json` stores `committed_backlog: 0` for
+weighted-round-robin, the same literal value it would store for a genuinely zero committed backlog. The
+`diversion_found: false` field is what actually distinguishes the two cases, and is present in the JSON;
+a reader consuming the raw artifact directly (not this table) must check `diversion_found` first and treat
+`committed_backlog` as not meaningfully comparable to another policy's when it's false, rather than reading
+`0` as "zero backlog." Found stated as an unqualified fact ("correctly reported as N/A... not zero") in an
+independent audit, when it's true of this document's own table but not of the data underneath it.
 
 ## 8. Explaining Committed Backlog
 

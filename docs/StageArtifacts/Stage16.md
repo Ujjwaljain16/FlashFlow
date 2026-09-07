@@ -400,8 +400,12 @@ low committed backlog across every scenario in this project.
 
 WRR:
 Static, capacity-aware allocation; safe when weights match reality (as they do in every scenario tested
-here). Never registers a "diversion" event at all, since its allocation never changes -- correctly
-reported as N/A for committed backlog, not zero.
+here). Never registers a "diversion" event at all, since its allocation never changes -- the console
+report renders this as N/A for committed backlog, not zero, but that distinction lives only in
+cmd/experiment-016-flagship's own text printer; the committed 016-flagship-results.json itself stores a
+literal committed_backlog: 0 for WRR, indistinguishable from a genuine zero without also checking
+diversion_found: false in the same record (found stated as if the JSON itself carried this distinction,
+in an independent audit).
 
 RR:
 No adaptation at all; chronic, not acute, failure -- permanently overloads whichever target is slowest,

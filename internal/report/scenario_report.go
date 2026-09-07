@@ -112,7 +112,11 @@ func (sr ScenarioReport) RenderText(policy string) string {
 	fmt.Fprintln(&b, sr.ScenarioLabel)
 	fmt.Fprintln(&b)
 	fmt.Fprintf(&b, "Policy: %s\n\n", pr.Policy)
-	fmt.Fprintln(&b, "Failure classification")
+	// "Diagnostic," not "Failure" -- STABLE is a real, common outcome this
+	// same field reports, and calling the field itself a "failure
+	// classification" undercuts the project's own established point that
+	// STABLE does not mean "safe," just "no collapse mechanism detected."
+	fmt.Fprintln(&b, "Diagnostic classification")
 	fmt.Fprintln(&b, string(pr.Classification))
 	fmt.Fprintf(&b, "(%s)\n", ClassificationSubtitle(pr.Classification))
 	fmt.Fprintln(&b)

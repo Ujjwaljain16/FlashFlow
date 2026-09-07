@@ -154,3 +154,110 @@ func TestGetSWR_ConcurrentStaleHitsCoalesceIntoOneRevalidation(t *testing.T) {
 		t.Errorf("expected exactly 1 real revalidate() call across 20 concurrent stale hits, got %d", calls)
 	}
 }
+
+// TestBackgroundRevalidation_DoesNotStallSynchronousCoalescerForSameKey
+// is a regression test for a real bug an independent audit found: a
+// prior version shared ONE Coalescer instance between GetSWR's own
+// background revalidations and the synchronous on-demand-miss path
+// (internal/topology.EdgeServer's own fetch, which uses this exact same
+// Coalescer instance). A synchronous caller whose entry expired past
+// TTL+StaleWindow right as an unrelated stale-triggered background
+// revalidation for that SAME key was still in flight would coalesce
+// onto -- and block on -- that background call, stalling a normal
+// foreground request for up to the origin fetch's own timeout (10s for
+// EdgeServer's client) for work it never asked for. bgCoalescer exists
+// specifically so this can't happen: the two coalescers dedupe their
+// own callers independently and never block on each other.
+func TestBackgroundRevalidation_DoesNotStallSynchronousCoalescerForSameKey(t *testing.T) {
+	mc := clock.NewMockClock(0)
+	co := NewCoalescer() // the exact instance a synchronous caller (EdgeServer) would share
+	c := NewWithConfig(mc, Config{TTL: 50 * time.Millisecond, StaleWindow: 500 * time.Millisecond}, co)
+	c.Set("k", &Entry{StatusCode: 200, Body: []byte("old"), StoredAt: mc.Now()})
+	mc.Advance(100 * time.Millisecond) // now Stale
+
+	bgStarted := make(chan struct{})
+	bgRelease := make(chan struct{})
+	slowRevalidate := func() (Entry, error) {
+		close(bgStarted)
+		<-bgRelease // held open deliberately, standing in for a slow/hung origin
+		return Entry{StatusCode: 200, Body: []byte("new")}, nil
+	}
+	defer close(bgRelease) // don't leak the background goroutine past this test
+
+	if _, result := c.GetSWR("k", slowRevalidate); result != Stale {
+		t.Fatalf("got %v, want Stale", result)
+	}
+	select {
+	case <-bgStarted:
+	case <-time.After(2 * time.Second):
+		t.Fatal("background revalidation never started")
+	}
+
+	// A separate, synchronous caller for the SAME key on the SAME
+	// coalescer the synchronous path actually uses -- this must return
+	// promptly, not block on the still-in-flight background call above.
+	done := make(chan struct{})
+	go func() {
+		co.Do("k", func() (Entry, error) { return Entry{StatusCode: 200, Body: []byte("fresh-fetch")}, nil })
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// correct: the synchronous fetch completed independently of the
+		// still-in-flight background revalidation.
+	case <-time.After(500 * time.Millisecond):
+		t.Fatal("synchronous coalescer call for the same key blocked on the in-flight background revalidation -- the two coalescers are not actually independent")
+	}
+}
+
+// TestRevalidateInBackground_OnlyLeaderStoresResult is a regression test
+// for the other half of the same audit finding: a prior version had
+// EVERY concurrent stale-triggered goroutine call c.Set independently
+// after the coalescer returned (even the ones that only shared the
+// leader's result), racing N redundant writes against each other with
+// N different c.clock.Now() reads for StoredAt -- wasteful, and a
+// nondeterministic effective freshness age depending on goroutine
+// scheduling order. Only the coalescer leader (shared == false) should
+// ever call Set; this is verified here via bgCoalescer's own Leads/
+// Shared counters, which revalidateInBackground's early "if shared:
+// return" makes a direct proxy for "how many Set calls actually
+// happened."
+func TestRevalidateInBackground_OnlyLeaderStoresResult(t *testing.T) {
+	mc := clock.NewMockClock(0)
+	co := NewCoalescer()
+	c := NewWithConfig(mc, Config{TTL: 50 * time.Millisecond, StaleWindow: 500 * time.Millisecond}, co)
+	c.Set("k", &Entry{StatusCode: 200, Body: []byte("old"), StoredAt: mc.Now()})
+	mc.Advance(100 * time.Millisecond)
+
+	release := make(chan struct{})
+	revalidate := func() (Entry, error) {
+		<-release
+		return Entry{StatusCode: 200, Body: []byte("new")}, nil
+	}
+
+	const n = 10
+	start := make(chan struct{})
+	var wg sync.WaitGroup
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-start
+			c.GetSWR("k", revalidate)
+		}()
+	}
+	close(start)
+	time.Sleep(50 * time.Millisecond) // let all n stale hits fire their own background goroutine into bgCoalescer.Do
+	close(release)                    // let the single real fetch complete
+	wg.Wait()
+	time.Sleep(50 * time.Millisecond) // let every background goroutine finish past Do()
+
+	stats := c.bgCoalescer.Snapshot()
+	if stats.Leads != 1 {
+		t.Errorf("bgCoalescer Leads = %d, want exactly 1 (exactly one Set call should ever happen)", stats.Leads)
+	}
+	if stats.Shared == 0 {
+		t.Error("expected at least one shared (non-writing) waiter across 10 concurrent stale hits, got 0")
+	}
+}

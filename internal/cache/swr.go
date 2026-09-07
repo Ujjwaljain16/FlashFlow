@@ -65,15 +65,27 @@ func (c *Cache) GetSWR(key string, revalidate func() (Entry, error)) (*Entry, Ge
 	return nil, Miss
 }
 
-// revalidateInBackground runs revalidate through the Cache's Coalescer
-// (deduplicating concurrent stale-triggered revalidations for the same
-// key into one real call) and stores its result. A failed revalidation
-// leaves the stale entry in place untouched -- it will be retried on
-// the next stale hit, or age past TTL+StaleWindow into a real Miss if
-// nothing ever succeeds.
+// revalidateInBackground runs revalidate through the Cache's own
+// bgCoalescer -- a separate instance from the one guarding the
+// synchronous miss path, specifically so a background revalidation can
+// never stall a foreground caller's request (see Cache.bgCoalescer's
+// doc comment) -- deduplicating concurrent stale-triggered
+// revalidations for the same key into one real call, and stores the
+// result. A failed revalidation leaves the stale entry in place
+// untouched -- it will be retried on the next stale hit, or age past
+// TTL+StaleWindow into a real Miss if nothing ever succeeds.
+//
+// Only the coalescer LEADER stores the result. Every waiter that shared
+// the leader's call receives the identical entry value, so a prior
+// version's "every caller stores independently" left N concurrent Set
+// calls racing to overwrite each other's StoredAt with whatever
+// c.clock.Now() each happened to read at its own scheduling moment --
+// redundant work, and a nondeterministic effective freshness age
+// depending on goroutine scheduling order rather than on when the fetch
+// actually completed. Found in an independent audit.
 func (c *Cache) revalidateInBackground(key string, revalidate func() (Entry, error)) {
-	entry, err, _ := c.coalescer.Do(key, revalidate)
-	if err != nil {
+	entry, err, shared := c.bgCoalescer.Do(key, revalidate)
+	if err != nil || shared {
 		return
 	}
 	entry.StoredAt = c.clock.Now()

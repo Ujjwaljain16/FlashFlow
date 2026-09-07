@@ -73,7 +73,22 @@ type Cache struct {
 	clock       clock.Clock
 	ttl         time.Duration
 	staleWindow time.Duration // 0 disables SWR entirely -- see swr.go
-	coalescer   *Coalescer    // required for SWR's background revalidation to be deduplicated; nil disables SWR even if staleWindow > 0
+	coalescer   *Coalescer    // dedupes the SYNCHRONOUS on-demand-miss path only; nil disables SWR even if staleWindow > 0
+	// bgCoalescer is a SEPARATE Coalescer instance for SWR's own
+	// background revalidations (swr.go), deliberately not shared with
+	// coalescer above. An earlier version shared one Coalescer for both
+	// paths, which meant a synchronous caller whose entry happened to
+	// expire past TTL+StaleWindow right as an unrelated stale-triggered
+	// background revalidation for that SAME key was still in flight would
+	// coalesce onto -- and block on -- that background call, stalling a
+	// normal foreground request for up to the origin fetch's own timeout
+	// (10s for EdgeServer's client) for work it never asked for and has
+	// no relationship to beyond sharing a cache key. Found in an
+	// independent audit. Two coalescers still dedupe each path's own
+	// concurrent callers (a stampede of stale hits still fires one
+	// background revalidation, a stampede of synchronous misses still
+	// fires one origin fetch); they just never block on each other.
+	bgCoalescer *Coalescer
 
 	entries map[string]*Entry
 
@@ -114,13 +129,17 @@ type Config struct {
 // fetches, exactly what Coalescer exists to prevent on the synchronous
 // miss path already).
 func NewWithConfig(clk clock.Clock, cfg Config, coalescer *Coalescer) *Cache {
-	return &Cache{
+	c := &Cache{
 		clock:       clk,
 		ttl:         cfg.TTL,
 		staleWindow: cfg.StaleWindow,
 		coalescer:   coalescer,
 		entries:     make(map[string]*Entry),
 	}
+	if coalescer != nil {
+		c.bgCoalescer = NewCoalescer()
+	}
+	return c
 }
 
 // Get looks up key. A present-but-expired entry counts as a miss and is
@@ -166,6 +185,27 @@ func (c *Cache) Set(key string, entry *Entry) {
 }
 
 // Snapshot returns a point-in-time copy of the activity counters.
+// CoalesceStats returns combined request-coalescing activity across
+// BOTH the synchronous on-demand-miss coalescer and the background-
+// revalidation coalescer (see bgCoalescer's doc comment for why they're
+// separate instances) -- a zero CoalesceStats if this Cache has
+// coalescing disabled entirely. Callers observing "how much redundant-
+// fetch protection is this cache providing" want the combined total;
+// only the internal deduplication logic itself needs the two kept
+// apart.
+func (c *Cache) CoalesceStats() CoalesceStats {
+	if c.coalescer == nil {
+		return CoalesceStats{}
+	}
+	fg := c.coalescer.Snapshot()
+	bg := c.bgCoalescer.Snapshot()
+	return CoalesceStats{
+		Leads:    fg.Leads + bg.Leads,
+		Shared:   fg.Shared + bg.Shared,
+		Failures: fg.Failures + bg.Failures,
+	}
+}
+
 func (c *Cache) Snapshot() Stats {
 	return Stats{
 		Lookups:   c.lookups.Load(),

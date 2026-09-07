@@ -190,13 +190,15 @@ func (e *EdgeServer) CacheStats() cache.Stats {
 	return e.cache.Snapshot()
 }
 
-// CoalesceStats returns the edge's request-coalescing activity counters,
-// or a zero CoalesceStats if this edge has coalescing disabled.
+// CoalesceStats returns the edge's request-coalescing activity counters
+// (synchronous on-demand fetches AND SWR background revalidations
+// combined -- see Cache.CoalesceStats), or a zero CoalesceStats if this
+// edge has coalescing disabled.
 func (e *EdgeServer) CoalesceStats() cache.CoalesceStats {
 	if e.coalescer == nil {
 		return cache.CoalesceStats{}
 	}
-	return e.coalescer.Snapshot()
+	return e.cache.CoalesceStats()
 }
 
 // NetworkStats returns the edge's simulated-network activity counters, or

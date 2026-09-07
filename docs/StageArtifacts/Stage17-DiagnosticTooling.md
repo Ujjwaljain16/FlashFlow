@@ -43,11 +43,19 @@ Four labels, matching Stage 15/16's own two-mechanism model: `STABLE`, `ACUTE_CO
 
 ## Where the Two Constants Come From, and Three Bugs Caught Calibrating Them
 
-Both magnitude constants (`1.2`, `10`) were chosen once, up front, then validated by running the tool
-against the canonical scenario's own six already-published policies and checking the result against
-Stage 15/16's own written characterization of each — not tuned after the fact to produce a pleasing
-table. That validation process caught three real design bugs before this tool shipped, each worth
-recording precisely:
+**Corrected, independent-audit finding**: this section originally claimed both magnitude constants
+(`1.2`, `10`) were "chosen once, up front... not tuned after the fact to produce a pleasing table." That
+is not an accurate description of the process the three bugs below actually record. In plain terms: the
+classifier's decision tree, and both of its numeric thresholds, were iteratively adjusted UNTIL the tool's
+output matched Stage 15/16's own already-published characterization of the same six policies — a genuine
+calibration process, but one against a single, fixed, six-point sample with no held-out scenario or
+policy the thresholds were checked against afterward. `1.2` sits in the real gap between round-robin's
+own concentration ratio (≈1.06x) and every other policy's (1.4x-3.1x) BECAUSE it was picked to land there;
+`10` similarly separates this same six-point sample's severe cases from its mild ones. That is a legitimate
+way to build a diagnostic tool matched to known ground truth, and the three bugs it caught below were
+real and worth fixing — but it is calibration against six known points, not an independently-derived
+threshold merely confirmed by them, and it says nothing about how the tree would classify a seventh
+policy or a different scenario. Three bugs, each worth recording precisely:
 
 **Bug 1 — fraction-of-time-over-capacity is not the right chronic/acute gate.** The first version of the
 classifier used `FractionAboveCapacity >= 0.5` as the primary gate. It misclassified EWMA as
@@ -78,6 +86,11 @@ of concentration; concentration then only distinguishes *why* a severe case fail
 one gets credit.
 
 ## Validation Against Stage 16's Own Six Policies
+
+This table is a calibration check, not an independent validation: these are the same six outcomes the
+thresholds above were iteratively adjusted against, so a match here confirms internal consistency with
+Stage 15/16's own prior characterization, not that the classifier generalizes to a policy or scenario
+outside this set.
 
 | Policy | Classification | Matches Stage 16's characterization? |
 |---|---|---|

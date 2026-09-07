@@ -34,10 +34,22 @@ const (
 	RecoveryLimited Classification = "RECOVERY_LIMITED"
 )
 
-// Two magnitude constants the classifier needs, both stated explicitly
-// (per this project's own anti-threshold-fishing discipline) and
-// validated against the flagship's own six already-published policy
-// outcomes -- see docs/StageArtifacts/Stage17-DiagnosticTooling.md.
+// Two magnitude constants the classifier needs. Both were calibrated
+// iteratively against the flagship's own six already-published policy
+// outcomes -- not derived from an independent theoretical argument, and
+// not validated against any held-out scenario or policy outside that
+// same set of six. An earlier version of this comment (and of
+// docs/StageArtifacts/Stage17-DiagnosticTooling.md) described these
+// values as "chosen once, up front... not tuned after the fact," which
+// an independent audit correctly identified as inconsistent with the
+// classifier's own documented development history immediately below
+// (Bug 1/Bug 3 in the diagnostic-tooling doc are, precisely, instances
+// of adjusting the tree until it matched these six known outcomes). Both
+// constants sit in the gap between round-robin's own value and every
+// other policy's -- a real, principled discriminator for THIS
+// calibration set, but one small, fixed sample, not a law. See
+// docs/StageArtifacts/Stage17-DiagnosticTooling.md for the corrected
+// account and its stated generalization caveat.
 const (
 	// concentrationFairShareMultiple: a target is treated as genuinely
 	// CONCENTRATED-upon (as opposed to merely receiving its ordinary,

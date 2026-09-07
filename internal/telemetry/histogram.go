@@ -44,6 +44,7 @@ type Histogram struct {
 	mu     sync.Mutex
 	counts [histogramNumBuckets + 2]uint64
 	total  uint64
+	sumNs  int64
 }
 
 // NewHistogram creates an empty Histogram.
@@ -64,6 +65,7 @@ func (h *Histogram) Record(latencyNs int64) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	h.total++
+	h.sumNs += latencyNs
 	switch {
 	case latencyNs < histogramMinNs:
 		h.counts[0]++
@@ -125,4 +127,17 @@ func (h *Histogram) Count() uint64 {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.total
+}
+
+// SumSeconds returns the exact sum of every observation recorded, in
+// seconds -- Prometheus's own summary exposition format requires a
+// `_sum` series alongside `_count` (a summary without one is not valid
+// exposition format, and tools that derive an average via sum/count
+// silently can't). Unlike ValueAtPercentile, this is not bucket-
+// approximated: summing the raw recorded values is cheap and exact
+// regardless of the histogram's own bucketing resolution.
+func (h *Histogram) SumSeconds() float64 {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return float64(h.sumNs) / 1e9
 }

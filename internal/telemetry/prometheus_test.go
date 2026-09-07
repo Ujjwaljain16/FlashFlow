@@ -31,7 +31,7 @@ func TestWriteText_RendersAllFields(t *testing.T) {
 		`flashflow_target_health{target="edge-a",state="HEALTHY"} 1`,
 		`flashflow_target_health{target="edge-b",state="DEGRADED"} 1`,
 		"# HELP flashflow_requests_total",
-		"# TYPE flashflow_requests_total gauge",
+		"# TYPE flashflow_requests_total counter",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("output missing expected line %q\nfull output:\n%s", want, out)
@@ -74,6 +74,12 @@ func TestWriteText_IncludesHistogramWhenPresent(t *testing.T) {
 	}
 	if !strings.Contains(out, "flashflow_latency_histogram_seconds_count 100") {
 		t.Errorf("expected the histogram count line to report 100, got:\n%s", out)
+	}
+	// 100 observations of exactly 10ms each = 1 second total -- an exact
+	// check, not an approximation, since SumSeconds sums the raw
+	// recorded values rather than deriving from bucket boundaries.
+	if !strings.Contains(out, "flashflow_latency_histogram_seconds_sum 1\n") {
+		t.Errorf("expected the histogram sum line to report exactly 1 (100 x 10ms), got:\n%s", out)
 	}
 }
 

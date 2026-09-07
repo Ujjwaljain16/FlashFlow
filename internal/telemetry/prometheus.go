@@ -15,11 +15,11 @@ import (
 // against unchanged Metrics produce byte-identical output, useful for
 // tests and for anyone diffing scrapes.
 func WriteText(w io.Writer, m Metrics) error {
-	writeGauge := func(name, help string, values map[string]uint64) error {
+	writeUint64Map := func(name, help, kind string, values map[string]uint64) error {
 		if len(values) == 0 {
 			return nil
 		}
-		if _, err := fmt.Fprintf(w, "# HELP %s %s\n# TYPE %s gauge\n", name, help, name); err != nil {
+		if _, err := fmt.Fprintf(w, "# HELP %s %s\n# TYPE %s %s\n", name, help, name, kind); err != nil {
 			return err
 		}
 		for _, target := range sortedKeys(values) {
@@ -66,7 +66,14 @@ func WriteText(w io.Writer, m Metrics) error {
 		return nil
 	}
 
-	if err := writeGauge("flashflow_requests_total", "Total application requests observed per target.", m.RequestsTotal); err != nil {
+	// A "_total"-suffixed metric is a monotonically-increasing counter by
+	// Prometheus naming convention (m.RequestsTotal is exactly that: a
+	// per-target cumulative completed-request count that only grows), so
+	// it must be TYPE counter, not gauge -- a scraper/dashboard using
+	// rate()/increase() (which assume counter reset-handling semantics)
+	// on a metric declared gauge would silently misbehave. Found
+	// mistyped as gauge in an independent audit.
+	if err := writeUint64Map("flashflow_requests_total", "Total application requests observed per target.", "counter", m.RequestsTotal); err != nil {
 		return err
 	}
 	if err := writeGaugeF("flashflow_latency_seconds", "Current smoothed (EWMA) latency estimate per target, in seconds.", m.LatencySeconds); err != nil {
@@ -113,6 +120,15 @@ func WriteText(w io.Writer, m Metrics) error {
 			if _, err := fmt.Fprintf(w, "flashflow_latency_histogram_seconds{quantile=\"%s\"} %g\n", q.label, float64(ns)/1e9); err != nil {
 				return err
 			}
+		}
+		// _sum before _count, matching standard Prometheus client output
+		// ordering. Both are mandatory companions to a summary's quantile
+		// lines per the exposition format -- omitting _sum (found in an
+		// independent audit) silently breaks any consumer computing a
+		// true average via sum/count, since the quantile lines alone
+		// don't provide one.
+		if _, err := fmt.Fprintf(w, "flashflow_latency_histogram_seconds_sum %g\n", m.Histogram.SumSeconds()); err != nil {
+			return err
 		}
 		if _, err := fmt.Fprintf(w, "flashflow_latency_histogram_seconds_count %d\n", m.Histogram.Count()); err != nil {
 			return err

@@ -10,6 +10,26 @@ func TestHistogram_EmptyReturnsZero(t *testing.T) {
 	if h.Count() != 0 {
 		t.Errorf("Count() = %d, want 0", h.Count())
 	}
+	if h.SumSeconds() != 0 {
+		t.Errorf("SumSeconds() = %v, want 0", h.SumSeconds())
+	}
+}
+
+// TestHistogram_SumSecondsIsExactNotBucketApproximated is a regression
+// test for a real gap an independent audit found: WriteText's Prometheus
+// summary output emitted quantile lines and _count but never _sum,
+// which the exposition format requires alongside a summary. SumSeconds
+// must sum the RAW recorded values, not something derived from bucket
+// boundaries (which would only be approximately correct).
+func TestHistogram_SumSecondsIsExactNotBucketApproximated(t *testing.T) {
+	h := NewHistogram()
+	h.Record(1_000_000)  // 1ms
+	h.Record(2_000_000)  // 2ms
+	h.Record(3_000_000)  // 3ms
+	want := 6.0 / 1000.0 // exactly 6ms in seconds
+	if got := h.SumSeconds(); got != want {
+		t.Errorf("SumSeconds() = %v, want exactly %v (1ms+2ms+3ms)", got, want)
+	}
 }
 
 func TestHistogram_SingleValue_EveryPercentileNearThatValue(t *testing.T) {

@@ -109,11 +109,19 @@ func RunStressMap(policyName string, seed int64) ([]StressMapCell, error) {
 	if err != nil {
 		return nil, err
 	}
-	cfg := backlog.CongestionConfig{RatioThreshold: 1.0, DiversionWindow: 20, DiversionShareThreshold: 1.5 / 3.0} // 3-target topologies here, matching Stage 14/16's own fair-share-scaled convention
 
 	var cells []StressMapCell
 	cellSeed := seed
 	for _, het := range heterogeneityTopologies() {
+		// DiversionShareThreshold is derived from THIS topology's own
+		// target count, not a hardcoded literal -- heterogeneityTopologies
+		// currently always returns 3-target topologies, but a cfg built
+		// once outside this loop from a hardcoded "3" would silently go
+		// stale the moment that changed, for every cell, with no error to
+		// catch it. Matches CanonicalCongestionConfig's own
+		// 1.5/float64(CanonicalTargetCount) pattern (found inconsistent
+		// with this hardcoded version in an independent audit).
+		cfg := backlog.CongestionConfig{RatioThreshold: 1.0, DiversionWindow: 20, DiversionShareThreshold: 1.5 / float64(len(het.targets))}
 		for _, wl := range stressMapWorkloads() {
 			seeds := replay.DeriveSeeds(cellSeed)
 			cellSeed++

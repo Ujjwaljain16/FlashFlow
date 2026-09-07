@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"flashflow/internal/dashboard"
+	"flashflow/internal/report"
 )
 
 // handleListGroups serves GET /api/experiments -- the top-level
@@ -133,7 +134,7 @@ func handleCanonicalCompare(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, fmt.Errorf("missing baseline or counterfactual parameter"))
 		return
 	}
-	seed := int64(17000)
+	seed := report.CanonicalBaseSeed
 	if raw := r.URL.Query().Get("seed"); raw != "" {
 		if n, err := strconv.ParseInt(raw, 10, 64); err == nil {
 			seed = n
@@ -157,7 +158,7 @@ func handleCanonicalTimeline(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, fmt.Errorf("missing policy parameter"))
 		return
 	}
-	seed := int64(17000)
+	seed := report.CanonicalBaseSeed
 	if raw := r.URL.Query().Get("seed"); raw != "" {
 		if n, err := strconv.ParseInt(raw, 10, 64); err == nil {
 			seed = n

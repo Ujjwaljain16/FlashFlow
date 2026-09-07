@@ -264,7 +264,7 @@ const EVIDENCE_CLAIMS = [
   {
     id: 'C24', status: 'RETIRED',
     claim: 'Adaptive is "safe" from collapse in general.',
-    evidence: "015a/016-flagship: Adaptive's own P99 was the WORST of all six policies tested, confirmed across all 3 independent seeds.",
+    evidence: "015a/016-flagship: Adaptive's own P99 (4072-4853ms) was worst-of-six in 2 of 3 seeds and a statistical near-tie with EWMA (4732 vs 4718ms, within 0.3%) in the third; in no seed did it fall into the safer half of the six policies. An earlier synthesis overstated this as \"worst in every seed\" -- seed 16000 actually has EWMA (4399.88ms) worse than Adaptive (4072.11ms); corrected via independent audit.",
     scope: 'Canonical scenario -- mean latency alone would have hidden this; P99 does not.',
     relevantTo: ['ACUTE_COLLAPSE'],
   },
@@ -312,6 +312,81 @@ function renderEvidence(container, classification) {
         <div class="evidence-meta">Scope: ${c.scope}</div>
       </div>`;
   }).join('');
+}
+
+// ---------- Overview: FlashFlow in Numbers ----------
+// Every figure here is sourced and cross-checked against its stage
+// artifact in docs/PublicReleaseAudit.md section 2 (Claims Audit) --
+// never a bare global performance claim. Static content, like
+// EVIDENCE_CLAIMS above, since these are one-time-measured figures, not
+// live-recomputed data.
+const STAT_ROW = [
+  { value: '~2.53M', label: 'events/sec, virtual engine', source: 'Stage 5' },
+  { value: '3.06x', label: 'HTTP keep-alive vs. no-reuse throughput', source: 'Stage 2' },
+  { value: '8x', label: 'EWMA vs. Adaptive mean latency at Capacity=1', source: 'Stage 12' },
+  { value: '8/8 vs 0/8', label: 'seeds: EWMA vs. P2C committed-backlog separation', source: 'Stage 15' },
+  { value: 'N=3/5/8', label: 'policy ranking generalizes across topology size', source: 'Stage 14' },
+];
+
+function renderStatRow(container) {
+  container.innerHTML = STAT_ROW.map((s) => `
+    <div class="stat-card">
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-source mono">${s.source}</div>
+    </div>`).join('');
+}
+
+// ---------- Overview: Surprising Result ----------
+// Reuses EVIDENCE_CLAIMS' own C24 entry rather than a second copy of the
+// same finding -- the negative result (Adaptive's own worst P99 despite
+// the strongest mean) stays a first-class Overview card, not something
+// only found by digging into the Evidence tab.
+function renderSurprisingResult(container) {
+  const c24 = EVIDENCE_CLAIMS.find((c) => c.id === 'C24');
+  if (!c24) return;
+  container.innerHTML = `
+    <div class="evidence-card highlight">
+      <div class="evidence-top">
+        <span class="evidence-id">${c24.id}</span>
+        <span class="status-badge ${statusBadgeClass(c24.status)}">${c24.status}</span>
+      </div>
+      <div class="evidence-claim">Adaptive improved mean latency, but its own P99 was worst-of-six in 2 of 3 flagship-scenario seeds -- and a near-tie with EWMA in the third.</div>
+      <div class="evidence-meta">${c24.evidence}</div>
+      <div class="evidence-meta">Scope: ${c24.scope}</div>
+    </div>`;
+}
+
+// ---------- Research: stage history ----------
+// One line each of question / discovery / change-in-understanding,
+// mirroring README.md's own "Research History" section verbatim rather
+// than inventing separate copy that could drift from it.
+const STAGE_HISTORY = [
+  { stage: 11, file: 'Stage11.md', title: 'What Appeared to Be True', question: 'Under heterogeneous load, does Adaptive routing beat simpler policies?', discovery: 'An 8-program sweep found Adaptive wins 0 of 27 regime-map configurations on raw mean latency in a flat (no-queueing) model.', change: 'The flat model had no way to penalize EWMA\'s unconstrained concentration -- the model itself was the gap, not the routing policies.' },
+  { stage: 12, file: 'Stage12.md', title: 'Finite Capacity Reverses the Finding', question: 'Does adding a minimal finite-capacity model change the answer?', discovery: 'At Capacity=1, EWMA\'s mean latency explodes 8x while Adaptive barely moves (12-seed confirmation, Cliff\'s Delta=1.000).', change: 'Sharply reverses Stage 11\'s flagship finding -- explicitly scoped to this one tested scenario, not a general law.' },
+  { stage: 13, file: 'Stage13.md', title: 'Toward Rho and Concentration', question: 'What actually drives the Stage 12 reversal?', discovery: 'Two independent sweeps locate the driver at offered ρ≈0.89-0.97 -- round-robin and EWMA (no live signal) collapse; every policy with SOME load signal stays stable.', change: 'Reframes the boundary as "load-blind vs. load-aware routing," not "EWMA vs. Adaptive."' },
+  { stage: 14, file: 'Stage14.md', title: 'Scale Falsifies the Simplification', question: 'Does the load-blind-vs-load-aware boundary hold as the topology scales?', discovery: 'EWMA (load-aware by Stage 13\'s own classification) loses outright to round-robin at N=8, confirmed across 10 seeds.', change: 'Falsifies "load-blind vs. load-aware" as the deepest regime boundary -- rho\'s own predictive power decreases as target count grows even as severity worsens.' },
+  { stage: 15, file: 'Stage15.md', title: 'Direct Backlog Measurement', question: 'If rho itself is not the answer, what is?', discovery: 'A new internal/backlog package measures committed backlog directly: perfect rank agreement with severity across a target-count generalization test where peak rho is badly misordered. Collapse has (at least) two shapes -- acute over-commitment and chronic over-allocation.', change: 'Replaces both prior explanations with a measured, two-mechanism model -- and finds Adaptive\'s own P99 was still worst-of-six in most seeds tested, never among the safer half.' },
+  { stage: 16, file: 'Stage16.md', title: 'Final Synthesis & Release', question: 'Is the evidence solid enough to freeze and release?', discovery: 'Re-audited every strong claim against source, fixed two documentation overclaims and one real security gap, confirmed reproducibility from a clean checkout.', change: 'Verdict: READY WITH DOCUMENTED LIMITATIONS, not a universal law.' },
+  { stage: 17, file: 'Stage17-DiagnosticTooling.md', title: 'Diagnostic Tooling', question: 'Can the Stage 15/16 mechanism model be turned into something an engineer can run directly?', discovery: 'Built flashflow report/explain/stress-map on top of the completed research -- validating the classifier against Stage 16\'s own six published outcomes caught three real design bugs before it shipped.', change: 'Not a new research stage -- productizes Stages 11-16\'s findings without adding a new claim.' },
+];
+
+// Plain text, not a hyperlink -- the dashboard's own HTTP server only
+// serves cmd/dashboard/static and the /api/* routes, not the repo's
+// docs/ directory, so a clickable link here would 404. Matches how
+// EVIDENCE_CLAIMS' own citations are already plain text, not links.
+function renderResearchHistory(container) {
+  container.innerHTML = STAGE_HISTORY.map((s) => `
+    <div class="research-entry">
+      <div class="research-stage">Stage ${s.stage}</div>
+      <div class="research-body">
+        <div class="research-title">${s.title}</div>
+        <div class="research-line"><strong>Question:</strong> ${s.question}</div>
+        <div class="research-line"><strong>Discovery:</strong> ${s.discovery}</div>
+        <div class="research-line"><strong>Changed understanding:</strong> ${s.change}</div>
+        <div class="research-meta mono">docs/StageArtifacts/${s.file}</div>
+      </div>
+    </div>`).join('');
 }
 
 async function loadControlRoom() {
@@ -475,7 +550,12 @@ $('#div-btn').addEventListener('click', async () => {
   const counterfactual = $('#div-counterfactual').value;
   $('#div-status').textContent = 'running both...';
   try {
-    const summary = await getJSON(`/api/canonical/compare?baseline=${encodeURIComponent(baseline)}&counterfactual=${encodeURIComponent(counterfactual)}&seed=17000`);
+    // No &seed= here on purpose: the server applies its own default
+    // (report.CanonicalBaseSeed) when the param is omitted, so this
+    // client never hardcodes that number a second time (an independent
+    // audit found it doing exactly that, with a literal 17000 that
+    // could silently drift from the Go source of truth).
+    const summary = await getJSON(`/api/canonical/compare?baseline=${encodeURIComponent(baseline)}&counterfactual=${encodeURIComponent(counterfactual)}`);
     lastDivergenceSummary = summary;
     $('#div-empty').hidden = true;
     $('#div-result').hidden = false;
@@ -612,7 +692,7 @@ function storyBeats(view) {
   if (m.drained) {
     beats.push({ t: m.drain_at_ms, text: `The queue fully drains at ${fmtSeconds(m.drain_at_ms)}.` });
   } else {
-    beats.push({ t: 7950, text: 'The queue never drains within the observed 8s horizon.' });
+    beats.push({ t: view.horizon_ms - 50, text: `The queue never drains within the observed ${fmtSeconds(view.horizon_ms)} horizon.` });
   }
   return beats.sort((a, b) => a.t - b.t);
 }
@@ -625,8 +705,12 @@ function stopStory() {
 function playStory(view) {
   stopStory();
   const beats = storyBeats(view);
-  const horizonMs = 8000;
-  const realtimeMs = 9000; // compresses the 8s virtual scenario into a 9s real-time playback
+  // Sourced from the API response, not a second hardcoded literal --
+  // an independent audit found this hardcoded to 8000 here, which
+  // could silently drift from report.CanonicalHorizon (the actual Go
+  // source of truth) if that ever changed.
+  const horizonMs = view.horizon_ms;
+  const realtimeMs = horizonMs * 1.125; // compresses the virtual scenario into a real-time playback ~12.5% longer than its own horizon
   const svg = $('#story-svg');
   const scale = renderEventTimeline(svg, view);
 
@@ -687,11 +771,21 @@ const CLI_ENTRIES = [
   { desc: 'Classify one policy across the 3x3 heterogeneity x workload grid the Regime Explorer visualizes.', cmd: 'go run ./cmd/flashflow stress-map --policy ewma --seed 17900' },
 ];
 
+// escapeHTML guards template placeholders like "<scenario-report.json>"
+// in CLI_ENTRIES' own command strings -- interpolated raw into innerHTML,
+// literal angle brackets are parsed as an (unrecognized, invisible) HTML
+// tag rather than displayed as text. A real bug, caught while promoting
+// this list to its own Reproduce tab: the "explain" command silently
+// rendered without its file-path placeholder at all.
+function escapeHTML(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function renderCLIReference(container) {
   container.innerHTML = CLI_ENTRIES.map((e, i) => `
     <div class="cli-entry">
       <div class="cli-desc">${e.desc}</div>
-      <div class="reproduce-cmd"><code id="cli-cmd-${i}">${e.cmd}</code><button class="repro-copy-btn" type="button" data-idx="${i}">Copy</button></div>
+      <div class="reproduce-cmd"><code id="cli-cmd-${i}">${escapeHTML(e.cmd)}</code><button class="repro-copy-btn" type="button" data-idx="${i}">Copy</button></div>
     </div>`).join('');
   container.querySelectorAll('.repro-copy-btn').forEach((btn) => {
     btn.addEventListener('click', (ev) => {
@@ -720,7 +814,15 @@ $('#shortcuts-btn').addEventListener('click', () => toggleShortcuts(true));
 $('#shortcuts-close').addEventListener('click', () => toggleShortcuts(false));
 $('#shortcuts-overlay').addEventListener('click', (e) => { if (e.target.id === 'shortcuts-overlay') toggleShortcuts(false); });
 
-const TAB_KEYS = { '1': 'control', '2': 'playground', '3': 'experiments', '4': 'tuning' };
+const TAB_KEYS = {
+  '1': 'overview', '2': 'compare', '3': 'diagnose', '4': 'stressmap', '5': 'research',
+  '6': 'evidence', '7': 'reproduce', '8': 'playground', '9': 'experiments', '0': 'tuning',
+};
+
+// Tabs that read from the same shared `controlReport` -- the "r" shortcut
+// re-runs it from any of them, not just Overview, since Compare/Diagnose/
+// Stress Map/Evidence all depend on the same canonical-scenario fetch.
+const CONTROL_REPORT_TABS = ['overview', 'compare', 'diagnose', 'stressmap', 'evidence'];
 
 document.addEventListener('keydown', (e) => {
   if (isTypingTarget(e.target)) return;
@@ -737,7 +839,7 @@ document.addEventListener('keydown', (e) => {
     $(`.tab-btn[data-tab="${TAB_KEYS[e.key]}"]`)?.click();
     return;
   }
-  if (e.key === 'r' && $('#tab-control').classList.contains('active')) {
+  if (e.key === 'r' && CONTROL_REPORT_TABS.some((t) => $('#tab-' + t).classList.contains('active'))) {
     $('#control-refresh-btn').click();
   }
 });
@@ -958,6 +1060,9 @@ async function loadTuning() {
 
 // ---------- Init ----------
 renderCLIReference($('#cli-reference'));
+renderStatRow($('#stat-row'));
+renderSurprisingResult($('#surprising-result'));
+renderResearchHistory($('#research-timeline'));
 loadControlRoom();
 loadPolicies();
 loadExperimentGroups();

@@ -100,6 +100,7 @@ func CompareCanonical(baselinePolicy, counterfactualPolicy string, seed int64) (
 type TimelineView struct {
 	Policy       string                          `json:"policy"`
 	Seed         int64                           `json:"seed"`
+	HorizonMs    float64                         `json:"horizon_ms"` // report.CanonicalHorizon in ms -- exposed so the dashboard's own JS never needs to hardcode this a second time (an independent audit found it doing exactly that, for the story-mode playback duration)
 	Traffic      []report.SeriesPoint            `json:"traffic"`
 	TargetDepths map[string][]report.SeriesPoint `json:"target_depths"`
 	Metrics      report.Metrics                  `json:"metrics"`
@@ -125,6 +126,7 @@ func RunCanonicalTimeline(policyName string, seed int64, buckets int) (TimelineV
 	view := TimelineView{
 		Policy:       policyName,
 		Seed:         seed,
+		HorizonMs:    horizonMs,
 		Traffic:      report.TrafficSeries(&result, buckets, horizonMs),
 		TargetDepths: make(map[string][]report.SeriesPoint, len(targets)),
 	}
